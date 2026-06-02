@@ -1,13 +1,109 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../lib/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
+}
+
+model Usuario {
+  id_usuario Int @id @default(autoincrement())
+
+  nombre      String
+  apellidos   String
+  correo      String @unique
+  contrasena  String
+  rol         String
+
+  visitas HechoVisita[]
+}
+
+model HechoVisita {
+  id_visita Int @id @default(autoincrement())
+
+  sede            String
+  curso           String
+  campo_formativo String
+  requerimientos  String?
+
+  fecha                DateTime
+  turno                String
+  hora_practica_teoria String
+  n_semana             Int
+  hora_inicio          String
+  hora_termino         String
+  ciclo                String
+
+  usuarioId Int
+  usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
+
+  controlDocente    ControlDocente?
+  controlMaterial   ControlMaterial?
+  controlSilabo     ControlSilabo?
+  controlEstudiante ControlEstudiante?
+  controlGuia       ControlGuia?
+}
+
+model ControlDocente {
+  id_control_docente Int @id @default(autoincrement())
+
+  nombre_docente     String
+  apellido_docente   String
+  actividad          String
+  presente           Boolean
+  horario_programado Boolean
+  interaccion        Boolean
+  observaciones      String?
+
+  visitaId Int @unique
+  visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
+}
+
+model ControlMaterial {
+  id_control_material Int @id @default(autoincrement())
+
+  cumple        Boolean
+  observaciones String?
+
+  visitaId Int @unique
+  visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
+}
+
+model ControlSilabo {
+  id_control_silabo Int @id @default(autoincrement())
+
+  coincidencia_actual   Boolean
+  coincidencia_anterior Boolean
+  ingreso_avance        Boolean
+  observaciones         String?
+
+  visitaId Int @unique
+  visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
+}
+
+model ControlEstudiante {
+  id_control_estudiante Int @id @default(autoincrement())
+
+  control_ambiente       Boolean
+  observaciones_ambiente String?
+
+  control_intranet       Boolean
+  observaciones_intranet String?
+
+  observaciones          String?
+
+  visitaId Int @unique
+  visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
+}
+
+model ControlGuia {
+  id_control_guia Int @id @default(autoincrement())
+
+  tema_programado String
+  logro           String
+  rubrica         String
+  observaciones   String?
+
+  visitaId Int @unique
+  visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
