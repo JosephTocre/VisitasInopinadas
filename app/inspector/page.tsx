@@ -6,6 +6,15 @@ import { useRouter } from "next/navigation";
 export default function InspectorPage() {
   const router = useRouter();
 
+  const usuarioGuardado =
+    typeof window !== "undefined"
+      ? localStorage.getItem("usuario")
+      : null;
+
+  const nombreUsuario = usuarioGuardado
+    ? JSON.parse(usuarioGuardado).nombre
+    : "Usuario";
+
   const cerrarSesion = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("usuario");
@@ -19,7 +28,7 @@ export default function InspectorPage() {
       {/* Header */}
       <div className="flex items-center gap-4 self-end">
         <p className="text-sm font-medium text-gray-800">
-          Hola, usuario
+          Hola, {nombreUsuario}
         </p>
 
         <button
@@ -64,20 +73,20 @@ export default function InspectorPage() {
             de Visitas Inopinadas
           </h1>
 
-          <p className="text-sm text-gray-500 mt-3">
+          <p className="text-sm text-gray-500 mt-10">
             Control de clases universitarias mediante QR
           </p>
 
-          <div className="w-full border-t border-gray-200 my-7" />
+          <div className="w-full  my-7" />
 
-          <Link href="/registro" className="w-full">
+          <Link href="/inspector/registro" className="w-full">
             <button className="w-full bg-black text-white font-semibold text-base rounded-lg py-3 px-6 flex items-center justify-center gap-3 hover:bg-gray-900 transition-colors">
               Registrar nueva visita
               <span className="text-lg">→</span>
             </button>
           </Link>
 
-          <div className="w-full border-t border-gray-200 my-4" />
+          <div className="w-full border-t border-gray-200 my-6" />
 
           <Link href="/historial">
             <button className="bg-gray-100 text-gray-700 font-semibold text-sm rounded-md py-2 px-8 hover:bg-gray-200 transition-colors">
