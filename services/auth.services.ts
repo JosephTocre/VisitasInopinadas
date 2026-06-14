@@ -28,13 +28,21 @@ export class AuthService {
       throw new Error("Contraseña incorrecta");
     }
 
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      throw new Error(
+        "JWT_SECRET no configurado"
+      );
+    }
+
     const token = jwt.sign(
       {
         id: usuario.id_usuario,
         correo: usuario.correo,
         rol: usuario.rol,
       },
-      process.env.JWT_SECRET!,
+      jwtSecret,
       {
         expiresIn: "8h",
       }
@@ -66,16 +74,30 @@ export class AuthService {
       );
 
     if (usuarioExistente) {
-      throw new Error("El correo ya está registrado");
+      throw new Error(
+        "El correo ya está registrado"
+      );
     }
 
     const hash =
-      await bcrypt.hash(datos.contrasena, 10);
+      await bcrypt.hash(
+        datos.contrasena,
+        10
+      );
 
-    return await this.usuarioRepository.crear({
-      ...datos,
-      contrasena: hash,
-    });
+    const usuario =
+      await this.usuarioRepository.crear({
+        ...datos,
+        contrasena: hash,
+      });
+
+    return {
+      id: usuario.id_usuario,
+      nombre: usuario.nombre,
+      apellidos: usuario.apellidos,
+      correo: usuario.correo,
+      rol: usuario.rol,
+    };
   }
 
   async cerrarSesion() {
