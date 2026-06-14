@@ -1,154 +1,157 @@
-// app/register/page.tsx
-
 "use client";
 
-import Link from "next/link";
+import AdminSidebar from "@/components/AdminSidebar";
 
-export default function RegisterPage() {
+export default function RegistroUsuarioPage() {
   return (
-    <main className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f5f5f5] flex">
 
-      <div className="w-full max-w-lg bg-white border border-gray-200 rounded-md shadow-sm p-10">
+      <AdminSidebar />
 
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-black rounded-lg flex items-center justify-center text-white text-3xl">
-            ★
-          </div>
-        </div>
+      <div className="w-px bg-gray-300" />
 
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold leading-tight text-black">
-            Registrar nuevo usuario
-          </h1>
-        </div>
+      <main className="flex-1 flex flex-col px-8 py-6">
 
-        <form className="mt-10 space-y-6">
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Nombres</label>
-
-            <input
-              type="text"
-              placeholder="Ingrese su nombre"
-              className="
-                w-full
-                border
-                border-gray-300
-                rounded-md
-                px-4
-                py-4
-                outline-none
-                text-black
-                placeholder:text-gray-400
-                focus:ring-2
-                focus:ring-black
-                transition"/>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Apellidos</label>
-
-            <input
-              type="text"
-              placeholder="Ingrese su apellido"
-              className="
-                w-full
-                border
-                border-gray-300
-                rounded-md
-                px-4
-                py-4
-                outline-none
-                text-black
-                placeholder:text-gray-400
-                focus:ring-2
-                focus:ring-black
-                transition"/>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Correo electrónico
-            </label>
-
-            <input
-              type="email"
-              placeholder="ejemplo@minedu.gob.pe"
-              className="
-                w-full
-                border
-                border-gray-300
-                rounded-md
-                px-4
-                py-4
-                outline-none
-                text-black
-                placeholder:text-gray-400
-                focus:ring-2
-                focus:ring-black
-                transition"/>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-900 mb-2">
-              Contraseña
-            </label>
-
-            <input
-              type="password"
-              placeholder="Ingrese una contraseña"
-              className="
-                w-full
-                border
-                border-gray-300
-                rounded-md
-                px-4
-                py-4
-                outline-none
-                text-black
-                placeholder:text-gray-400
-                focus:ring-2
-                focus:ring-black
-                transition"/>
-          </div>
-
-          <button
-            type="submit"
-            className="
-              w-full
-              bg-black
-              text-white
-              py-4
-              rounded-md
-              font-semibold
-              hover:opacity-90
-              transition">
-            Crear cuenta →
-          </button>
-
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            ¿Ya tienes cuenta?{" "}
-            <Link
-              href="/"
-              className="font-semibold text-black hover:underline">
-              Iniciar sesión
-            </Link>
+        {/* Saludo */}
+        <div className="flex justify-end">
+          <p className="text-sm font-medium text-gray-800">
+            Hola admin
           </p>
         </div>
 
-        <div className="mt-8 text-center">
-          <p className="text-xs text-gray-500">
-            Sistema seguro y eficiente para el control de visitas
-          </p>
+        {/* Contenido */}
+        <div className="flex-1 flex items-center justify-center">
+
+          <div className="w-full max-w-md border border-gray-300 rounded-3xl p-10 bg-[#f5f5f5]">
+
+            <h1 className="text-5xl font-extrabold text-center text-black leading-tight mb-10">
+              Registrar nuevo
+              <br />
+              usuario
+            </h1>
+
+            <form className="space-y-5">
+
+              <input
+                type="text"
+                placeholder="Nombre"
+                className="
+                  w-full
+                  border
+                  border-gray-300
+                  rounded-2xl
+                  px-5
+                  py-4
+                  bg-transparent
+                  text-black
+                  outline-none
+                  focus:ring-2
+                  focus:ring-black
+                "
+              />
+
+              <input
+                type="text"
+                placeholder="Apellido"
+                className="
+                  w-full
+                  border
+                  border-gray-300
+                  rounded-2xl
+                  px-5
+                  py-4
+                  bg-transparent
+                  text-black
+                  outline-none
+                  focus:ring-2
+                  focus:ring-black
+                "
+              />
+
+              <input
+                type="email"
+                placeholder="Correo"
+                className="
+                  w-full
+                  border
+                  border-gray-300
+                  rounded-2xl
+                  px-5
+                  py-4
+                  bg-transparent
+                  text-black
+                  outline-none
+                  focus:ring-2
+                  focus:ring-black
+                "
+              />
+
+              <input
+                type="password"
+                placeholder="Contraseña"
+                className="
+                  w-full
+                  border
+                  border-gray-300
+                  rounded-2xl
+                  px-5
+                  py-4
+                  bg-transparent
+                  text-black
+                  outline-none
+                  focus:ring-2
+                  focus:ring-black
+                "
+              />
+
+              <select
+                className="
+                  w-full
+                  border
+                  border-gray-300
+                  rounded-2xl
+                  px-5
+                  py-4
+                  bg-transparent
+                  text-black
+                  outline-none
+                  focus:ring-2
+                  focus:ring-black
+                "
+              >
+                <option value="">Seleccione un rol</option>
+                <option value="ADMIN">Administrador</option>
+                <option value="INSPECTOR">Inspector</option>
+              </select>
+
+              <button
+                type="submit"
+                className="
+                  w-full
+                  bg-black
+                  text-white
+                  py-4
+                  rounded-2xl
+                  font-semibold
+                  hover:opacity-90
+                  transition
+                "
+              >
+                Crear cuenta →
+              </button>
+
+            </form>
+
+            <p className="text-center text-xs text-gray-500 mt-5">
+              Sistema seguro y eficiente para el control
+            </p>
+
+          </div>
+
         </div>
 
-      </div>
+      </main>
 
-    </main>
+    </div>
   );
 }
