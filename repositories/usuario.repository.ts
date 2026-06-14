@@ -1,26 +1,25 @@
+import { prisma } from "@/lib/prisma";
+import { Rol } from "@prisma/client";
+
 export class UsuarioRepository {
 
-  async obtenerTodos() {}
-
-  async obtenerPorId(id: number) {
-    void id;
-  }
-
   async obtenerPorCorreo(correo: string) {
-    void correo;
+    return await prisma.usuario.findUnique({
+      where: {
+        correo,
+      },
+    });
   }
 
-  async crear(datos: unknown) {
-    void datos;
+  async crear(datos: {
+    nombre: string;
+    apellidos: string;
+    correo: string;
+    contrasena: string;
+    rol: Rol;
+  }) {
+    return await prisma.usuario.create({
+      data: datos,
+    });
   }
-
-  async actualizar(id: number, datos: unknown) {
-    void id;
-    void datos;
-  }
-
-  async eliminar(id: number) {
-    void id;
-  }
-
 }

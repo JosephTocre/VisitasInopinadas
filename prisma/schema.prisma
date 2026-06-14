@@ -3,17 +3,23 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ADMIN
+  INSPECTOR
 }
 
 model Usuario {
   id_usuario Int @id @default(autoincrement())
 
-  nombre      String
-  apellidos   String
-  correo      String @unique
-  contrasena  String
-  rol         String
+  nombre     String
+  apellidos  String
+  correo     String @unique
+  contrasena String
+  rol        Rol
 
   visitas HechoVisita[]
 }
@@ -30,8 +36,8 @@ model HechoVisita {
   turno                String
   hora_practica_teoria String
   n_semana             Int
-  hora_inicio          String
-  hora_termino         String
+  hora_inicio          DateTime
+  hora_termino         DateTime
   ciclo                String
 
   usuarioId Int
@@ -90,7 +96,7 @@ model ControlEstudiante {
   control_intranet       Boolean
   observaciones_intranet String?
 
-  observaciones          String?
+  observaciones String?
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
