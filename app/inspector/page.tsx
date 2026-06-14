@@ -1,17 +1,39 @@
-// app/dashboard/page.tsx
-
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-export default function DashboardPage() {
+export default function InspectorPage() {
+  const router = useRouter();
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    router.push("/");
+  };
+
   return (
-    <main className="min-h-screen bg-[#eaeaea] flex flex-col px-8 py-6">
+    <main className="min-h-screen bg-[#f5f5f5] flex flex-col p-8">
 
+      {/* Header */}
       <div className="flex items-center gap-4 self-end">
-        <p className="text-sm font-medium text-gray-800">Hola, usuario</p>
-        <button className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black transition-colors">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <p className="text-sm font-medium text-gray-800">
+          Hola, usuario
+        </p>
+
+        <button
+          onClick={cerrarSesion}
+          className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black transition-colors"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
             <polyline points="16 17 21 12 16 7" />
             <line x1="21" y1="12" x2="9" y2="12" />
@@ -19,6 +41,7 @@ export default function DashboardPage() {
         </button>
       </div>
 
+      {/* Contenido */}
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-8">
 
         <div className="w-full max-w-lg bg-white rounded-lg shadow-sm px-12 py-12 flex flex-col items-center text-center">
@@ -36,7 +59,9 @@ export default function DashboardPage() {
           </div>
 
           <h1 className="text-3xl font-extrabold text-black leading-tight tracking-tight">
-            Sistema de Registro<br />de Visitas Inopinadas
+            Sistema de Registro
+            <br />
+            de Visitas Inopinadas
           </h1>
 
           <p className="text-sm text-gray-500 mt-3">
@@ -53,6 +78,7 @@ export default function DashboardPage() {
           </Link>
 
           <div className="w-full border-t border-gray-200 my-4" />
+
           <Link href="/historial">
             <button className="bg-gray-100 text-gray-700 font-semibold text-sm rounded-md py-2 px-8 hover:bg-gray-200 transition-colors">
               Historial
@@ -60,10 +86,13 @@ export default function DashboardPage() {
           </Link>
 
         </div>
+
         <p className="text-xs text-gray-400">
           Sistema seguro y eficiente para el control
         </p>
+
       </div>
+
     </main>
   );
 }

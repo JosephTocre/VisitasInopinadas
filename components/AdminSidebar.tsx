@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const navItems = [
   {
@@ -23,11 +23,17 @@ const navItems = [
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const cerrarSesion = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
+
+    router.push("/");
+  };
 
   return (
     <aside className="w-56 bg-[#eaeaea] flex flex-col px-4 py-6 shrink-0">
-
-      {/* Logo */}
       <div className="mb-8">
         <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
           <svg
@@ -65,6 +71,7 @@ export default function AdminSidebar() {
 
       {/* Cerrar sesión */}
       <button
+        onClick={cerrarSesion}
         className="
           flex
           items-center
