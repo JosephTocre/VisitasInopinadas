@@ -2,25 +2,164 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #030213;
+
+  --card: #ffffff;
+  --card-foreground: #030213;
+
+  --primary: #030213;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #030213;
+
+  --muted: #ececf0;
+  --muted-foreground: #666666;
+
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+
+  --border: #e5e5e5;
+  --input-background: #ffffff;
+
+  --radius: 0.75rem;
+}
+
+.select-modern {
+  @apply w-full appearance-none px-4 py-3 rounded-lg border-2 border-border bg-white transition-colors duration-200 focus:outline-none focus:border-primary;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 40px;
+}
+
+.dark {
+  --background: #171717;
+  --foreground: #fafafa;
+
+  --card: #171717;
+  --card-foreground: #fafafa;
+
+  --primary: #fafafa;
+  --primary-foreground: #171717;
+
+  --secondary: #262626;
+  --secondary-foreground: #fafafa;
+
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+
+  --accent: #262626;
+  --accent-foreground: #fafafa;
+
+  --border: #404040;
+  --input-background: #262626;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-border: var(--border);
+  --color-input-background: var(--input-background);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --radius-lg: var(--radius);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Base */
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg,
+      #ffffff 0%,
+      #f5f5f5 50%,
+      #e5e5e5 100%);
+
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bdbdbd;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #8d8d8d;
+}
+
+/* Componentes */
+
+@layer components {
+  .page-container {
+    @apply min-h-screen py-8 px-4;
+  }
+
+  .card-modern {
+    @apply bg-card text-card-foreground rounded-2xl border border-border shadow-2xl p-6 md:p-10;
+  }
+
+  .input-modern {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-border bg-white transition-colors duration-200 focus:outline-none focus:border-primary;
+  }
+
+  .select-modern {
+    @apply w-full appearance-none px-4 py-3 rounded-lg border-2 border-border bg-white transition-colors duration-200 focus:outline-none focus:border-primary;
+  }
+
+  .label-modern {
+    @apply block text-sm font-bold text-foreground mb-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-primary-foreground rounded-xl py-4 px-8 font-bold text-lg shadow-xl transition-all duration-300 hover:opacity-90 hover:shadow-2xl;
+  }
+
+  .btn-option {
+    @apply py-4 px-6 rounded-lg border-2 border-border bg-card text-card-foreground font-semibold transition-all duration-300 hover:border-primary;
+  }
+
+  .btn-option-active {
+    @apply bg-primary text-primary-foreground border-primary shadow-lg;
+  }
+
+  .page-title {
+    @apply text-3xl font-black text-foreground mb-2;
+  }
+
+  .page-subtitle {
+    @apply text-muted-foreground;
+  }
 }
