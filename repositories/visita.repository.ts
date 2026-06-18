@@ -1,26 +1,45 @@
-export class VisitaRepository {
+import { prisma } from "@/lib/prisma";
 
-  async obtenerTodas() {}
+export class VisitaRepository {
+  async obtenerTodas(where: any = {}) {
+    return await prisma.hechoVisita.findMany({
+      where,
+      include: {
+        controlDocente: true,
+      },
+      orderBy: {
+        fecha: "desc",
+      },
+    });
+  }
 
   async obtenerPorId(id: number) {
-    void id;
+    return await prisma.hechoVisita.findUnique({
+      where: { id_visita: id },
+      include: {
+        controlDocente: true,
+        controlMaterial: true,
+        controlSilabo: true,
+        controlEstudiante: true,
+        controlGuia: true,
+      },
+    });
   }
 
-  async obtenerPorInspector(idUsuario: number) {
-    void idUsuario;
+  async crear(datos: any) {
+    return await prisma.hechoVisita.create({ data: datos });
   }
 
-  async crear(datos: unknown) {
-    void datos;
-  }
-
-  async actualizar(id: number, datos: unknown) {
-    void id;
-    void datos;
+  async actualizar(id: number, datos: any) {
+    return await prisma.hechoVisita.update({
+      where: { id_visita: id },
+      data: datos,
+    });
   }
 
   async eliminar(id: number) {
-    void id;
+    return await prisma.hechoVisita.delete({
+      where: { id_visita: id },
+    });
   }
-
 }
