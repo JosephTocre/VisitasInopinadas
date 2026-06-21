@@ -1,48 +1,58 @@
 "use client";
 
 import { useState } from "react";
+import { useControlAsistenciaStore } from "@/store/controlAsistencia";
 
 type ControlAsistenciaStepProps = {
   onBack: () => void;
   onNext: () => void;
+  visitaId: number;
 };
 
 export default function ControlAsistenciaStep({
   onBack,
   onNext,
+  visitaId,
 }: ControlAsistenciaStepProps) {
-  const [ambienteCumple, setAmbienteCumple] = useState<"cumple" | "no_cumple">("cumple");
-  const [intranetCumple, setIntranetCumple] = useState<"cumple" | "no_cumple">("cumple");
+  const { controlAsistencia, setControlAsistencia } = useControlAsistenciaStore();
   const [error, setError] = useState("");
 
-  const [formulario, setFormulario] = useState({
-    observacionAmbiente: "",
-    observacionIntranet: "",
-    observacionesGenerales: "",
-    observacionesSilabo: "",
-  });
-
-  const continuar = () => {
+  const continuar = async () => {
     if (
-      !formulario.observacionAmbiente.trim() ||
-      !formulario.observacionIntranet.trim()
+      !controlAsistencia.observacionAmbiente.trim() ||
+      !controlAsistencia.observacionIntranet.trim()
     ) {
       setError("Debe completar todos los campos obligatorios.");
       return;
     }
 
-    setError("");
+    try {
+      setError("");
 
-    sessionStorage.setItem(
-      "controlAsistencia",
-      JSON.stringify({
-        ambienteCumple,
-        intranetCumple,
-        ...formulario,
-      })
-    );
+      const token = localStorage.getItem("token");
 
-    onNext();
+      const res = await fetch(`/api/control-asistencia/${visitaId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...controlAsistencia,
+          visitaId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.mensaje || "Error al guardar control");
+      }
+
+      onNext();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+    }
   };
 
   return (
@@ -88,14 +98,18 @@ export default function ControlAsistenciaStep({
               <div className="flex gap-8">
                 <RadioOption
                   label="Cumple"
-                  checked={ambienteCumple === "cumple"}
-                  onChange={() => setAmbienteCumple("cumple")}
+                  checked={controlAsistencia.ambienteCumple === "cumple"}
+                  onChange={() =>
+                    setControlAsistencia({ ambienteCumple: "cumple" })
+                  }
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={ambienteCumple === "no_cumple"}
-                  onChange={() => setAmbienteCumple("no_cumple")}
+                  checked={controlAsistencia.ambienteCumple === "no_cumple"}
+                  onChange={() =>
+                    setControlAsistencia({ ambienteCumple: "no_cumple" })
+                  }
                 />
               </div>
             </div>
@@ -107,10 +121,10 @@ export default function ControlAsistenciaStep({
 
               <input
                 type="text"
-                value={formulario.observacionAmbiente}
+                value={controlAsistencia.observacionAmbiente}
                 onChange={(e) =>
-                  setFormulario({
-                    ...formulario,
+                  setControlAsistencia({
+                    ...controlAsistencia,
                     observacionAmbiente: e.target.value,
                   })
                 }
@@ -133,14 +147,18 @@ export default function ControlAsistenciaStep({
               <div className="flex gap-8">
                 <RadioOption
                   label="Cumple"
-                  checked={intranetCumple === "cumple"}
-                  onChange={() => setIntranetCumple("cumple")}
+                  checked={controlAsistencia.intranetCumple === "cumple"}
+                  onChange={() =>
+                    setControlAsistencia({ intranetCumple: "cumple" })
+                  }
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={intranetCumple === "no_cumple"}
-                  onChange={() => setIntranetCumple("no_cumple")}
+                  checked={controlAsistencia.intranetCumple === "no_cumple"}
+                  onChange={() =>
+                    setControlAsistencia({ intranetCumple: "no_cumple" })
+                  }
                 />
               </div>
             </div>
@@ -152,10 +170,10 @@ export default function ControlAsistenciaStep({
 
               <input
                 type="text"
-                value={formulario.observacionIntranet}
+                value={controlAsistencia.observacionIntranet}
                 onChange={(e) =>
-                  setFormulario({
-                    ...formulario,
+                  setControlAsistencia({
+                    ...controlAsistencia,
                     observacionIntranet: e.target.value,
                   })
                 }
@@ -172,10 +190,10 @@ export default function ControlAsistenciaStep({
 
             <input
               type="text"
-              value={formulario.observacionesGenerales}
+              value={controlAsistencia.observacionesGenerales}
               onChange={(e) =>
-                setFormulario({
-                  ...formulario,
+                setControlAsistencia({
+                  ...controlAsistencia,
                   observacionesGenerales: e.target.value,
                 })
               }

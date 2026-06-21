@@ -1,31 +1,28 @@
 "use client";
 
 import { useState } from "react";
+import { useVisitaStore } from "@/store/visitaStore";
 
 type ControlVisitaStepProps = {
   onBack: () => void;
-  onNext: () => void;
+  onNext: (id: number) => void;
 };
 
 export default function ControlVisitaStep({
   onBack,
   onNext,
 }: ControlVisitaStepProps) {
+  const visitaId = useVisitaStore((state) => state.visitaId);
+  const setVisitaId = useVisitaStore((state) => state.setVisitaId);
+  const setControlVisita = useVisitaStore((state) => state.setControlVisita);
+  const formulario = useVisitaStore((state) => state.controlVisita);
+
   const [turno, setTurno] = useState<"mañana" | "noche">("mañana");
   const [tipoHora, setTipoHora] = useState<"practica" | "teoria">("teoria");
 
   const [error, setError] = useState("");
 
-  const [formulario, setFormulario] = useState({
-    sede: "",
-    ciclo: "",
-    curso: "",
-    campoFormativo: "",
-    semana: "",
-    lugarVisita: "",
-  });
-
-  const continuar = () => {
+  const continuar = async () => {
     if (
       !formulario.sede ||
       !formulario.ciclo ||
@@ -38,26 +35,68 @@ export default function ControlVisitaStep({
       return;
     }
 
-    setError("");
+    try {
+      setError("");
 
-    const visita = {
-      sede: formulario.sede,
-      ciclo: formulario.ciclo,
-      curso: formulario.curso,
-      campoFormativo: formulario.campoFormativo,
-      semana: formulario.semana,
-      lugarVisita: formulario.lugarVisita,
-      turno,
-      tipoHora,
-      hora_inicio: new Date().toISOString(),
-    };
+      const token = localStorage.getItem("token");
 
-    sessionStorage.setItem(
-      "visita",
-      JSON.stringify(visita)
-    );
+      // =========================
+      // 1. SI YA EXISTE → UPDATE
+      // =========================
+      if (visitaId) {
+        await fetch(`/api/visitas/${visitaId}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            sede: formulario.sede,
+            ciclo: formulario.ciclo,
+            curso: formulario.curso,
+            campoFormativo: formulario.campoFormativo,
+            semana: formulario.semana,
+            lugarVisita: formulario.lugarVisita,
+            turno,
+            tipoHora,
+          }),
+        });
 
-    onNext();
+        onNext(visitaId);
+        return;
+      }
+
+      const res = await fetch("/api/visitas", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          sede: formulario.sede,
+          ciclo: formulario.ciclo,
+          curso: formulario.curso,
+          campoFormativo: formulario.campoFormativo,
+          semana: formulario.semana,
+          lugarVisita: formulario.lugarVisita,
+          turno,
+          tipoHora,
+          hora_inicio: new Date().toISOString(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Error al guardar");
+      }
+
+      setVisitaId(data.id_visita);
+
+      onNext(data.id_visita);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+    }
   };
 
   return (
@@ -99,7 +138,7 @@ export default function ControlVisitaStep({
               <select
                 value={formulario.sede}
                 onChange={(e) =>
-                  setFormulario({
+                  setControlVisita({
                     ...formulario,
                     sede: e.target.value,
                   })
@@ -133,7 +172,7 @@ export default function ControlVisitaStep({
               <select
                 value={formulario.ciclo}
                 onChange={(e) =>
-                  setFormulario({
+                  setControlVisita({
                     ...formulario,
                     ciclo: e.target.value,
                   })
@@ -190,7 +229,7 @@ export default function ControlVisitaStep({
             <select
               value={formulario.curso}
               onChange={(e) =>
-                setFormulario({
+                setControlVisita({
                   ...formulario,
                   curso: e.target.value,
                 })
@@ -224,7 +263,7 @@ export default function ControlVisitaStep({
               <select
                 value={formulario.campoFormativo}
                 onChange={(e) =>
-                  setFormulario({
+                  setControlVisita({
                     ...formulario,
                     campoFormativo: e.target.value,
                   })
@@ -248,7 +287,7 @@ export default function ControlVisitaStep({
               <select
                 value={formulario.semana}
                 onChange={(e) =>
-                  setFormulario({
+                  setControlVisita({
                     ...formulario,
                     semana: e.target.value,
                   })
@@ -307,7 +346,7 @@ export default function ControlVisitaStep({
               type="text"
               value={formulario.lugarVisita}
               onChange={(e) =>
-                setFormulario({
+                setControlVisita({
                   ...formulario,
                   lugarVisita: e.target.value,
                 })

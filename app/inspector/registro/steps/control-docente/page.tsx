@@ -1,52 +1,60 @@
 "use client";
 
+import { useControlDocenteStore } from "@/store/controlDocente";
 import { useState } from "react";
 
 type ControlDocenteStepProps = {
   onBack: () => void;
   onNext: () => void;
+  visitaId: number;
 };
 
 export default function ControlDocenteStep({
   onBack,
   onNext,
+  visitaId,
 }: ControlDocenteStepProps) {
-  const [presente, setPresente] = useState<"si" | "no">("si");
-  const [horario, setHorario] = useState<"cumple" | "no_cumple">("cumple");
-  const [interaccion, setInteraccion] = useState<"si" | "no">("si");
-  const [materialCumple, setMaterialCumple] = useState<"si" | "no">("si");
+  const { controlDocente, setControlDocente } = useControlDocenteStore();
 
   const [error, setError] = useState("");
-  const [formulario, setFormulario] = useState({
-    nombreDocente: "",
-    apellidoDocente: "",
-    actividad: "",
-    observaciones: "",
-  });
 
-  const continuar = () => {
+  const continuar = async () => {
     if (
-      !formulario.nombreDocente.trim() ||
-      !formulario.apellidoDocente.trim() ||
-      !formulario.actividad.trim()
+      !controlDocente.nombreDocente.trim() ||
+      !controlDocente.apellidoDocente.trim() ||
+      !controlDocente.actividad.trim()
     ) {
       setError("Debe completar todos los campos obligatorios.");
       return;
     }
 
-    setError("");
+    try {
+      setError("");
 
-    sessionStorage.setItem(
-      "controlDocente",
-      JSON.stringify({
-        ...formulario,
-        presente,
-        horario,
-        interaccion,
-      })
-    );
+      const token = localStorage.getItem("token");
 
-    onNext();
+      const res = await fetch("/api/control-docente", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...controlDocente,
+          visitaId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.mensaje || "Error al guardar");
+      }
+
+      onNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+    }
   };
 
   return (
@@ -88,10 +96,10 @@ export default function ControlDocenteStep({
 
               <input
                 type="text"
-                value={formulario.nombreDocente}
+                value={controlDocente.nombreDocente}
                 onChange={(e) =>
-                  setFormulario({
-                    ...formulario,
+                  setControlDocente({
+                    ...controlDocente,
                     nombreDocente: e.target.value,
                   })
                 }
@@ -107,10 +115,10 @@ export default function ControlDocenteStep({
 
               <input
                 type="text"
-                value={formulario.apellidoDocente}
+                value={controlDocente.apellidoDocente}
                 onChange={(e) =>
-                  setFormulario({
-                    ...formulario,
+                  setControlDocente({
+                    ...controlDocente,
                     apellidoDocente: e.target.value,
                   })
                 }
@@ -128,10 +136,10 @@ export default function ControlDocenteStep({
 
             <input
               type="text"
-              value={formulario.actividad}
+              value={controlDocente.actividad}
               onChange={(e) =>
-                setFormulario({
-                  ...formulario,
+                setControlDocente({
+                  ...controlDocente,
                   actividad: e.target.value,
                 })
               }
@@ -151,14 +159,14 @@ export default function ControlDocenteStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Sí"
-                  checked={presente === "si"}
-                  onChange={() => setPresente("si")}
+                  checked={controlDocente.presente === "si"}
+                  onChange={() => setControlDocente({ ...controlDocente, presente: "si" })}
                 />
 
                 <RadioOption
                   label="No"
-                  checked={presente === "no"}
-                  onChange={() => setPresente("no")}
+                  checked={controlDocente.presente === "no"}
+                  onChange={() => setControlDocente({ ...controlDocente, presente: "no" })}
                 />
               </div>
             </div>
@@ -171,14 +179,14 @@ export default function ControlDocenteStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Cumple"
-                  checked={horario === "cumple"}
-                  onChange={() => setHorario("cumple")}
+                  checked={controlDocente.horario === "cumple"}
+                  onChange={() => setControlDocente({ ...controlDocente, horario: "cumple" })}
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={horario === "no_cumple"}
-                  onChange={() => setHorario("no_cumple")}
+                  checked={controlDocente.horario === "no_cumple"}
+                  onChange={() => setControlDocente({ ...controlDocente, horario: "no_cumple" } )}
                 />
               </div>
             </div>
@@ -191,14 +199,14 @@ export default function ControlDocenteStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Sí"
-                  checked={interaccion === "si"}
-                  onChange={() => setInteraccion("si")}
+                  checked={controlDocente.interaccion === "si"}
+                  onChange={() => setControlDocente({ ...controlDocente, interaccion: "si" })}
                 />
 
                 <RadioOption
                   label="No"
-                  checked={interaccion === "no"}
-                  onChange={() => setInteraccion("no")}
+                  checked={controlDocente.interaccion === "no"}
+                  onChange={() => setControlDocente({ ...controlDocente, interaccion: "no" })}
                 />
               </div>
             </div>
@@ -211,10 +219,10 @@ export default function ControlDocenteStep({
             </label>
 
             <textarea
-              value={formulario.observaciones}
+              value={controlDocente.observaciones}
               onChange={(e) =>
-                setFormulario({
-                  ...formulario,
+                setControlDocente({
+                  ...controlDocente,
                   observaciones: e.target.value,
                 })
               }
@@ -239,14 +247,14 @@ export default function ControlDocenteStep({
                 <div className="flex flex-col gap-3">
                   <RadioOption
                     label="Sí"
-                    checked={materialCumple === "si"}
-                    onChange={() => setMaterialCumple("si")}
+                    checked={controlDocente.materialCumple === "si"}
+                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "si" } )}
                   />
 
                   <RadioOption
                     label="No"
-                    checked={materialCumple === "no"}
-                    onChange={() => setMaterialCumple("no")}
+                    checked={controlDocente.materialCumple === "no"}
+                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "no" })}
                   />
                 </div>
               </div>
@@ -257,6 +265,13 @@ export default function ControlDocenteStep({
                 </label>
 
                 <textarea
+                  value={controlDocente.observacionesMaterial}
+                  onChange={(e) =>
+                    setControlDocente({
+                      ...controlDocente,
+                      observacionesMaterial: e.target.value,
+                    })
+                  }
                   rows={4}
                   className="input-modern resize-none"
                   placeholder="Ingrese observaciones"

@@ -24,14 +24,13 @@ export default function HistorialPage() {
     ciclo: "todos",
     docente: "",
   });
-  const [pagina, setPagina] = useState(1); // Nuevo estado
-  const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
+  const [pagina, setPagina] = useState(1); 
+  const [meta, setMeta] = useState({ totalPages: 1 });
   const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 
   const fetchVisitas = async () => {
-    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
+    const token = localStorage.getItem("token");
 
-    // Combinamos filtros + página
     const query = new URLSearchParams({
       ...filtros,
       page: pagina.toString(),
@@ -39,12 +38,11 @@ export default function HistorialPage() {
 
     const res = await fetch(`/api/visitas?${query}`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Envías el token aquí
+        Authorization: `Bearer ${token}`,
       },
     });
     const data = await res.json();
 
-    // Ajustado a la nueva estructura: { data, meta }
     setVisitas(data.data || []);
     setMeta(data.meta);
   };
@@ -54,15 +52,13 @@ export default function HistorialPage() {
     const data = await res.json();
     setVisitaSeleccionada(data);
   };
-
-  // Reiniciar a la página 1 cuando cambien los filtros
   useEffect(() => {
     setPagina(1);
   }, [filtros]);
 
   useEffect(() => {
     fetchVisitas();
-  }, [filtros, pagina]); // Dependemos de filtros y página
+  }, [filtros, pagina]);
 
   return (
     <div className="flex min-h-screen">

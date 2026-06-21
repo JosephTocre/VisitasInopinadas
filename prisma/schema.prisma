@@ -5,6 +5,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 enum Rol {
@@ -31,7 +32,6 @@ model HechoVisita {
   lugar           String
   curso           String
   campo_formativo String
-  requerimientos  String?
 
   fecha                DateTime
   turno                String
@@ -116,6 +116,7 @@ model ControlGuia {
   logro           EstadoCumplimiento
   rubrica         EstadoCumplimiento
   observaciones   String?
+  requerimientos String?
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])

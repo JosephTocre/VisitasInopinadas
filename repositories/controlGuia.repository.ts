@@ -1,16 +1,15 @@
+import { prisma } from "@/lib/prisma";
+
 export class ControlGuiaRepository {
-
-  async obtenerPorVisita(idVisita: number) {
-    void idVisita;
+  async crear(data: any) {
+    return await prisma.controlGuia.create({
+      data: {
+        tema_programado: data.guia1,
+        logro: data.guia2,
+        rubrica: data.guia3,
+        observaciones: data.observacionesGuia,
+        visitaId: data.visitaId,
+      },
+    });
   }
-
-  async crear(datos: unknown) {
-    void datos;
-  }
-
-  async actualizar(id: number, datos: unknown) {
-    void id;
-    void datos;
-  }
-
 }

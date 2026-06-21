@@ -5,11 +5,13 @@ import { useState } from "react";
 type ControlGuiaStepProps = {
     onBack: () => void;
     onNext: () => void;
+    visitaId: number;
 };
 
 export default function ControlGuiaStep({
     onBack,
     onNext,
+    visitaId,
 }: ControlGuiaStepProps) {
     const [guia1, setGuia1] = useState<"cumple" | "no_cumple" | "no_aplica">("cumple");
     const [guia2, setGuia2] = useState<"cumple" | "no_cumple" | "no_aplica">("cumple");
@@ -20,32 +22,41 @@ export default function ControlGuiaStep({
     const [requerimientos, setRequerimientos] = useState("");
     const [error, setError] = useState("");
 
-    const continuar = () => {
-        if (!responsable.trim()) {
-            setError("Debe seleccionar un responsable.");
-            return;
+    const continuar = async () => {
+        try {
+            setError("");
+
+            const mapEstado = (valor: string) => {
+                if (valor === "cumple") return "CUMPLE";
+                if (valor === "no_cumple") return "NO_CUMPLE";
+                return "NO_APLICA";
+            };
+
+            const res = await fetch("/api/control-guia", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    visitaId,
+                    guia1: mapEstado(guia1),
+                    guia2: mapEstado(guia2),
+                    guia3: mapEstado(guia3),
+                    observacionesGuia,
+                    responsable,
+                    requerimientos,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error);
+
+            onNext();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Error");
         }
-
-        if (!requerimientos.trim()) {
-            setError("Debe ingresar los requerimientos solicitados.");
-            return;
-        }
-
-        setError("");
-
-        sessionStorage.setItem(
-            "controlGuia",
-            JSON.stringify({
-                guia1,
-                guia2,
-                guia3,
-                observacionesGuia,
-                responsable,
-                requerimientos,
-            })
-        );
-
-        onNext();
     };
 
     return (

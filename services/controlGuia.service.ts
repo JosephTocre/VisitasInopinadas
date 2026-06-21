@@ -1,11 +1,9 @@
+import { ControlGuiaRepository } from "@/repositories/controlGuia.repository";
+
 export class ControlGuiaService {
+  private repository = new ControlGuiaRepository();
 
-  async registrarControl(datos: unknown) {
-    void datos;
+  async crear(datos: any) {
+    return await this.repository.crear(datos);
   }
-
-  async obtenerPorVisita(idVisita: number) {
-    void idVisita;
-  }
-
 }
