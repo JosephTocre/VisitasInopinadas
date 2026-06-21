@@ -7,10 +7,12 @@ const controlVisitaService = new ControlVisitaService();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const visita = await visitaService.obtenerVisita(Number(params.id));
+    const { id } = await context.params;
+
+    const visita = await visitaService.obtenerVisita(Number(id));
 
     if (!visita) {
       return NextResponse.json(
