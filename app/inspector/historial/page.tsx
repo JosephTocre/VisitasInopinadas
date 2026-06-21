@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import InspectorSidebar from "@/components/InspectorSidebar";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReusableTable } from "@/components/ui/ReusableTable";
 import { Pagination } from "@/components/ui/Pagination";
@@ -65,10 +66,11 @@ export default function HistorialPage() {
 
   return (
     <div className="flex min-h-screen">
+      <InspectorSidebar />
       <main className="p-8 w-full bg-[#eaeaea]">
         <PageHeader
           title="Historial de Visitas"
-          description="Consulta y seguimiento de todas las visitas registradas."
+          description="Consulta y seguimiento de todas tus visitas registradas."
         />
 
         <FilterBar

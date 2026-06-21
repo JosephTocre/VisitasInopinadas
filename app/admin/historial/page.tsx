@@ -29,13 +29,19 @@ export default function HistorialPage() {
   const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 
   const fetchVisitas = async () => {
+    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
+
     // Combinamos filtros + página
     const query = new URLSearchParams({
       ...filtros,
       page: pagina.toString(),
     }).toString();
 
-    const res = await fetch(`/api/visitas?${query}`);
+    const res = await fetch(`/api/visitas?${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Envías el token aquí
+      },
+    });
     const data = await res.json();
 
     // Ajustado a la nueva estructura: { data, meta }
