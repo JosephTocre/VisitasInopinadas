@@ -7,9 +7,7 @@ export default function InspectorPage() {
   const router = useRouter();
 
   const usuarioGuardado =
-    typeof window !== "undefined"
-      ? localStorage.getItem("usuario")
-      : null;
+    typeof window !== "undefined" ? localStorage.getItem("usuario") : null;
 
   const nombreUsuario = usuarioGuardado
     ? JSON.parse(usuarioGuardado).nombre
@@ -24,7 +22,6 @@ export default function InspectorPage() {
 
   return (
     <main className="min-h-screen bg-[#f5f5f5] flex flex-col p-8">
-
       {/* Header */}
       <div className="flex items-center gap-4 self-end">
         <p className="text-sm font-medium text-gray-800">
@@ -52,9 +49,7 @@ export default function InspectorPage() {
 
       {/* Contenido */}
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-8">
-
         <div className="w-full max-w-lg bg-white rounded-lg shadow-sm px-12 py-12 flex flex-col items-center text-center">
-
           <div className="w-14 h-14 bg-black rounded-lg flex items-center justify-center mb-6">
             <svg
               width="28"
@@ -88,20 +83,17 @@ export default function InspectorPage() {
 
           <div className="w-full border-t border-gray-200 my-6" />
 
-          <Link href="/historial">
+          <Link href="/inspector/historial">
             <button className="bg-gray-100 text-gray-700 font-semibold text-sm rounded-md py-2 px-8 hover:bg-gray-200 transition-colors">
               Historial
             </button>
           </Link>
-
         </div>
 
         <p className="text-xs text-gray-400">
           Sistema seguro y eficiente para el control
         </p>
-
       </div>
-
     </main>
   );
 }
