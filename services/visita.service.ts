@@ -3,7 +3,11 @@ import { VisitaRepository } from "@/repositories/visita.repository";
 export class VisitaService {
   private repository = new VisitaRepository();
 
-  async obtenerHistorial(filters: { ciclo?: string; docente?: string }) {
+  async obtenerHistorial(
+    filters: { ciclo?: string; docente?: string },
+    page: number = 1,
+    pageSize: number = 4,
+  ) {
     const where: any = {};
     if (filters.ciclo && filters.ciclo !== "todos") {
       where.ciclo = filters.ciclo;
@@ -23,7 +27,22 @@ export class VisitaService {
         ],
       };
     }
-    return await this.repository.obtenerTodas(where);
+
+    // Ejecutamos ambos en paralelo para mayor eficiencia
+    const [data, total] = await Promise.all([
+      this.repository.obtenerTodas(page, pageSize, where),
+      this.repository.contar(where),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   }
 
   async obtenerVisita(id: number) {

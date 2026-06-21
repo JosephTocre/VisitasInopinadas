@@ -1,9 +1,12 @@
 import { prisma } from "@/lib/prisma";
 
 export class VisitaRepository {
-  async obtenerTodas(where: any = {}) {
+  // Ahora pasamos la página y el tamaño como argumentos
+  async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
     return await prisma.hechoVisita.findMany({
       where,
+      take: pageSize,
+      skip: (page - 1) * pageSize,
       include: {
         controlDocente: true,
       },
@@ -11,6 +14,11 @@ export class VisitaRepository {
         fecha: "desc",
       },
     });
+  }
+
+  // Método adicional para contar el total (útil para el frontend)
+  async contar(where: any = {}) {
+    return await prisma.hechoVisita.count({ where });
   }
 
   async obtenerPorId(id: number) {

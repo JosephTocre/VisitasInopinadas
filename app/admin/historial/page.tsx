@@ -2,8 +2,12 @@
 
 import { useEffect, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ReusableTable } from "@/components/ui/ReusableTable";
+import { Pagination } from "@/components/ui/Pagination";
+import { DetalleVisitaModal } from "@/components/DetalleVisitaModal";
+import { ExportButton } from "@/components/ExportButton";
+import { FilterBar } from "@/components/ui/FilterBar";
 
 interface Visita {
   id_visita: number;
@@ -20,145 +24,185 @@ export default function HistorialPage() {
     ciclo: "todos",
     docente: "",
   });
+  const [pagina, setPagina] = useState(1); // Nuevo estado
+  const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
+
+  const formatField = (
+    value: any,
+    formatter?: (val: any) => string,
+    useCumpleFormat = false,
+  ) => {
+    // Cambiamos a esta validación para permitir 'false' y '0'
+    if (value === null || value === undefined || value === "") {
+      return <span className="text-gray-400 italic">N/A</span>;
+    }
+
+    // Si el valor es booleano, lo convertimos a texto explícito
+    if (typeof value === "boolean") {
+      if (useCumpleFormat) {
+        return value ? "Cumple" : "No cumple";
+      }
+      return value ? "Sí" : "No";
+    }
+
+    // Si es string, capitalizar la primera letra y poner el resto en minúscula
+    if (typeof value === "string") {
+      return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+    }
+
+    return formatter ? formatter(value) : value;
+  };
+
+  const formatTime = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+
+    // Validamos si la fecha es válida
+    if (isNaN(date.getTime())) return "N/A";
+
+    return date.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Cambia a false si prefieres formato 24h
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    // Validamos si la fecha es realmente válida
+    if (isNaN(date.getTime())) return "Fecha inválida";
+
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const fetchVisitas = async () => {
-    // Ajuste de query: solo enviamos los filtros activos
-    const query = new URLSearchParams(filtros as any).toString();
+    // Combinamos filtros + página
+    const query = new URLSearchParams({
+      ...filtros,
+      page: pagina.toString(),
+    }).toString();
+
     const res = await fetch(`/api/visitas?${query}`);
     const data = await res.json();
-    setVisitas(data);
+
+    // Ajustado a la nueva estructura: { data, meta }
+    setVisitas(data.data);
+    setMeta(data.meta);
   };
 
-  const exportarPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Historial de Visitas", 14, 15);
-    autoTable(doc, {
-      startY: 20,
-      head: [["Fecha", "Sede", "Curso", "Docente"]],
-      body: visitas.map((v) => [
-        new Date(v.fecha).toLocaleDateString(),
-        v.sede,
-        v.curso,
-        v.controlDocente
-          ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
-          : "N/A",
-      ]),
-    });
-    doc.save("historial-visitas.pdf");
+  const abrirDetalle = async (id: number) => {
+    const res = await fetch(`/api/visitas/${id}`);
+    const data = await res.json();
+    setVisitaSeleccionada(data);
   };
+
+  // Reiniciar a la página 1 cuando cambien los filtros
+  useEffect(() => {
+    setPagina(1);
+  }, [filtros]);
 
   useEffect(() => {
     fetchVisitas();
-  }, [filtros]);
+  }, [filtros, pagina]); // Dependemos de filtros y página
 
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
       <main className="p-8 w-full bg-[#eaeaea]">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Historial de Visitas
-          </h1>
-          <p className="text-sm text-gray-500">
-            Consulta y seguimiento de todas las visitas registradas.
-          </p>
-        </header>
+        <PageHeader
+          title="Historial de Visitas"
+          description="Consulta y seguimiento de todas las visitas registradas."
+        />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-gray-500 uppercase">
-              Ciclo
-            </label>
-            <select
-              className="border border-gray-300 p-2 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black outline-none bg-white"
-              onChange={(e) =>
-                setFiltros({ ...filtros, ciclo: e.target.value })
-              }
-              value={filtros.ciclo}
-            >
-              <option value="todos">Todos los ciclos</option>
-              <option value="2026-1">2026 - Ciclo 1 Marzo</option>
-              <option value="2026-2">2026 - Ciclo 2 Agosto</option>
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs font-semibold text-gray-500 uppercase">
-              Docente
-            </label>
-            <input
-              type="text"
-              placeholder="Buscar por apellido..."
-              className="border border-gray-300 p-2 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black outline-none"
-              onChange={(e) =>
-                setFiltros({ ...filtros, docente: e.target.value })
-              }
-            />
-          </div>
-        </div>
+        <FilterBar
+          fields={[
+            {
+              label: "Ciclo",
+              key: "ciclo",
+              type: "select",
+              options: [
+                { value: "todos", label: "Todos los ciclos" },
+                { value: "2026-1", label: "2026 - Ciclo 1 Marzo" },
+                { value: "2026-2", label: "2026 - Ciclo 2 Agosto" },
+              ],
+            },
+            {
+              label: "Docente",
+              key: "docente",
+              type: "text",
+              placeholder: "Buscar por apellido...",
+            },
+          ]}
+          values={filtros}
+          onChange={(newValues) =>
+            setFiltros({
+              ciclo: newValues.ciclo ?? filtros.ciclo,
+              docente: newValues.docente ?? filtros.docente,
+            })
+          }
+        />
 
         <div className="flex justify-end mb-8">
-          <button
-            onClick={exportarPDF}
-            className="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:opacity-80 transition"
-          >
-            Exportar en PDF
-          </button>
+          <ExportButton
+            data={visitas}
+            title="Historial de Visitas"
+            filename="historial-visitas"
+          />
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="min-w-full">
-            <thead className="bg-black">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Fecha
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Sede
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Curso
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider">
-                  Docente
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-semibold text-white uppercase tracking-wider">
-                  Acciones
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {visitas.map((v) => (
-                <tr
-                  key={v.id_visita}
-                  className="hover:bg-gray-50 transition-colors"
+        <ReusableTable
+          columns={[
+            {
+              header: "Fecha",
+              accessor: (v) => new Date(v.fecha).toLocaleDateString(),
+            },
+            { header: "Sede", accessor: (v) => v.sede },
+            { header: "Curso", accessor: (v) => v.curso },
+            {
+              header: "Docente",
+              accessor: (v) =>
+                v.controlDocente
+                  ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
+                  : "N/A",
+            },
+            {
+              header: "Acciones",
+              accessor: (v) => (
+                <button
+                  onClick={() => abrirDetalle(v.id_visita)}
+                  className="text-black font-medium hover:underline px-3 py-1 bg-gray-100 rounded-md"
                 >
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {new Date(v.fecha).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {v.sede}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {v.curso}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {v.controlDocente
-                      ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
-                      : "N/A"}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center text-sm">
-                    <a
-                      href={`/admin/historial/${v.id_visita}`}
-                      className="text-black font-medium hover:underline px-3 py-1 bg-gray-100 rounded-md"
-                    >
-                      Ver detalle
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  Detalle
+                </button>
+              ),
+            },
+          ]}
+          data={visitas}
+        />
+
+        {/* Controles de Paginación */}
+        <Pagination
+          currentPage={pagina}
+          totalPages={meta.totalPages}
+          onPageChange={setPagina}
+        />
+
+        {/* Modal de Detalle */}
+        {visitaSeleccionada && (
+          <DetalleVisitaModal
+            visita={visitaSeleccionada}
+            onClose={() => setVisitaSeleccionada(null)}
+            formatDate={formatDate}
+            formatTime={formatTime}
+            formatField={formatField}
+          />
+        )}
       </main>
     </div>
   );

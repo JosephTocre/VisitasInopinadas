@@ -28,6 +28,7 @@ model HechoVisita {
   id_visita Int @id @default(autoincrement())
 
   sede            String
+  lugar           String
   curso           String
   campo_formativo String
   requerimientos  String?
@@ -102,12 +103,18 @@ model ControlEstudiante {
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
 
+enum EstadoCumplimiento {
+  CUMPLE
+  NO_CUMPLE
+  NO_APLICA
+}
+
 model ControlGuia {
   id_control_guia Int @id @default(autoincrement())
 
-  tema_programado String
-  logro           String
-  rubrica         String
+  tema_programado EstadoCumplimiento
+  logro           EstadoCumplimiento
+  rubrica         EstadoCumplimiento
   observaciones   String?
 
   visitaId Int @unique

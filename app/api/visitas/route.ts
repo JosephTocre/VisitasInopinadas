@@ -11,8 +11,15 @@ export async function GET(request: NextRequest) {
     docente: searchParams.get("docente") || undefined,
   };
 
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "4");
+
   try {
-    const visitas = await visitaService.obtenerHistorial(filters);
+    const visitas = await visitaService.obtenerHistorial(
+      filters,
+      page,
+      pageSize,
+    );
     return NextResponse.json(visitas);
   } catch (error) {
     return NextResponse.json(
