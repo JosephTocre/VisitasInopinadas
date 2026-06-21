@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-export default function ControlAsistenciaPage() {
+type ControlAsistenciaStepProps = {
+  onBack: () => void;
+  onNext: () => void;
+};
+
+export default function ControlAsistenciaStep({
+  onBack,
+  onNext,
+}: ControlAsistenciaStepProps) {
   const [ambienteCumple, setAmbienteCumple] = useState<"cumple" | "no_cumple">("cumple");
   const [intranetCumple, setIntranetCumple] = useState<"cumple" | "no_cumple">("cumple");
-  const [silabo1, setSilabo1] = useState<"cumple" | "no_cumple">("cumple");
-  const [silabo2, setSilabo2] = useState<"cumple" | "no_cumple">("cumple");
-  const [silabo3, setSilabo3] = useState<"cumple" | "no_cumple">("cumple");
-  const router = useRouter();
   const [error, setError] = useState("");
 
   const [formulario, setFormulario] = useState({
@@ -36,25 +38,23 @@ export default function ControlAsistenciaPage() {
       JSON.stringify({
         ambienteCumple,
         intranetCumple,
-        silabo1,
-        silabo2,
-        silabo3,
         ...formulario,
       })
     );
 
-    router.push("/inspector/registro/control-final");
+    onNext();
   };
 
   return (
     <main className="page-container">
-      <Link
-        href="/inspector/registro/control-docente"
+      <button
+        type="button"
+        onClick={onBack}
         className="max-w-3xl mx-auto w-full flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <span>←</span>
         Atrás
-      </Link>
+      </button>
 
       <div className="max-w-3xl mx-auto card-modern">
         <div className="space-y-6">
@@ -177,91 +177,6 @@ export default function ControlAsistenciaPage() {
                 setFormulario({
                   ...formulario,
                   observacionesGenerales: e.target.value,
-                })
-              }
-              className="input-modern"
-            />
-          </div>
-
-          {/* Control avance silábico */}
-          <div className="border-t border-border pt-8 space-y-6">
-            <h2 className="text-2xl font-black">
-              Control de avance silábico
-            </h2>
-
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-600">
-                El tema del sílabo coincide con la clase desarrollada en la fecha de la visita
-              </p>
-              <div className="flex items-center gap-6">
-                <RadioOption
-                  label="Cumple"
-                  checked={silabo1 === "cumple"}
-                  onChange={() => setSilabo1("cumple")}
-                  bold
-                />
-                <RadioOption
-                  label="No cumple"
-                  checked={silabo1 === "no_cumple"}
-                  onChange={() => setSilabo1("no_cumple")}
-                  bold
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-600">
-                El tema desarrollado en la fecha anterior a la visita coincide con el sílabo
-              </p>
-              <div className="flex items-center gap-6">
-                <RadioOption
-                  label="Cumple"
-                  checked={silabo2 === "cumple"}
-                  onChange={() => setSilabo2("cumple")}
-                  bold
-                />
-                <RadioOption
-                  label="No cumple"
-                  checked={silabo2 === "no_cumple"}
-                  onChange={() => setSilabo2("no_cumple")}
-                  bold
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <p className="text-sm text-gray-600">
-                Ingreso del avance silábico en el aula virtual
-              </p>
-              <div className="flex items-center gap-6">
-                <RadioOption
-                  label="Cumple"
-                  checked={silabo3 === "cumple"}
-                  onChange={() => setSilabo3("cumple")}
-                  bold
-                />
-                <RadioOption
-                  label="No cumple"
-                  checked={silabo3 === "no_cumple"}
-                  onChange={() => setSilabo3("no_cumple")}
-                  bold
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="label-modern">
-              Observaciones
-            </label>
-
-            <input
-              type="text"
-              value={formulario.observacionesSilabo}
-              onChange={(e) =>
-                setFormulario({
-                  ...formulario,
-                  observacionesSilabo: e.target.value,
                 })
               }
               className="input-modern"
