@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-export default function ControlDocentePage() {
+type ControlDocenteStepProps = {
+  onBack: () => void;
+  onNext: () => void;
+};
+
+export default function ControlDocenteStep({
+  onBack,
+  onNext,
+}: ControlDocenteStepProps) {
   const [presente, setPresente] = useState<"si" | "no">("si");
   const [horario, setHorario] = useState<"cumple" | "no_cumple">("cumple");
   const [interaccion, setInteraccion] = useState<"si" | "no">("si");
   const [materialCumple, setMaterialCumple] = useState<"si" | "no">("si");
-  const router = useRouter();
 
   const [error, setError] = useState("");
   const [formulario, setFormulario] = useState({
@@ -41,18 +46,19 @@ export default function ControlDocentePage() {
       })
     );
 
-    router.push("/inspector/registro/control-asistencia");
+    onNext();
   };
 
   return (
     <main className="page-container">
-      <Link
-        href="/inspector/registro/registro-visita"
+      <button
+        type="button"
+        onClick={onBack}
         className="max-w-3xl mx-auto w-full flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <span>←</span>
         Atrás
-      </Link>
+      </button>
 
       <div className="max-w-3xl mx-auto card-modern">
         <div className="space-y-6">

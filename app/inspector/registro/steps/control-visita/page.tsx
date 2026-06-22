@@ -1,13 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 
-export default function RegistroPage() {
+type ControlVisitaStepProps = {
+  onBack: () => void;
+  onNext: () => void;
+};
+
+export default function ControlVisitaStep({
+  onBack,
+  onNext,
+}: ControlVisitaStepProps) {
   const [turno, setTurno] = useState<"mañana" | "noche">("mañana");
   const [tipoHora, setTipoHora] = useState<"practica" | "teoria">("teoria");
-  const router = useRouter();
 
   const [error, setError] = useState("");
 
@@ -29,9 +34,7 @@ export default function RegistroPage() {
       !formulario.semana ||
       !formulario.lugarVisita.trim()
     ) {
-      setError(
-        "Debe completar todos los campos."
-      );
+      setError("Debe completar todos los campos.");
       return;
     }
 
@@ -54,20 +57,19 @@ export default function RegistroPage() {
       JSON.stringify(visita)
     );
 
-    router.push(
-      "/inspector/registro/control-docente"
-    );
+    onNext();
   };
 
   return (
     <main className="page-container">
-      <Link
-        href="/inspector"
+      <button
+        type="button"
+        onClick={onBack}
         className="max-w-3xl mx-auto w-full flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <span>←</span>
         Atrás
-      </Link>
+      </button>
 
       <div className="max-w-3xl mx-auto card-modern">
         <div className="space-y-6">

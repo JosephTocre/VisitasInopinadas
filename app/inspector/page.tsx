@@ -79,7 +79,7 @@ export default function InspectorPage() {
 
           <div className="w-full  my-7" />
 
-          <Link href="/inspector/registro/registro-visita" className="w-full">
+          <Link href="/inspector/registro" className="w-full">
             <button className="w-full bg-black text-white font-semibold text-base rounded-lg py-3 px-6 flex items-center justify-center gap-3 hover:bg-gray-900 transition-colors">
               Registrar nueva visita
               <span className="text-lg">→</span>
