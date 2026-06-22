@@ -1,10 +1,20 @@
 import { ControlDocenteRepository } from "@/repositories/controlDocente.repository";
 
-export class ControlDocenteService {
+interface RegistrarControlDocenteDTO {
+  visitaId: number;
+  nombreDocente: string;
+  apellidoDocente: string;
+  actividad: string;
+  presente: "si" | "no";
+  horario: "cumple" | "no_cumple";
+  interaccion: "si" | "no";
+  observaciones?: string;
+}
 
+export class ControlDocenteService {
   private repo = new ControlDocenteRepository();
 
-  async registrarControl(datos) {
+  async registrarControl(datos: RegistrarControlDocenteDTO) {
     const existe = await this.repo.obtenerPorVisita(datos.visitaId);
 
     const data = {
@@ -24,6 +34,7 @@ export class ControlDocenteService {
 
     return this.repo.crear(data);
   }
+
 
   async obtenerPorVisita(idVisita: number) {
     return this.repo.obtenerPorVisita(idVisita);

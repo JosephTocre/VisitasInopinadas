@@ -1,15 +1,10 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class ControlGuiaRepository {
-  async crear(data: any) {
+  async crear(data: Prisma.ControlGuiaUncheckedCreateInput) {
     return await prisma.controlGuia.create({
-      data: {
-        tema_programado: data.guia1,
-        logro: data.guia2,
-        rubrica: data.guia3,
-        observaciones: data.observacionesGuia,
-        visitaId: data.visitaId,
-      },
+      data,
     });
   }
 }

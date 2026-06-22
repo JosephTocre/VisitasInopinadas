@@ -1,8 +1,9 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class ControlSilaboRepository {
 
-  async crear(data: any) {
+  async crear(data: Prisma.ControlSilaboUncheckedCreateInput) {
     return prisma.controlSilabo.create({
       data,
     });
@@ -20,7 +21,10 @@ export class ControlSilaboRepository {
     });
   }
 
-  async actualizar(id: number, data: any) {
+  async actualizar(
+    id: number,
+    data: Prisma.ControlSilaboUncheckedUpdateInput
+  ) {
     return prisma.controlSilabo.update({
       where: {
         id_control_silabo: id,
