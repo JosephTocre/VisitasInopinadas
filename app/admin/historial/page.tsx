@@ -28,71 +28,24 @@ export default function HistorialPage() {
   const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
   const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 
-  const formatField = (
-    value: any,
-    formatter?: (val: any) => string,
-    useCumpleFormat = false,
-  ) => {
-    // Cambiamos a esta validación para permitir 'false' y '0'
-    if (value === null || value === undefined || value === "") {
-      return <span className="text-gray-400 italic">N/A</span>;
-    }
-
-    // Si el valor es booleano, lo convertimos a texto explícito
-    if (typeof value === "boolean") {
-      if (useCumpleFormat) {
-        return value ? "Cumple" : "No cumple";
-      }
-      return value ? "Sí" : "No";
-    }
-
-    // Si es string, capitalizar la primera letra y poner el resto en minúscula
-    if (typeof value === "string") {
-      return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-    }
-
-    return formatter ? formatter(value) : value;
-  };
-
-  const formatTime = (dateString: string) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-
-    // Validamos si la fecha es válida
-    if (isNaN(date.getTime())) return "N/A";
-
-    return date.toLocaleTimeString("es-ES", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true, // Cambia a false si prefieres formato 24h
-    });
-  };
-
-  const formatDate = (dateString: string) => {
-    if (!dateString) return "N/A";
-    const date = new Date(dateString);
-    // Validamos si la fecha es realmente válida
-    if (isNaN(date.getTime())) return "Fecha inválida";
-
-    return date.toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   const fetchVisitas = async () => {
+    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
+
     // Combinamos filtros + página
     const query = new URLSearchParams({
       ...filtros,
       page: pagina.toString(),
     }).toString();
 
-    const res = await fetch(`/api/visitas?${query}`);
+    const res = await fetch(`/api/visitas?${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Envías el token aquí
+      },
+    });
     const data = await res.json();
 
     // Ajustado a la nueva estructura: { data, meta }
-    setVisitas(data.data);
+    setVisitas(data.data || []);
     setMeta(data.meta);
   };
 
@@ -189,7 +142,7 @@ export default function HistorialPage() {
         {/* Controles de Paginación */}
         <Pagination
           currentPage={pagina}
-          totalPages={meta.totalPages}
+          totalPages={meta?.totalPages || 1}
           onPageChange={setPagina}
         />
 
@@ -198,9 +151,6 @@ export default function HistorialPage() {
           <DetalleVisitaModal
             visita={visitaSeleccionada}
             onClose={() => setVisitaSeleccionada(null)}
-            formatDate={formatDate}
-            formatTime={formatTime}
-            formatField={formatField}
           />
         )}
       </main>

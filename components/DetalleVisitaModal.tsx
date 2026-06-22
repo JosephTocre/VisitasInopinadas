@@ -5,22 +5,76 @@ import autoTable from "jspdf-autotable";
 interface DetalleVisitaModalProps {
   visita: any;
   onClose: () => void;
-  formatDate: (date: string) => string;
-  formatTime: (date: string) => string;
-  formatField: (
-    value: any,
-    formatter?: (val: any) => string,
-    useCumpleFormat?: boolean,
-  ) => any;
 }
 
 export function DetalleVisitaModal({
   visita,
   onClose,
-  formatDate,
-  formatTime,
-  formatField,
 }: DetalleVisitaModalProps) {
+  const formatField = (
+    value: any,
+    formatter?: (val: any) => string,
+    useCumpleFormat = false,
+  ) => {
+    // Cambiamos a esta validación para permitir 'false' y '0'
+    if (value === null || value === undefined || value === "") {
+      return <span className="text-gray-400 italic">N/A</span>;
+    }
+
+    // Si el valor es booleano, lo convertimos a texto explícito
+    if (typeof value === "boolean") {
+      if (useCumpleFormat) {
+        return value ? "Cumple" : "No cumple";
+      }
+      return value ? "Sí" : "No";
+    }
+
+    // Si es string, manejar normalización
+    if (typeof value === "string") {
+      // Reemplazar guiones bajos por espacios y convertir a minúsculas para comparar
+      const normalized = value.replace(/_/g, " ").toLowerCase();
+
+      // Si es un estado de cumplimiento, capitalizarlo y retornar
+      if (["no cumple", "no aplica", "cumple"].includes(normalized)) {
+        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+      }
+
+      // Para otros textos, solo capitalizar la primera letra
+      return (
+        value.replace(/_/g, " ").charAt(0).toUpperCase() +
+        value.replace(/_/g, " ").slice(1).toLowerCase()
+      );
+    }
+
+    return formatter ? formatter(value) : value;
+  };
+
+  const formatTime = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+
+    // Validamos si la fecha es válida
+    if (isNaN(date.getTime())) return "N/A";
+
+    return date.toLocaleTimeString("es-ES", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Cambia a false si prefieres formato 24h
+    });
+  };
+
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    // Validamos si la fecha es realmente válida
+    if (isNaN(date.getTime())) return "Fecha inválida";
+
+    return date.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   const exportarVisitaPDF = (visita: any) => {
     const doc = new jsPDF();
@@ -201,17 +255,20 @@ export function DetalleVisitaModal({
         ? [
             [
               "Cumple con el tema programado en la guía de práctica para el desarrollo de la clase práctica",
-              formatField(visita.controlGuia.tema_programado),
+              formatField(visita.controlGuia.tema_programado, undefined, true),
             ],
             [
               "Se evidencia el logro a medir en la práctica desarrollada",
-              formatField(visita.controlGuia.logro),
+              formatField(visita.controlGuia.logro, undefined, true),
             ],
             [
               "Cuenta con una rúbrica de evaluación",
-              formatField(visita.controlGuia.rubrica),
+              formatField(visita.controlGuia.rubrica, undefined, true),
             ],
-            ["Observaciones", formatField(visita.controlGuia.observaciones)],
+            [
+              "Observaciones",
+              formatField(visita.controlGuia.observaciones, undefined, true),
+            ],
           ]
         : [["Información", "Sin datos"]],
     });
