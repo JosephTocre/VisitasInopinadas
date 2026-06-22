@@ -18,11 +18,13 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         const data = await service.registrarControlSilabo({
-            coincidencia_actual: body.silabo1 === "cumple",
-            coincidencia_anterior: body.silabo2 === "cumple",
-            ingreso_avance: body.silabo3 === "cumple",
-            observaciones: body.observacionesSilabico,
             visitaId: Number(body.visitaId),
+
+            silabo1: body.silabo1,
+            silabo2: body.silabo2,
+            silabo3: body.silabo3,
+
+            observacionesSilabico: body.observacionesSilabico,
         });
 
         return NextResponse.json({

@@ -17,18 +17,18 @@ export async function POST(request: NextRequest) {
 
         const body = await request.json();
         console.log("BODY RECIBIDO:", body);
-console.log("VISITA ID:", body.visitaId);
+        console.log("VISITA ID:", body.visitaId);
 
         const data = await service.registrarControlAsistencia({
-            control_ambiente: body.ambienteCumple === "cumple",
-            observaciones_ambiente: body.observacionAmbiente,
-
-            control_intranet: body.intranetCumple === "cumple",
-            observaciones_intranet: body.observacionIntranet,
-
-            observaciones: body.observacionesGenerales,
-
             visitaId: Number(body.visitaId),
+
+            ambienteCumple: body.ambienteCumple,
+            intranetCumple: body.intranetCumple,
+
+            observacionAmbiente: body.observacionAmbiente,
+            observacionIntranet: body.observacionIntranet,
+
+            observacionesGenerales: body.observacionesGenerales,
         });
 
         return NextResponse.json({
