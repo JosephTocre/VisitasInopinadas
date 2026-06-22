@@ -128,7 +128,7 @@ body {
   }
 
   .card-modern {
-    @apply bg-card text-card-foreground rounded-2xl border border-border shadow-2xl p-6 md:p-10;
+    @apply bg-white text-black rounded-2xl border border-gray-200 shadow-2xl p-6 md:p-10;
   }
 
   .input-modern {
