@@ -119,6 +119,7 @@ model ControlGuia {
   logro           EstadoCumplimiento
   rubrica         EstadoCumplimiento
   observaciones   String?
+  requerimientos String?
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
