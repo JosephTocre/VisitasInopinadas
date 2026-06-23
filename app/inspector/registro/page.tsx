@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import ControlVisitaStep from "./steps/control-visita/page";
 import ControlDocenteStep from "./steps/control-docente/page";
 import ControlAsistenciaStep from "./steps/control-asistencia/page";
-import ControlSilabicoStep from "./steps/control-silabico/page";
+import ControlSilaboStep from "./steps/control-silabo/page";
 import ControlGuiaStep from "./steps/control-guia/page";
 import ResultadoStep from "./steps/resultado/page";
 import { useVisitaStore } from "@/store/visitaStore";
 import { useControlDocenteStore } from "@/store/controlDocente";
 import { useControlAsistenciaStore } from "@/store/controlAsistencia";
-import { useControlSilaboStore } from "@/store/controlSilabico";    
+import { useControlSilaboStore } from "@/store/controlSilabo";    
 
 
 export default function RegistroPage() {
@@ -59,7 +59,7 @@ export default function RegistroPage() {
             )}
 
             {paso === 4 && visitaId && (
-                <ControlSilabicoStep
+                <ControlSilaboStep
                     visitaId={visitaId}
                     onBack={() => setPaso(3)}
                     onNext={() => setPaso(5)}
@@ -76,6 +76,7 @@ export default function RegistroPage() {
 
             {paso === 6 && (
                 <ResultadoStep
+                    visitaId={visitaId!}
                     onFinalizar={() => {
                         reset();
                         resetControlDocente();

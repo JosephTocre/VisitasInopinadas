@@ -7,7 +7,6 @@ const initialControlAsistencia = {
     observacionAmbiente: "",
     observacionIntranet: "",
     observacionesGenerales: "",
-    observacionesSilabo: "",
 };
 
 interface ControlAsistenciaStore {
