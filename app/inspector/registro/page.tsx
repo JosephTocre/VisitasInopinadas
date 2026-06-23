@@ -11,6 +11,7 @@ import ControlGuiaStep from "./steps/control-guia/page";
 import ResultadoStep from "./steps/resultado/page";
 import { useVisitaStore } from "@/store/visitaStore";
 import { useControlDocenteStore } from "@/store/controlDocente";
+import { useControlMaterialStore } from "@/store/controlMaterial";
 import { useControlAsistenciaStore } from "@/store/controlAsistencia";
 import { useControlSilaboStore } from "@/store/controlSilabo";    
 
@@ -20,6 +21,7 @@ export default function RegistroPage() {
     const [paso, setPaso] = useState(1);
     const reset = useVisitaStore((state) => state.reset);
     const resetControlDocente = useControlDocenteStore((state) => state.reset);
+    const resetControlMaterial = useControlMaterialStore((state) => state.reset);
     const resetControlAsistencia = useControlAsistenciaStore((state) => state.reset);
     const resetControlSilabo = useControlSilaboStore((state) => state.reset);
     const router = useRouter();
@@ -31,6 +33,7 @@ export default function RegistroPage() {
                     onBack={() => {
                         reset();
                         resetControlDocente();
+                        resetControlMaterial();
                         resetControlAsistencia();
                         resetControlSilabo();
                         router.push("/inspector");
@@ -80,6 +83,7 @@ export default function RegistroPage() {
                     onFinalizar={() => {
                         reset();
                         resetControlDocente();
+                        resetControlMaterial();
                         resetControlAsistencia();
                         resetControlSilabo();
                         router.push("/inspector");
@@ -87,6 +91,7 @@ export default function RegistroPage() {
                     onRegistrarOtro={() => {
                         reset();
                         resetControlDocente();
+                        resetControlMaterial();
                         resetControlAsistencia();
                         resetControlSilabo();
                         setVisitaId(null);

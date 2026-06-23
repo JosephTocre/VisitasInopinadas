@@ -11,36 +11,31 @@ export function DetalleVisitaModal({
   visita,
   onClose,
 }: DetalleVisitaModalProps) {
-  const formatField = (
-    value: any,
-    formatter?: (val: any) => string,
-    useCumpleFormat = false,
-  ) => {
-    // Cambiamos a esta validación para permitir 'false' y '0'
-    if (value === null || value === undefined || value === "") {
-      return <span className="text-gray-400 italic">N/A</span>;
-    }
+  const formatField = (value: any) => {
+    if (value === null || value === undefined) return "N/A";
 
-    // Si el valor es booleano, lo convertimos a texto explícito
+    // boolean
     if (typeof value === "boolean") {
-      if (useCumpleFormat) {
-        return value ? "Cumple" : "No cumple";
-      }
       return value ? "Sí" : "No";
     }
 
-    // Si es string, manejar normalización
-    if (typeof value === "string") {
-      // Reemplazar guiones bajos por espacios y convertir a minúsculas para comparar
-      const normalized = value.replace(/_/g, " ").toLowerCase();
-
-      // Si es un estado de cumplimiento, capitalizarlo y retornar
-      if (["no cumple", "no aplica", "cumple"].includes(normalized)) {
-        return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-      }
+    // number
+    if (typeof value === "number") {
+      return value.toString();
     }
 
-    return formatter ? formatter(value) : value;
+    // string
+    if (typeof value === "string") {
+      const v = value.trim().toLowerCase();
+
+      if (v === "no_cumple" || v === "no cumple") return "No cumple";
+      if (v === "cumple") return "Cumple";
+      if (v === "no_aplica" || v === "no aplica") return "No aplica";
+
+      return value;
+    }
+
+    return String(value);
   };
 
   const formatTime = (dateString: string) => {
@@ -78,7 +73,7 @@ export function DetalleVisitaModal({
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
 
-    doc.text("UNIVERSIDAD PRIVADA ...", 105, 20, { align: "center" }); 
+    doc.text("UNIVERSIDAD PRIVADA ...", 105, 20, { align: "center" });
     doc.text("VICERRECTORADO ACADÉMICO", 105, 25, { align: "center" });
     doc.text(
       "FACULTAD DE INGENIERÍAS - ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS",
@@ -158,7 +153,7 @@ export function DetalleVisitaModal({
           styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
         },
         {
-          content: visita.n_semana || "N/A",
+          content: visita.n_semana ?? "N/A",
           colSpan: 3,
         },
         {
@@ -186,94 +181,94 @@ export function DetalleVisitaModal({
       y,
       visita.controlDocente
         ? [
-            [
-              {
-                content: "DOCENTE:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+          [
+            {
+              content: "DOCENTE:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: `${formatField(
+                visita.controlDocente.nombre_docente,
+              )} ${formatField(visita.controlDocente.apellido_docente)}`,
+            },
+            {
+              content: "PRESENTE",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-              {
-                content: `${formatField(
-                  visita.controlDocente.nombre_docente,
-                )} ${formatField(visita.controlDocente.apellido_docente)}`,
+            },
+            {
+              content: "HORARIO PROGRAMADO",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-              {
-                content: "PRESENTE",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
+            },
+            {
+              content: "INTERACCIÓN",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-              {
-                content: "HORARIO PROGRAMADO",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
-              },
-              {
-                content: "INTERACCIÓN",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
-              },
-            ],
-            [
-              {
-                content: "ACTIVIDAD:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(visita.controlDocente.actividad),
-              },
-              {
-                content: formatField(visita.controlDocente.presente),
-                styles: {
-                  halign: "center",
-                },
-              },
-              {
-                content: formatField(
-                  visita.controlDocente.horario_programado,
-                  undefined,
-                  true,
-                ),
-                styles: {
-                  halign: "center",
-                },
-              },
-              {
-                content: formatField(visita.controlDocente.interaccion),
-                styles: {
-                  halign: "center",
-                },
-              },
-            ],
-            [
-              {
-                content: "OBSERVACIONES:",
-                styles: { fontStyle: "bold" },
-              },
-              {
-                content: visita.controlDocente.observaciones || "N/A",
-                colSpan: 4,
-              },
-            ],
-          ]
-        : [
-            [
-              {
-                content: "INFORMACIÓN:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: "Sin datos",
-              },
-            ],
+            },
           ],
+          [
+            {
+              content: "ACTIVIDAD:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(visita.controlDocente.actividad),
+            },
+            {
+              content: formatField(visita.controlDocente.presente),
+              styles: {
+                halign: "center",
+              },
+            },
+            {
+              content: formatField(
+                visita.controlDocente.horario_programado,
+                undefined,
+                true,
+              ),
+              styles: {
+                halign: "center",
+              },
+            },
+            {
+              content: formatField(visita.controlDocente.interaccion),
+              styles: {
+                halign: "center",
+              },
+            },
+          ],
+          [
+            {
+              content: "OBSERVACIONES:",
+              styles: { fontStyle: "bold" },
+            },
+            {
+              content: visita.controlDocente.observaciones || "N/A",
+              colSpan: 4,
+            },
+          ],
+        ]
+        : [
+          [
+            {
+              content: "INFORMACIÓN:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: "Sin datos",
+            },
+          ],
+        ],
     );
 
     // CONTROL MATERIAL
@@ -289,39 +284,39 @@ export function DetalleVisitaModal({
       y,
       visita.controlMaterial
         ? [
-            [
-              {
-                content: "CUMPLE:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(visita.controlMaterial.cumple),
-              },
-            ],
-            [
-              {
-                content: "OBSERVACIONES:",
-                styles: { fontStyle: "bold" },
-              },
-              {
-                content: visita.controlMaterial.observaciones || "N/A",
-              },
-            ],
-          ]
-        : [
-            [
-              {
-                content: "INFORMACIÓN:",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                },
-              },
-              {
-                content: "Sin datos",
-              },
-            ],
+          [
+            {
+              content: "CUMPLE:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(visita.controlMaterial.cumple),
+            },
           ],
+          [
+            {
+              content: "OBSERVACIONES:",
+              styles: { fontStyle: "bold" },
+            },
+            {
+              content: visita.controlMaterial.observaciones || "N/A",
+            },
+          ],
+        ]
+        : [
+          [
+            {
+              content: "INFORMACIÓN:",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+              },
+            },
+            {
+              content: "Sin datos",
+            },
+          ],
+        ],
     );
 
     // CONTROL ESTUDIANTE
@@ -333,108 +328,108 @@ export function DetalleVisitaModal({
       y,
       visita.controlEstudiante
         ? [
-            [
-              {
-                content: "CONTROL",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
+          [
+            {
+              content: "CONTROL",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-              {
-                content: "CONTROL EN AMBIENTE",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
-                colSpan: 2,
+            },
+            {
+              content: "CONTROL EN AMBIENTE",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-              {
-                content: "CONTROL EN INTRANET",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
-                colSpan: 2,
+              colSpan: 2,
+            },
+            {
+              content: "CONTROL EN INTRANET",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
               },
-            ],
-            [
-              {
-                content: "ASISTENCIA",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                  halign: "center",
-                },
-              },
-              {
-                content: formatField(
-                  visita.controlEstudiante.control_ambiente,
-                  undefined,
-                  true,
-                ),
-              },
-              // {
-              //   content: "OBSERVACIONES AMBIENTE:",
-              //   styles: {
-              //     fillColor: [230, 230, 230],
-              //     fontStyle: "bold",
-              //   },
-              // },
-              {
-                content: formatField(
-                  visita.controlEstudiante.observaciones_ambiente || "N/A",
-                ),
-              },
-              {
-                content: formatField(
-                  visita.controlEstudiante.control_intranet,
-                  undefined,
-                  true,
-                ),
-              },
-              // {
-              //   content: "OBSERVACIONES INTRANET:",
-              //   styles: {
-              //     fontStyle: "bold",
-              //   },
-              // },
-              {
-                content: formatField(
-                  visita.controlEstudiante.observaciones_intranet || "N/A",
-                ),
-              },
-            ],
-            [
-              {
-                content: "OBSERVACIONES:",
-                styles: {
-                  fontStyle: "bold",
-                },
-              },
-              {
-                content: visita.controlEstudiante.observaciones || "N/A",
-                colSpan: 4,
-              },
-            ],
-          ]
-        : [
-            [
-              {
-                content: "INFORMACIÓN:",
-                styles: {
-                  fillColor: [230, 230, 230],
-                  fontStyle: "bold",
-                },
-              },
-              {
-                content: "Sin datos",
-              },
-            ],
+              colSpan: 2,
+            },
           ],
+          [
+            {
+              content: "ASISTENCIA",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+                halign: "center",
+              },
+            },
+            {
+              content: formatField(
+                visita.controlEstudiante.control_ambiente,
+                undefined,
+                true,
+              ),
+            },
+            // {
+            //   content: "OBSERVACIONES AMBIENTE:",
+            //   styles: {
+            //     fillColor: [230, 230, 230],
+            //     fontStyle: "bold",
+            //   },
+            // },
+            {
+              content: formatField(
+                visita.controlEstudiante.observaciones_ambiente || "N/A",
+              ),
+            },
+            {
+              content: formatField(
+                visita.controlEstudiante.control_intranet,
+                undefined,
+                true,
+              ),
+            },
+            // {
+            //   content: "OBSERVACIONES INTRANET:",
+            //   styles: {
+            //     fontStyle: "bold",
+            //   },
+            // },
+            {
+              content: formatField(
+                visita.controlEstudiante.observaciones_intranet || "N/A",
+              ),
+            },
+          ],
+          [
+            {
+              content: "OBSERVACIONES:",
+              styles: {
+                fontStyle: "bold",
+              },
+            },
+            {
+              content: visita.controlEstudiante.observaciones || "N/A",
+              colSpan: 4,
+            },
+          ],
+        ]
+        : [
+          [
+            {
+              content: "INFORMACIÓN:",
+              styles: {
+                fillColor: [230, 230, 230],
+                fontStyle: "bold",
+              },
+            },
+            {
+              content: "Sin datos",
+            },
+          ],
+        ],
     );
 
     // CONTROL SILABO
@@ -446,68 +441,68 @@ export function DetalleVisitaModal({
       y,
       visita.controlSilabo
         ? [
-            [
-              {
-                content:
-                  "EL TEMA DEL SÍLABO COINCIDE CON LA CLASE DESARROLLADA EN LA FECHA DE LA VISITA",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(
-                  visita.controlSilabo.coincidencia_actual,
-                  undefined,
-                  true,
-                ),
-              },
-            ],
-            [
-              {
-                content:
-                  "EL TEMA DESARROLLADO EN LA FECHA ANTERIOR A LA VISITA COINCIDE CON EL SÍLABO",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(
-                  visita.controlSilabo.coincidencia_anterior,
-                  undefined,
-                  true,
-                ),
-              },
-            ],
-            [
-              {
-                content: "INGRESO DEL AVANCE SILÁBICO EN EL AULA VIRTUAL",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(
-                  visita.controlSilabo.ingreso_avance,
-                  undefined,
-                  true,
-                ),
-              },
-            ],
-            [
-              {
-                content: "OBSERVACIONES:",
-                styles: { fontStyle: "bold" },
-              },
-              {
-                content: visita.controlSilabo.observaciones || "N/A",
-              },
-            ],
-          ]
-        : [
-            [
-              {
-                content: "INFORMACIÓN:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: "Sin datos",
-              },
-            ],
+          [
+            {
+              content:
+                "EL TEMA DEL SÍLABO COINCIDE CON LA CLASE DESARROLLADA EN LA FECHA DE LA VISITA",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(
+                visita.controlSilabo.coincidencia_actual,
+                undefined,
+                true,
+              ),
+            },
           ],
+          [
+            {
+              content:
+                "EL TEMA DESARROLLADO EN LA FECHA ANTERIOR A LA VISITA COINCIDE CON EL SÍLABO",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(
+                visita.controlSilabo.coincidencia_anterior,
+                undefined,
+                true,
+              ),
+            },
+          ],
+          [
+            {
+              content: "INGRESO DEL AVANCE SILÁBICO EN EL AULA VIRTUAL",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(
+                visita.controlSilabo.ingreso_avance,
+                undefined,
+                true,
+              ),
+            },
+          ],
+          [
+            {
+              content: "OBSERVACIONES:",
+              styles: { fontStyle: "bold" },
+            },
+            {
+              content: visita.controlSilabo.observaciones || "N/A",
+            },
+          ],
+        ]
+        : [
+          [
+            {
+              content: "INFORMACIÓN:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: "Sin datos",
+            },
+          ],
+        ],
     );
 
     // CONTROL GUÍA
@@ -519,70 +514,70 @@ export function DetalleVisitaModal({
       y,
       visita.controlGuia
         ? [
-            [
-              {
-                content:
-                  "CUMPLE CON EL TEMA PROGRAMADO EN LA GUÍA DE PRÁCTICA PARA EL DESARROLLO DE LA CLASE PRÁCTICA",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(
-                  visita.controlGuia.tema_programado,
-                  undefined,
-                  true,
-                ),
-              },
-            ],
-            [
-              {
-                content:
-                  "SE EVIDENCIA EL LOGRO A MEDIR EN LA PRÁCTICA DESARROLLADA",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(visita.controlGuia.logro, undefined, true),
-              },
-            ],
-            [
-              {
-                content: "CUENTA CON UNA RÚBRICA DE EVALUACIÓN",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: formatField(
-                  visita.controlGuia.rubrica,
-                  undefined,
-                  true,
-                ),
-              },
-            ],
-            [
-              {
-                content: "OBSERVACIONES:",
-                styles: { fontStyle: "bold" },
-              },
-              {
-                content: visita.controlGuia.observaciones
-                  ? formatField(
-                      visita.controlGuia.observaciones,
-                      undefined,
-                      true,
-                    )
-                  : "N/A",
-              },
-            ],
-          ]
-        : [
-            [
-              {
-                content: "INFORMACIÓN:",
-                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
-              },
-              {
-                content: "Sin datos",
-              },
-            ],
+          [
+            {
+              content:
+                "CUMPLE CON EL TEMA PROGRAMADO EN LA GUÍA DE PRÁCTICA PARA EL DESARROLLO DE LA CLASE PRÁCTICA",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(
+                visita.controlGuia.tema_programado,
+                undefined,
+                true,
+              ),
+            },
           ],
+          [
+            {
+              content:
+                "SE EVIDENCIA EL LOGRO A MEDIR EN LA PRÁCTICA DESARROLLADA",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(visita.controlGuia.logro, undefined, true),
+            },
+          ],
+          [
+            {
+              content: "CUENTA CON UNA RÚBRICA DE EVALUACIÓN",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: formatField(
+                visita.controlGuia.rubrica,
+                undefined,
+                true,
+              ),
+            },
+          ],
+          [
+            {
+              content: "OBSERVACIONES:",
+              styles: { fontStyle: "bold" },
+            },
+            {
+              content: visita.controlGuia.observaciones
+                ? formatField(
+                  visita.controlGuia.observaciones,
+                  undefined,
+                  true,
+                )
+                : "N/A",
+            },
+          ],
+        ]
+        : [
+          [
+            {
+              content: "INFORMACIÓN:",
+              styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+            },
+            {
+              content: "Sin datos",
+            },
+          ],
+        ],
     );
 
     // TABLA ADICIONAL: RESPONSABLE Y REQUERIMIENTOS
@@ -649,7 +644,9 @@ export function DetalleVisitaModal({
           </h2>
           <div className="flex gap-2">
             <button
-              onClick={() => exportarVisitaPDF(visita)}
+              onClick={() =>
+                window.open(`/api/ficha/${visita.id_visita}/pdf`, "_blank")
+              }
               className="bg-black text-white px-3 py-1 rounded-lg text-sm hover:opacity-90"
             >
               Generar PDF
@@ -714,7 +711,7 @@ export function DetalleVisitaModal({
                 <span className="font-semibold">
                   Requerimientos solicitados en la visita inopinada:
                 </span>{" "}
-                {formatField(visita.requerimientos)}
+                {formatField(visita.controlGuia?.requerimientos)}
               </p>
               <p>
                 <span className="font-semibold">Lugar de la visita:</span>{" "}

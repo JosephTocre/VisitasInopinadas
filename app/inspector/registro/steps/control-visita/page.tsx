@@ -16,9 +16,8 @@ export default function ControlVisitaStep({
   const setVisitaId = useVisitaStore((state) => state.setVisitaId);
   const setControlVisita = useVisitaStore((state) => state.setControlVisita);
   const formulario = useVisitaStore((state) => state.controlVisita);
-
-  const [turno, setTurno] = useState<"mañana" | "noche" | "">("");
-  const [tipoHora, setTipoHora] = useState<"practica" | "teoria" | "">("");
+  const turno = useVisitaStore((state) => state.controlVisita.turno);
+  const tipoHora = useVisitaStore((state) => state.controlVisita.tipoHora);
 
   const [error, setError] = useState("");
 
@@ -26,11 +25,11 @@ export default function ControlVisitaStep({
     if (
       !formulario.sede ||
       !formulario.ciclo ||
-      !turno ||
+      !formulario.turno ||
       !formulario.curso ||
       !formulario.campoFormativo ||
       !formulario.semana ||
-      !tipoHora ||
+      !formulario.tipoHora ||
       !formulario.lugarVisita.trim()
     ) {
       setError("Debe completar todos los campos.");
@@ -204,7 +203,12 @@ export default function ControlVisitaStep({
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => setTurno("mañana")}
+                onClick={() =>
+                  setControlVisita({
+                    ...formulario,
+                    turno: "mañana",
+                  })
+                }
                 className={`btn-option ${turno === "mañana"
                   ? "btn-option-active"
                   : ""
@@ -215,7 +219,12 @@ export default function ControlVisitaStep({
 
               <button
                 type="button"
-                onClick={() => setTurno("noche")}
+                onClick={() =>
+                  setControlVisita({
+                    ...formulario,
+                    turno: "noche",
+                  })
+                }
                 className={`btn-option ${turno === "noche"
                   ? "btn-option-active"
                   : ""
@@ -320,8 +329,12 @@ export default function ControlVisitaStep({
             <div className="grid grid-cols-2 gap-4">
               <button
                 type="button"
-                onClick={() => setTipoHora("practica")}
-                className={`btn-option ${tipoHora === "practica"
+                onClick={() =>
+                  setControlVisita({
+                    ...formulario,
+                    tipoHora: "practica",
+                  })
+                } className={`btn-option ${tipoHora === "practica"
                   ? "btn-option-active"
                   : ""
                   }`}
@@ -331,8 +344,12 @@ export default function ControlVisitaStep({
 
               <button
                 type="button"
-                onClick={() => setTipoHora("teoria")}
-                className={`btn-option ${tipoHora === "teoria"
+                onClick={() =>
+                  setControlVisita({
+                    ...formulario,
+                    tipoHora: "teoria",
+                  })
+                } className={`btn-option ${tipoHora === "teoria"
                   ? "btn-option-active"
                   : ""
                   }`}

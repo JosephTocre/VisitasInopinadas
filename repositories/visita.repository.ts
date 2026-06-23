@@ -10,6 +10,10 @@ export class VisitaRepository {
         skip: (page - 1) * pageSize,
         include: {
           controlDocente: true,
+          controlMaterial: true,
+          controlSilabo: true,
+          controlEstudiante: true,
+          controlGuia: true,
           usuario: {
             select: { nombre: true, apellidos: true },
           },

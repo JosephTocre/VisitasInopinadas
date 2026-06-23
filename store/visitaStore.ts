@@ -7,6 +7,8 @@ const initialControlVisita = {
     campoFormativo: "",
     semana: "",
     lugarVisita: "",
+    turno: "",
+    tipoHora: "",
 };
 
 interface VisitaStore {

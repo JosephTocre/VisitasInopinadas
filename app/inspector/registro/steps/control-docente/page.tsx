@@ -1,6 +1,7 @@
 "use client";
 
 import { useControlDocenteStore } from "@/store/controlDocente";
+import { useControlMaterialStore } from "@/store/controlMaterial";
 import { useState } from "react";
 
 type ControlDocenteStepProps = {
@@ -15,26 +16,27 @@ export default function ControlDocenteStep({
   visitaId,
 }: ControlDocenteStepProps) {
   const { controlDocente, setControlDocente } = useControlDocenteStore();
+  const { controlMaterial, setControlMaterial } = useControlMaterialStore();
 
   const [error, setError] = useState("");
 
   const continuar = async () => {
-    if (
-      !controlDocente.nombreDocente.trim() ||
-      !controlDocente.apellidoDocente.trim() ||
-      !controlDocente.actividad.trim() ||
-      !controlDocente.presente ||
-      !controlDocente.horario ||
-      !controlDocente.interaccion ||
-      !controlDocente.materialCumple
-    ) {
+    const d = controlDocente;
+    const m = controlMaterial;
+
+    const camposInvalidos =
+      !d.nombreDocente?.trim() ||
+      !d.apellidoDocente?.trim() ||
+      !d.actividad?.trim() ||
+      !d.presente ||
+      !d.horario ||
+      !d.interaccion ||
+      !m.cumple;
+
+    if (camposInvalidos) {
       setError("Debe completar todos los campos obligatorios.");
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -43,22 +45,42 @@ export default function ControlDocenteStep({
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch("/api/control-docente", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...controlDocente,
-          visitaId,
+      const [resDocente, resMaterial] = await Promise.all([
+        fetch("/api/control-docente", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ...controlDocente,
+            visitaId,
+          }),
         }),
-      });
 
-      const data = await res.json();
+        fetch("/api/control-material", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            visitaId,
+            cumple: controlMaterial.cumple === "si",
+            observaciones: controlMaterial.observaciones,
+          }),
+        }),
+      ]);
 
-      if (!res.ok) {
-        throw new Error(data.mensaje || "Error al guardar");
+      const dataDocente = await resDocente.json();
+      const dataMaterial = await resMaterial.json();
+
+      if (!resDocente.ok || !resMaterial.ok) {
+        throw new Error(
+          dataDocente?.mensaje ||
+          dataMaterial?.mensaje ||
+          "Error al guardar"
+        );
       }
 
       onNext();
@@ -266,14 +288,18 @@ export default function ControlDocenteStep({
                 <div className="flex flex-col gap-3">
                   <RadioOption
                     label="Sí"
-                    checked={controlDocente.materialCumple === "si"}
-                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "si" })}
+                    checked={controlMaterial.cumple === "si"}
+                    onChange={() =>
+                      setControlMaterial({ ...controlMaterial, cumple: "si" })
+                    }
                   />
 
                   <RadioOption
                     label="No"
-                    checked={controlDocente.materialCumple === "no"}
-                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "no" })}
+                    checked={controlMaterial.cumple === "no"}
+                    onChange={() =>
+                      setControlMaterial({ ...controlMaterial, cumple: "no" })
+                    }
                   />
                 </div>
               </div>
@@ -284,11 +310,11 @@ export default function ControlDocenteStep({
                 </label>
 
                 <textarea
-                  value={controlDocente.observacionesMaterial}
+                  value={controlMaterial.observaciones}
                   onChange={(e) =>
-                    setControlDocente({
-                      ...controlDocente,
-                      observacionesMaterial: e.target.value,
+                    setControlMaterial({
+                      ...controlMaterial,
+                      observaciones: e.target.value,
                     })
                   }
                   rows={4}

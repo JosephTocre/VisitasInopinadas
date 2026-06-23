@@ -3,11 +3,13 @@ import { Prisma } from "@prisma/client";
 
 export class ControlMaterialRepository {
 
-  async crear(
-    datos: Prisma.ControlMaterialUncheckedCreateInput
-  ) {
-    return prisma.controlMaterial.create({
-      data: datos,
+  async crear(datos: Prisma.ControlMaterialUncheckedCreateInput) {
+    return prisma.controlMaterial.upsert({
+      where: {
+        visitaId: datos.visitaId,
+      },
+      create: datos,
+      update: datos,
     });
   }
 
