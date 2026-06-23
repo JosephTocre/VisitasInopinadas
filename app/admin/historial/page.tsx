@@ -26,12 +26,12 @@ export default function HistorialPage() {
     periodo: "todos",
     docente: "",
   });
-  const [pagina, setPagina] = useState(1); // Nuevo estado
-  const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
+  const [pagina, setPagina] = useState(1);
+  const [meta, setMeta] = useState({ totalPages: 1 });
   const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 
   const fetchVisitas = async () => {
-    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
+    const token = localStorage.getItem("token");
 
     setIsLoading(true);
     // Construimos los parámetros de búsqueda, ignorando valores vacíos

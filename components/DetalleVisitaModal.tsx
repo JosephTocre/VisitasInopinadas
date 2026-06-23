@@ -78,8 +78,8 @@ export function DetalleVisitaModal({
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
 
-    doc.text("UNIVERSIDAD PRIVADA ...", 105, 20, { align: "center" }); // Ajustado de 10 a 20
-    doc.text("VICERRECTORADO ACADÉMICO", 105, 25, { align: "center" }); // Ajustado de 15 a 25
+    doc.text("UNIVERSIDAD PRIVADA ...", 105, 20, { align: "center" }); 
+    doc.text("VICERRECTORADO ACADÉMICO", 105, 25, { align: "center" });
     doc.text(
       "FACULTAD DE INGENIERÍAS - ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS",
       105,
@@ -87,7 +87,7 @@ export function DetalleVisitaModal({
       { align: "center" },
     );
 
-    y = 40; // Aumentado de 25 a 40 para empezar la tabla más abajo
+    y = 40;
 
     // Función auxiliar para configurar autoTable de forma consistente
     const createTable = (doc: any, startY: number, body: any[]) => {
@@ -98,7 +98,7 @@ export function DetalleVisitaModal({
         styles: { fontSize: 8, cellPadding: 1 },
         headStyles: { fontSize: 8, cellPadding: 2 },
       });
-      return (doc as any).lastAutoTable.finalY + 5; // Menos espacio entre tablas
+      return (doc as any).lastAutoTable.finalY + 5;
     };
 
     // DATOS GENERALES
