@@ -23,7 +23,7 @@ interface StatsChartProps {
 
 export function VisitsTrendChart({ data }: StatsChartProps) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm w-full">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-[350px] w-full">
       <h3 className="text-lg font-semibold mb-4">
         Tendencia de Visitas (7 días)
       </h3>
@@ -48,7 +48,7 @@ export function VisitsTrendChart({ data }: StatsChartProps) {
 
 export function VisitsByMonthChart({ data }: StatsChartProps) {
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm w-full">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-[350px] w-full">
       <h3 className="text-lg font-semibold mb-4">Visitas por Mes</h3>
       <ResponsiveContainer width="100%" height="90%">
         <BarChart data={data} layout="vertical">
@@ -66,12 +66,12 @@ export function VisitsByMonthChart({ data }: StatsChartProps) {
 export function VisitsByInspectorChart({ data }: StatsChartProps) {
   // Convertir data al formato del gráfico
   const dataForChart = data.map((item) => ({
-    inspector: item.inspector,
+    inspector: item.inspector +" "+ item,
     visitas: item._count.id,
   }));
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm w-full">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-[350px] w-full">
       <h3 className="text-lg font-semibold mb-4">Visitas por Inspector</h3>
       <ResponsiveContainer width="100%" height="90%">
         <PieChart>
@@ -109,7 +109,7 @@ export function VisitsByPeriodChart({ data }: StatsChartProps) {
     .sort((a, b) => a.periodo.localeCompare(b.periodo));
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm w-full">
+    <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm h-[350px] w-full">
       <h3 className="text-lg font-semibold mb-4">Visitas por Periodo</h3>
 
       <ResponsiveContainer width="100%" height="90%">
