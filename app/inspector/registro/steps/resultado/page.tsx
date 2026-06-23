@@ -15,10 +15,11 @@ export default function ResultadoStep({
 }: ResultadoStepProps) {
 
   const pdfUrl = `/api/ficha/${visitaId}/pdf`;
+  const firmarUrl = `/api/visita/${visitaId}/firmar`;
 
   const qrUrl =
     typeof window !== "undefined"
-      ? `${window.location.origin}${pdfUrl}`
+      ? `${window.location.origin}${firmarUrl}`
       : "";
   return (
     <main className="page-container flex items-center justify-center">

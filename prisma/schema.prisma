@@ -44,6 +44,10 @@ model HechoVisita {
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
 
+  firma      String?   @db.Text
+  firmado    Boolean   @default(false)
+  fechaFirma DateTime?
+
   @@index([fecha])
   @@index([usuarioId])
 
