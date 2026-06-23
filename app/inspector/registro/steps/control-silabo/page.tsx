@@ -18,6 +18,14 @@ export default function ControlSilaboStep({
   const { controlSilabo, setControlSilabo } = useControlSilaboStore();
 
   const [error, setError] = useState("");
+  const MAX_CARACTERES = 100;
+
+  const limpiarTexto = (valor: string) => {
+    return valor
+      .replace(/\s{2,}/g, " ")
+      .replace(/^\s+/, "")
+      .slice(0, MAX_CARACTERES);
+  };
 
   const continuar = async () => {
     try {
@@ -137,15 +145,24 @@ export default function ControlSilaboStep({
             </div>
 
             <div>
-              <label className="label-modern">
-                Observaciones
+              <label className="label-modern flex justify-between items-center">
+                <span>Observaciones</span>
+                <span className="text-xs text-gray-500">
+                  {controlSilabo.observacionesSilabo?.length || 0}/{MAX_CARACTERES}
+                </span>
               </label>
+
               <textarea
                 value={controlSilabo.observacionesSilabo}
-                onChange={(e) => setControlSilabo({ observacionesSilabo: e.target.value })}
+                onChange={(e) =>
+                  setControlSilabo({
+                    ...controlSilabo,
+                    observacionesSilabo: limpiarTexto(e.target.value),
+                  })
+                }
                 rows={4}
                 className="input-modern resize-none"
-                placeholder="Ingrese observaciones"
+                placeholder="Ingrese observaciones sobre el control silábico"
               />
             </div>
           </div>

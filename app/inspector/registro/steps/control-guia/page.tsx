@@ -21,10 +21,19 @@ export default function ControlGuiaStep({
     const [requerimientos, setRequerimientos] = useState("");
     const [error, setError] = useState("");
 
+    const MAX_CARACTERES = 100;
+
+    const limpiarTexto = (valor: string) => {
+        return valor
+            .replace(/\s{2,}/g, " ") // sin doble espacio
+            .replace(/^\s+/, "") // sin espacio inicial
+            .slice(0, MAX_CARACTERES); // límite 100
+    };
+
     const continuar = async () => {
         try {
             setError("");
-            if (!guia1 || !guia2 || !guia3 ) {
+            if (!guia1 || !guia2 || !guia3) {
                 setError("Debe completar todos los campos obligatorios.");
 
                 window.scrollTo({
@@ -142,14 +151,21 @@ export default function ControlGuiaStep({
                             </div>
 
                             <div className="flex flex-col gap-1">
-                                <label className="label-modern">Observaciones</label>
+                                <label className="label-modern flex justify-between items-center">
+                                    <span>Observaciones</span>
+                                    <span className="text-xs text-gray-500">
+                                        {observacionesGuia?.length || 0}/{MAX_CARACTERES}
+                                    </span>
+                                </label>
 
                                 <textarea
                                     value={observacionesGuia}
-                                    onChange={(e) => setObservacionesGuia(e.target.value)}
+                                    onChange={(e) =>
+                                        setObservacionesGuia(limpiarTexto(e.target.value))
+                                    }
                                     rows={4}
                                     className="input-modern resize-none"
-                                    placeholder="Ingrese observaciones"
+                                    placeholder="Ingrese observaciones sobre la guía"
                                 />
                             </div>
                         </div>
@@ -159,16 +175,21 @@ export default function ControlGuiaStep({
                         <div className="space-y-6">
 
                             <div className="flex flex-col gap-1">
-                                <label className="label-modern">
-                                    Requerimientos solicitados en la visita inopinada
+                                <label className="label-modern flex justify-between items-center">
+                                    <span>Requerimientos solicitados en la visita inopinada</span>
+                                    <span className="text-xs text-gray-500">
+                                        {requerimientos?.length || 0}/{MAX_CARACTERES}
+                                    </span>
                                 </label>
 
                                 <textarea
                                     value={requerimientos}
-                                    onChange={(e) => setRequerimientos(e.target.value)}
+                                    onChange={(e) =>
+                                        setRequerimientos(limpiarTexto(e.target.value))
+                                    }
                                     rows={4}
                                     className="input-modern resize-none"
-                                    placeholder="Ingrese los requerimientos solicitados"
+                                    placeholder="Ingrese los requerimientos solicitados en la visita inopinada"
                                 />
                             </div>
                         </div>

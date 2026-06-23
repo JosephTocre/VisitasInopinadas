@@ -19,6 +19,14 @@ export default function ControlDocenteStep({
   const { controlMaterial, setControlMaterial } = useControlMaterialStore();
 
   const [error, setError] = useState("");
+  const MAX_CARACTERES = 100;
+
+  const limpiarTexto = (valor: string) => {
+    return valor
+      .replace(/\s{2,}/g, " ") // evita doble espacio
+      .replace(/^\s+/, "") // opcional: evita espacios al inicio
+      .slice(0, MAX_CARACTERES);
+  };
 
   const continuar = async () => {
     const d = controlDocente;
@@ -131,8 +139,11 @@ export default function ControlDocenteStep({
           {/* Nombre y apellido */}
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label-modern">
-                Nombre del docente
+              <label className="label-modern flex justify-between items-center">
+                <span>Nombre del docente</span>
+                <span className="text-xs text-gray-500">
+                  {controlDocente.nombreDocente?.length || 0}/{MAX_CARACTERES}
+                </span>
               </label>
 
               <input
@@ -141,7 +152,7 @@ export default function ControlDocenteStep({
                 onChange={(e) =>
                   setControlDocente({
                     ...controlDocente,
-                    nombreDocente: e.target.value,
+                    nombreDocente: limpiarTexto(e.target.value),
                   })
                 }
                 className="input-modern"
@@ -150,8 +161,11 @@ export default function ControlDocenteStep({
             </div>
 
             <div>
-              <label className="label-modern">
-                Apellido del docente
+              <label className="label-modern flex justify-between items-center">
+                <span>Apellido del docente</span>
+                <span className="text-xs text-gray-500">
+                  {controlDocente.apellidoDocente?.length || 0}/{MAX_CARACTERES}
+                </span>
               </label>
 
               <input
@@ -160,7 +174,7 @@ export default function ControlDocenteStep({
                 onChange={(e) =>
                   setControlDocente({
                     ...controlDocente,
-                    apellidoDocente: e.target.value,
+                    apellidoDocente: limpiarTexto(e.target.value),
                   })
                 }
                 className="input-modern"
@@ -171,8 +185,11 @@ export default function ControlDocenteStep({
 
           {/* Actividad */}
           <div>
-            <label className="label-modern">
-              Actividad
+            <label className="label-modern flex justify-between items-center">
+              <span>Actividad</span>
+              <span className="text-xs text-gray-500">
+                {controlDocente.actividad?.length || 0}/{MAX_CARACTERES}
+              </span>
             </label>
 
             <input
@@ -181,7 +198,7 @@ export default function ControlDocenteStep({
               onChange={(e) =>
                 setControlDocente({
                   ...controlDocente,
-                  actividad: e.target.value,
+                  actividad: limpiarTexto(e.target.value),
                 })
               }
               className="input-modern"
@@ -255,8 +272,11 @@ export default function ControlDocenteStep({
 
           {/* Observaciones */}
           <div>
-            <label className="label-modern">
-              Observaciones
+            <label className="label-modern flex justify-between items-center">
+              <span>Observaciones</span>
+              <span className="text-xs text-gray-500">
+                {controlDocente.observaciones?.length || 0}/{MAX_CARACTERES}
+              </span>
             </label>
 
             <textarea
@@ -264,7 +284,7 @@ export default function ControlDocenteStep({
               onChange={(e) =>
                 setControlDocente({
                   ...controlDocente,
-                  observaciones: e.target.value,
+                  observaciones: limpiarTexto(e.target.value),
                 })
               }
               rows={4}
@@ -305,8 +325,11 @@ export default function ControlDocenteStep({
               </div>
 
               <div>
-                <label className="label-modern">
-                  Observaciones
+                <label className="label-modern flex justify-between items-center">
+                  <span>Observaciones</span>
+                  <span className="text-xs text-gray-500">
+                    {controlDocente.observacionesMaterial?.length || 0}/{MAX_CARACTERES}
+                  </span>
                 </label>
 
                 <textarea

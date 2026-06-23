@@ -20,6 +20,13 @@ export default function ControlVisitaStep({
   const tipoHora = useVisitaStore((state) => state.controlVisita.tipoHora);
 
   const [error, setError] = useState("");
+  const MAX_CARACTERES = 100;
+
+  const limpiarTexto = (valor: string) => {
+    return valor
+      .replace(/\s{2,}/g, " ") // evita doble o más espacios
+      .slice(0, MAX_CARACTERES); // limita a 100
+  };
 
   const continuar = async () => {
     if (
@@ -361,8 +368,11 @@ export default function ControlVisitaStep({
 
           {/* Lugar de visita */}
           <div>
-            <label className="label-modern">
-              Lugar de visita
+            <label className="label-modern flex justify-between items-center">
+              <span>Lugar de visita</span>
+              <span className="text-xs text-gray-500">
+                {formulario.lugarVisita?.length || 0}/{MAX_CARACTERES}
+              </span>
             </label>
 
             <input
@@ -371,11 +381,11 @@ export default function ControlVisitaStep({
               onChange={(e) =>
                 setControlVisita({
                   ...formulario,
-                  lugarVisita: e.target.value,
+                  lugarVisita: limpiarTexto(e.target.value),
                 })
               }
               className="input-modern"
-              placeholder="Ingrese el lugar de visita"
+              placeholder="Ingrese el lugar de visita "
             />
           </div>
 
