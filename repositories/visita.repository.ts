@@ -2,8 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export class VisitaRepository {
-  // Ahora pasamos la página y el tamaño como argumentos
-  async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
+  async obtenerTodas(page: number = 1, pageSize: number = 15, where: any = {}) {
     try {
       return await prisma.hechoVisita.findMany({
         where,
@@ -41,6 +40,32 @@ export class VisitaRepository {
         usuario: {
           select: { nombre: true, apellidos: true },
         },
+      },
+    });
+  }
+
+  async obtenerSedes(where: any = {}) {
+    return prisma.hechoVisita.findMany({
+      where,
+      distinct: ["sede"],
+      select: {
+        sede: true,
+      },
+      orderBy: {
+        sede: "asc",
+      },
+    });
+  }
+
+  async obtenerCursos(where: any = {}) {
+    return prisma.hechoVisita.findMany({
+      where,
+      distinct: ["curso"],
+      select: {
+        curso: true,
+      },
+      orderBy: {
+        curso: "asc",
       },
     });
   }

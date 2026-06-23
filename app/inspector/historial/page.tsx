@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import InspectorSidebar from "@/components/InspectorSidebar";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReusableTable } from "@/components/ui/ReusableTable";
@@ -24,25 +24,73 @@ export default function HistorialPage() {
   const [filtros, setFiltros] = useState({
     periodo: "todos",
     docente: "",
+    sede: "todos",
+    curso: "todos",
   });
-  const [pagina, setPagina] = useState(1); // Nuevo estado
-  const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
-  const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
+  const [pagina, setPagina] = useState(1);
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
+  const [sedes, setSedes] = useState<string[]>([]);
+  const [cursos, setCursos] = useState<string[]>([]);
+
+  const fetchFiltros = useCallback(
+    async (periodo?: string, sede?: string, curso?: string) => {
+      const token = localStorage.getItem("token");
+
+      const params = new URLSearchParams({
+        mode: "filtros",
+      });
+
+      if (periodo && periodo !== "todos") {
+        params.append("periodo", periodo);
+      }
+      if (sede && sede !== "todos") {
+        params.append("sede", sede);
+      }
+      if (curso && curso !== "todos") {
+        params.append("curso", curso);
+      }
+
+      const res = await fetch(`/api/visitas?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setSedes(data.sedes || []);
+      setCursos(data.cursos || []);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const loadFiltros = async () => {
+      setSedes([]);
+      setCursos([]);
+      await fetchFiltros(filtros.periodo, filtros.sede, filtros.curso);
+    };
+
+    loadFiltros();
+  }, [filtros.periodo, filtros.sede, filtros.curso, fetchFiltros]);
+
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<string, unknown> | null>(null);
 
   const fetchVisitas = async () => {
-    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
+    const token = localStorage.getItem("token");
 
     setIsLoading(true);
-    // Construimos los parámetros de búsqueda, ignorando valores vacíos
-    const params: any = { page: pagina.toString() };
+    const params: Record<string, string> = { page: pagina.toString() };
     if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
     if (filtros.docente.trim() !== "") params.docente = filtros.docente;
+    if (filtros.sede !== "todos") params.sede = filtros.sede;
+    if (filtros.curso !== "todos") params.curso = filtros.curso;
 
     const query = new URLSearchParams(params).toString();
 
     const res = await fetch(`/api/visitas?${query}`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Envías el token aquí
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -54,7 +102,6 @@ export default function HistorialPage() {
 
     const data = await res.json();
 
-    // Ajustado a la nueva estructura: { data, meta }
     setVisitas(data.data || []);
     setMeta(data.meta || { totalPages: 1 });
     setIsLoading(false);
@@ -62,18 +109,18 @@ export default function HistorialPage() {
 
   const abrirDetalle = async (id: number) => {
     const res = await fetch(`/api/visitas/${id}`);
-    const data = await res.json();
+    const data = (await res.json()) as Record<string, unknown>;
     setVisitaSeleccionada(data);
   };
 
-  // Reiniciar a la página 1 cuando cambien los filtros
-  useEffect(() => {
-    setPagina(1);
-  }, [filtros]);
 
   useEffect(() => {
-    fetchVisitas();
-  }, [filtros, pagina]); // Dependemos de filtros y página
+    const loadVisitas = async () => {
+      await fetchVisitas();
+    };
+
+    loadVisitas();
+  }, [filtros, pagina]);
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">
@@ -84,6 +131,40 @@ export default function HistorialPage() {
           title="Historial de Visitas"
           description="Consulta y seguimiento de todas tus visitas registradas."
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl shadow-sm p-5 border">
+            <p className="text-sm text-gray-500">Total de visitas</p>
+            <h3 className="text-3xl font-bold">{meta.total}</h3>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border">
+            <p className="text-sm text-gray-500">Docentes</p>
+            <h3 className="text-3xl font-bold">
+              {new Set(
+                visitas.map(
+                  (v) =>
+                    `${v.controlDocente?.nombre_docente ?? ""} ${v.controlDocente?.apellido_docente ?? ""
+                    }`
+                )
+              ).size}
+            </h3>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border">
+            <p className="text-sm text-gray-500">Cursos</p>
+            <h3 className="text-3xl font-bold">
+              {new Set(visitas.map((v) => v.curso)).size}
+            </h3>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm p-5 border">
+            <p className="text-sm text-gray-500">Sedes</p>
+            <h3 className="text-3xl font-bold">
+              {new Set(visitas.map((v) => v.sede)).size}
+            </h3>
+          </div>
+        </div>
 
         <FilterBar
           fields={[
@@ -115,14 +196,60 @@ export default function HistorialPage() {
               type: "text",
               placeholder: "Buscar por apellido...",
             },
+            {
+              label: "Sede",
+              key: "sede",
+              type: "select",
+              options: [
+                { value: "todos", label: "Todas las sedes" },
+                ...sedes.map((sede) => ({
+                  value: sede,
+                  label: sede,
+                })),
+              ],
+            },
+            {
+              label: "Curso",
+              key: "curso",
+              type: "select",
+              options: [
+                { value: "todos", label: "Todos los cursos" },
+                ...cursos.map((curso) => ({
+                  value: curso,
+                  label: curso,
+                })),
+              ],
+            },
           ]}
           values={filtros}
-          onChange={(newValues) =>
-            setFiltros({
-              periodo: newValues.periodo ?? filtros.periodo,
-              docente: newValues.docente ?? filtros.docente,
-            })
-          }
+          onChange={(newValues) => {
+            setFiltros((previousFiltros) => {
+              const updatedFiltros = {
+                ...previousFiltros,
+                ...newValues,
+              };
+
+              if (newValues.periodo !== undefined) {
+                updatedFiltros.sede = "todos";
+                updatedFiltros.curso = "todos";
+                setSedes([]);
+                setCursos([]);
+              }
+
+              if (newValues.sede !== undefined && newValues.sede !== "todos") {
+                updatedFiltros.curso = "todos";
+                setCursos([]);
+              }
+
+              if (newValues.curso !== undefined && newValues.curso !== "todos") {
+                setSedes([]);
+              }
+
+              return updatedFiltros;
+            });
+
+            setPagina(1);
+          }}
         />
 
         <div className="flex justify-end mb-8">
@@ -164,7 +291,6 @@ export default function HistorialPage() {
           isLoading={isLoading}
         />
 
-        {/* Controles de Paginación */}
         {visitas.length > 0 && (
           <Pagination
             currentPage={pagina}
@@ -173,7 +299,6 @@ export default function HistorialPage() {
           />
         )}
 
-        {/* Modal de Detalle */}
         {visitaSeleccionada && (
           <DetalleVisitaModal
             visita={visitaSeleccionada}

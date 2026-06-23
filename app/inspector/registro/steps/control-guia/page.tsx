@@ -161,30 +161,6 @@ export default function ControlGuiaStep({
 
                             <div className="flex flex-col gap-1">
                                 <label className="label-modern">
-                                    Responsable de realizar la actividad
-                                </label>
-
-                                <div className="relative">
-                                    <select
-                                        value={responsable}
-                                        onChange={(e) => setResponsable(e.target.value)}
-                                        className="w-full appearance-none border border-gray-300 rounded-2xl py-2.5 px-3 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-black"
-                                    >
-                                        <option value=""></option>
-                                        <option>Inspector Harvey Specter</option>
-                                        <option>Inspector Mike Ross</option>
-                                        <option>Inspector Donna Paulsen</option>
-                                        <option>Inspector Jessica Pearson</option>
-                                    </select>
-
-                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                                        ▼
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="flex flex-col gap-1">
-                                <label className="label-modern">
                                     Requerimientos solicitados en la visita inopinada
                                 </label>
 

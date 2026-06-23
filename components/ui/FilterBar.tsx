@@ -41,9 +41,7 @@ export function FilterBar({
           {field.type === "select" ? (
             <select
               className="border border-gray-300 p-2 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black outline-none bg-white"
-              onChange={(e) =>
-                onChange({ ...values, [field.key]: e.target.value })
-              }
+              onChange={(e) => onChange({ [field.key]: e.target.value })}
               value={values[field.key] || ""}
             >
               {field.options?.map((opt) => (
@@ -56,9 +54,7 @@ export function FilterBar({
             <input
               type="date"
               className="border border-gray-300 p-2 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black outline-none"
-              onChange={(e) =>
-                onChange({ ...values, [field.key]: e.target.value })
-              }
+              onChange={(e) => onChange({ [field.key]: e.target.value })}
               value={values[field.key] || ""}
             />
           ) : (
@@ -66,9 +62,7 @@ export function FilterBar({
               type="text"
               placeholder={field.placeholder}
               className="border border-gray-300 p-2 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-black outline-none"
-              onChange={(e) =>
-                onChange({ ...values, [field.key]: e.target.value })
-              }
+              onChange={(e) => onChange({ [field.key]: e.target.value })}
               value={values[field.key] || ""}
             />
           )}
