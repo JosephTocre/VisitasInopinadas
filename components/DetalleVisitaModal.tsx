@@ -38,12 +38,6 @@ export function DetalleVisitaModal({
       if (["no cumple", "no aplica", "cumple"].includes(normalized)) {
         return normalized.charAt(0).toUpperCase() + normalized.slice(1);
       }
-
-      // Para otros textos, solo capitalizar la primera letra
-      return (
-        value.replace(/_/g, " ").charAt(0).toUpperCase() +
-        value.replace(/_/g, " ").slice(1).toLowerCase()
-      );
     }
 
     return formatter ? formatter(value) : value;
@@ -79,77 +73,208 @@ export function DetalleVisitaModal({
   const exportarVisitaPDF = (visita: any) => {
     const doc = new jsPDF();
 
-    let y = 15;
+    let y = 20; // Aumentado de 10 a 20
 
-    doc.setFontSize(16);
-    doc.text(`Detalle de Visita #${visita.id_visita}`, 14, y);
-    y += 10;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+
+    doc.text("UNIVERSIDAD PRIVADA ...", 105, 20, { align: "center" }); // Ajustado de 10 a 20
+    doc.text("VICERRECTORADO ACADÉMICO", 105, 25, { align: "center" }); // Ajustado de 15 a 25
+    doc.text(
+      "FACULTAD DE INGENIERÍAS - ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS",
+      105,
+      30, // Ajustado de 20 a 30
+      { align: "center" },
+    );
+
+    y = 40; // Aumentado de 25 a 40 para empezar la tabla más abajo
+
+    // Función auxiliar para configurar autoTable de forma consistente
+    const createTable = (doc: any, startY: number, body: any[]) => {
+      autoTable(doc, {
+        startY,
+        body,
+        theme: "grid",
+        styles: { fontSize: 8, cellPadding: 1 },
+        headStyles: { fontSize: 8, cellPadding: 2 },
+      });
+      return (doc as any).lastAutoTable.finalY + 5; // Menos espacio entre tablas
+    };
 
     // DATOS GENERALES
-    autoTable(doc, {
-      startY: y,
-      head: [["Campo", "Detalle"]],
-      body: [
-        ["Fecha", formatDate(visita.fecha)],
-        ["Hora de inicio de visita", formatTime(visita.hora_inicio)],
-        ["Hora de término de visita", formatTime(visita.hora_termino)],
-        ["Sede o filial", formatField(visita.sede)],
-        ["Ciclo", formatField(visita.ciclo)],
-        ["Turno", formatField(visita.turno)],
-        ["Curso o asignatura", formatField(visita.curso)],
-        ["Campo Formativo", formatField(visita.campo_formativo)],
-        ["Número de Semana", visita.n_semana || "N/A"],
-        ["Hora práctica/hora teoría", visita.hora_practica_teoria || "N/A"],
-        [
-          "Requerimientos solicitados en la visita inopinada",
-          typeof visita.controlGuia.requerimientos === "string"
-            ? visita.controlGuia.requerimientos
-            : "N/A",
-        ],
-        ["Lugar de la visita", visita.lugar || "N/A"],
-        [
-          "Responsable de realizar la actividad",
-          visita.usuario
-            ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
-            : "N/A",
-        ],
+    y = createTable(doc, y, [
+      [
+        {
+          content: "FECHA DE VISITA:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatDate(visita.fecha),
+        {
+          content: "HORA DE INICIO DE VISITA:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatTime(visita.hora_inicio),
+        {
+          content: "HORA DE TÉRMINO DE VISITA:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatTime(visita.hora_termino),
       ],
-    });
-
-    y = (doc as any).lastAutoTable.finalY + 10;
+      [
+        {
+          content: "SEDE O FILIAL:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatField(visita.sede),
+        {
+          content: "CICLO:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatField(visita.ciclo),
+        {
+          content: "TURNO:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatField(visita.turno),
+      ],
+      [
+        {
+          content: "ASIGNATURA:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        {
+          content: formatField(visita.curso),
+          colSpan: 3,
+        },
+        {
+          content: "CAMPO FORMATIVO",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        formatField(visita.campo_formativo),
+      ],
+      [
+        {
+          content: "SEMANA N°:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        {
+          content: visita.n_semana || "N/A",
+          colSpan: 3,
+        },
+        {
+          content: "HORA PRÁCTICA/HORA TEORÍA:",
+          styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+        },
+        visita.hora_practica_teoria || "N/A",
+      ],
+      [
+        { content: "LUGAR DE LA VISITA:", styles: { fontStyle: "bold" } },
+        {
+          content: visita.lugar || "N/A",
+          colSpan: 5,
+        },
+      ],
+    ]);
 
     // CONTROL DOCENTE
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.text("1. CONTROL DOCENTE (ASISTENCIA, HORARIO, COMPORTAMIENTO)", 14, y);
-    y += 3;
+    y += 2;
 
-    autoTable(doc, {
-      startY: y,
-      body: visita.controlDocente
+    y = createTable(
+      doc,
+      y,
+      visita.controlDocente
         ? [
             [
-              "Docente",
-              `${formatField(
-                visita.controlDocente.nombre_docente,
-              )} ${formatField(visita.controlDocente.apellido_docente)}`,
+              {
+                content: "DOCENTE:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: `${formatField(
+                  visita.controlDocente.nombre_docente,
+                )} ${formatField(visita.controlDocente.apellido_docente)}`,
+              },
+              {
+                content: "PRESENTE",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+              },
+              {
+                content: "HORARIO PROGRAMADO",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+              },
+              {
+                content: "INTERACCIÓN",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+              },
             ],
-            ["Actividad", formatField(visita.controlDocente.actividad)],
-            ["Presente", formatField(visita.controlDocente.presente)],
             [
-              "Horario programado",
-              formatField(
-                visita.controlDocente.horario_programado,
-                undefined,
-                true,
-              ),
+              {
+                content: "ACTIVIDAD:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(visita.controlDocente.actividad),
+              },
+              {
+                content: formatField(visita.controlDocente.presente),
+                styles: {
+                  halign: "center",
+                },
+              },
+              {
+                content: formatField(
+                  visita.controlDocente.horario_programado,
+                  undefined,
+                  true,
+                ),
+                styles: {
+                  halign: "center",
+                },
+              },
+              {
+                content: formatField(visita.controlDocente.interaccion),
+                styles: {
+                  halign: "center",
+                },
+              },
             ],
-            ["Interacción", formatField(visita.controlDocente.interaccion)],
-            ["Observaciones", formatField(visita.controlDocente.observaciones)],
+            [
+              {
+                content: "OBSERVACIONES:",
+                styles: { fontStyle: "bold" },
+              },
+              {
+                content: visita.controlDocente.observaciones || "N/A",
+                colSpan: 4,
+              },
+            ],
           ]
-        : [["Información", "Sin datos"]],
-    });
-
-    y = (doc as any).lastAutoTable.finalY + 10;
+        : [
+            [
+              {
+                content: "INFORMACIÓN:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: "Sin datos",
+              },
+            ],
+          ],
+    );
 
     // CONTROL MATERIAL
     doc.text(
@@ -157,126 +282,359 @@ export function DetalleVisitaModal({
       14,
       y,
     );
-    y += 3;
+    y += 2;
 
-    autoTable(doc, {
-      startY: y,
-      body: visita.controlMaterial
+    y = createTable(
+      doc,
+      y,
+      visita.controlMaterial
         ? [
-            ["Cumple", formatField(visita.controlMaterial.cumple)],
             [
-              "Observaciones",
-              formatField(visita.controlMaterial.observaciones),
+              {
+                content: "CUMPLE:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(visita.controlMaterial.cumple),
+              },
+            ],
+            [
+              {
+                content: "OBSERVACIONES:",
+                styles: { fontStyle: "bold" },
+              },
+              {
+                content: visita.controlMaterial.observaciones || "N/A",
+              },
             ],
           ]
-        : [["Información", "Sin datos"]],
-    });
-
-    y = (doc as any).lastAutoTable.finalY + 10;
+        : [
+            [
+              {
+                content: "INFORMACIÓN:",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                },
+              },
+              {
+                content: "Sin datos",
+              },
+            ],
+          ],
+    );
 
     // CONTROL ESTUDIANTE
     doc.text("3. CONTROL DE REGISTRO DE ASISTENCIA DE ESTUDIANTES", 14, y);
-    y += 3;
+    y += 2;
 
-    autoTable(doc, {
-      startY: y,
-      body: visita.controlEstudiante
+    y = createTable(
+      doc,
+      y,
+      visita.controlEstudiante
         ? [
             [
-              "Control en ambiente",
-              formatField(
-                visita.controlEstudiante.control_ambiente,
-                undefined,
-                true,
-              ),
+              {
+                content: "CONTROL",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+              },
+              {
+                content: "CONTROL EN AMBIENTE",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+                colSpan: 2,
+              },
+              {
+                content: "CONTROL EN INTRANET",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+                colSpan: 2,
+              },
             ],
             [
-              "Observaciones ambiente",
-              formatField(visita.controlEstudiante.observaciones_ambiente),
+              {
+                content: "ASISTENCIA",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                  halign: "center",
+                },
+              },
+              {
+                content: formatField(
+                  visita.controlEstudiante.control_ambiente,
+                  undefined,
+                  true,
+                ),
+              },
+              // {
+              //   content: "OBSERVACIONES AMBIENTE:",
+              //   styles: {
+              //     fillColor: [230, 230, 230],
+              //     fontStyle: "bold",
+              //   },
+              // },
+              {
+                content: formatField(
+                  visita.controlEstudiante.observaciones_ambiente || "N/A",
+                ),
+              },
+              {
+                content: formatField(
+                  visita.controlEstudiante.control_intranet,
+                  undefined,
+                  true,
+                ),
+              },
+              // {
+              //   content: "OBSERVACIONES INTRANET:",
+              //   styles: {
+              //     fontStyle: "bold",
+              //   },
+              // },
+              {
+                content: formatField(
+                  visita.controlEstudiante.observaciones_intranet || "N/A",
+                ),
+              },
             ],
             [
-              "Control en intranet",
-              formatField(
-                visita.controlEstudiante.control_intranet,
-                undefined,
-                true,
-              ),
-            ],
-            [
-              "Observaciones intranet",
-              formatField(visita.controlEstudiante.observaciones_intranet),
-            ],
-            [
-              "Observaciones",
-              formatField(visita.controlEstudiante.observaciones),
+              {
+                content: "OBSERVACIONES:",
+                styles: {
+                  fontStyle: "bold",
+                },
+              },
+              {
+                content: visita.controlEstudiante.observaciones || "N/A",
+                colSpan: 4,
+              },
             ],
           ]
-        : [["Información", "Sin datos"]],
-    });
-
-    y = (doc as any).lastAutoTable.finalY + 10;
+        : [
+            [
+              {
+                content: "INFORMACIÓN:",
+                styles: {
+                  fillColor: [230, 230, 230],
+                  fontStyle: "bold",
+                },
+              },
+              {
+                content: "Sin datos",
+              },
+            ],
+          ],
+    );
 
     // CONTROL SILABO
     doc.text("4. CONTROL DEL AVANCE SILÁBICO", 14, y);
-    y += 3;
+    y += 2;
 
-    autoTable(doc, {
-      startY: y,
-      body: visita.controlSilabo
+    y = createTable(
+      doc,
+      y,
+      visita.controlSilabo
         ? [
             [
-              "El tema del sílabo coincide con la clase desarrollada en la fecha de la visita",
-              formatField(
-                visita.controlSilabo.coincidencia_actual,
-                undefined,
-                true,
-              ),
+              {
+                content:
+                  "EL TEMA DEL SÍLABO COINCIDE CON LA CLASE DESARROLLADA EN LA FECHA DE LA VISITA",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(
+                  visita.controlSilabo.coincidencia_actual,
+                  undefined,
+                  true,
+                ),
+              },
             ],
             [
-              "El tema desarrollado en la fecha anterior a la visita coincide con el sílabo",
-              formatField(
-                visita.controlSilabo.coincidencia_anterior,
-                undefined,
-                true,
-              ),
+              {
+                content:
+                  "EL TEMA DESARROLLADO EN LA FECHA ANTERIOR A LA VISITA COINCIDE CON EL SÍLABO",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(
+                  visita.controlSilabo.coincidencia_anterior,
+                  undefined,
+                  true,
+                ),
+              },
             ],
             [
-              "Ingreso del avance silabico en el aula virtual",
-              formatField(visita.controlSilabo.ingreso_avance, undefined, true),
+              {
+                content: "INGRESO DEL AVANCE SILÁBICO EN EL AULA VIRTUAL",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(
+                  visita.controlSilabo.ingreso_avance,
+                  undefined,
+                  true,
+                ),
+              },
             ],
-            ["Observaciones", formatField(visita.controlSilabo.observaciones)],
+            [
+              {
+                content: "OBSERVACIONES:",
+                styles: { fontStyle: "bold" },
+              },
+              {
+                content: visita.controlSilabo.observaciones || "N/A",
+              },
+            ],
           ]
-        : [["Información", "Sin datos"]],
-    });
-
-    y = (doc as any).lastAutoTable.finalY + 10;
+        : [
+            [
+              {
+                content: "INFORMACIÓN:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: "Sin datos",
+              },
+            ],
+          ],
+    );
 
     // CONTROL GUÍA
     doc.text("5. CUMPLE CON EL DESARROLLO DE LA GUÍA DE PRÁCTICA", 14, y);
-    y += 3;
+    y += 2;
 
-    autoTable(doc, {
-      startY: y,
-      body: visita.controlGuia
+    y = createTable(
+      doc,
+      y,
+      visita.controlGuia
         ? [
             [
-              "Cumple con el tema programado en la guía de práctica para el desarrollo de la clase práctica",
-              formatField(visita.controlGuia.tema_programado, undefined, true),
+              {
+                content:
+                  "CUMPLE CON EL TEMA PROGRAMADO EN LA GUÍA DE PRÁCTICA PARA EL DESARROLLO DE LA CLASE PRÁCTICA",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(
+                  visita.controlGuia.tema_programado,
+                  undefined,
+                  true,
+                ),
+              },
             ],
             [
-              "Se evidencia el logro a medir en la práctica desarrollada",
-              formatField(visita.controlGuia.logro, undefined, true),
+              {
+                content:
+                  "SE EVIDENCIA EL LOGRO A MEDIR EN LA PRÁCTICA DESARROLLADA",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(visita.controlGuia.logro, undefined, true),
+              },
             ],
             [
-              "Cuenta con una rúbrica de evaluación",
-              formatField(visita.controlGuia.rubrica, undefined, true),
+              {
+                content: "CUENTA CON UNA RÚBRICA DE EVALUACIÓN",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: formatField(
+                  visita.controlGuia.rubrica,
+                  undefined,
+                  true,
+                ),
+              },
             ],
             [
-              "Observaciones",
-              formatField(visita.controlGuia.observaciones, undefined, true),
+              {
+                content: "OBSERVACIONES:",
+                styles: { fontStyle: "bold" },
+              },
+              {
+                content: visita.controlGuia.observaciones
+                  ? formatField(
+                      visita.controlGuia.observaciones,
+                      undefined,
+                      true,
+                    )
+                  : "N/A",
+              },
             ],
           ]
-        : [["Información", "Sin datos"]],
+        : [
+            [
+              {
+                content: "INFORMACIÓN:",
+                styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
+              },
+              {
+                content: "Sin datos",
+              },
+            ],
+          ],
+    );
+
+    // TABLA ADICIONAL: RESPONSABLE Y REQUERIMIENTOS
+    y = createTable(doc, y, [
+      [
+        {
+          content: "RESPONSABLE DE REALIZAR LA ACTIVIDAD:",
+          styles: { fontStyle: "bold" },
+        },
+        {
+          content: visita.usuario
+            ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
+            : "N/A",
+        },
+      ],
+      [
+        {
+          content: "REQUERIMIENTOS SOLICITADOS EN LA VISITA INOPINADA:",
+          styles: { fontStyle: "bold" },
+        },
+        {
+          content: visita.controlGuia?.requerimientos || "N/A",
+        },
+      ],
+    ]);
+
+    // Aseguramos que haya espacio suficiente para las firmas
+    let firmaY = (doc as any).lastAutoTable.finalY + 20;
+
+    // Si supera el alto de página, agregamos una página nueva
+    if (firmaY + 30 > doc.internal.pageSize.height - 20) {
+      doc.addPage();
+      firmaY = 30;
+    }
+
+    doc.setFontSize(13);
+    doc.text("VISITA INOPINADA – CLASES PRESENCIALES", 105, firmaY, {
+      align: "center",
+    });
+
+    firmaY += 30;
+
+    doc.line(30, firmaY, 90, firmaY);
+    doc.line(110, firmaY, 190, firmaY); // Raya de la 2da firma más larga
+
+    doc.setFontSize(10);
+    doc.text("FIRMA DEL DOCENTE", 60, firmaY + 5, {
+      align: "center",
+    });
+
+    doc.text("FIRMA DEL RESPONSABLE DE LA VISITA", 150, firmaY + 5, {
+      align: "center",
     });
 
     doc.save(`visita-${visita.id_visita}.pdf`);
