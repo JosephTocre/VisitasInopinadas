@@ -5,47 +5,72 @@ import { useState } from "react";
 type ControlGuiaStepProps = {
     onBack: () => void;
     onNext: () => void;
+    visitaId: number;
 };
 
 export default function ControlGuiaStep({
     onBack,
     onNext,
+    visitaId,
 }: ControlGuiaStepProps) {
-    const [guia1, setGuia1] = useState<"cumple" | "no_cumple" | "no_aplica">("cumple");
-    const [guia2, setGuia2] = useState<"cumple" | "no_cumple" | "no_aplica">("cumple");
-    const [guia3, setGuia3] = useState<"cumple" | "no_cumple" | "no_aplica">("cumple");
+    const [guia1, setGuia1] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
+    const [guia2, setGuia2] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
+    const [guia3, setGuia3] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
 
     const [observacionesGuia, setObservacionesGuia] = useState("");
     const [responsable, setResponsable] = useState("");
     const [requerimientos, setRequerimientos] = useState("");
     const [error, setError] = useState("");
 
-    const continuar = () => {
-        if (!responsable.trim()) {
-            setError("Debe seleccionar un responsable.");
-            return;
+    const continuar = async () => {
+        try {
+            setError("");
+            if (!guia1 || !guia2 || !guia3 || !responsable) {
+                setError("Debe completar todos los campos obligatorios.");
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+
+                return;
+            }
+
+            const mapEstado = (valor: string) => {
+                if (valor === "cumple") return "CUMPLE";
+                if (valor === "no_cumple") return "NO_CUMPLE";
+                return "NO_APLICA";
+            };
+
+            const res = await fetch("/api/control-guia", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    visitaId,
+                    tema_programado: mapEstado(guia1),
+                    logro: mapEstado(guia2),
+                    rubrica: mapEstado(guia3),
+                    observaciones: observacionesGuia,
+                    requerimientos,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || "Error al guardar");
+
+            onNext();
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Error");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
         }
-
-        if (!requerimientos.trim()) {
-            setError("Debe ingresar los requerimientos solicitados.");
-            return;
-        }
-
-        setError("");
-
-        sessionStorage.setItem(
-            "controlGuia",
-            JSON.stringify({
-                guia1,
-                guia2,
-                guia3,
-                observacionesGuia,
-                responsable,
-                requerimientos,
-            })
-        );
-
-        onNext();
     };
 
     return (

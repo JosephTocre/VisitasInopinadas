@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class VisitaRepository {
   // Ahora pasamos la página y el tamaño como argumentos
@@ -24,13 +25,12 @@ export class VisitaRepository {
     }
   }
 
-  // Método adicional para contar el total (útil para el frontend)
-  async contar(where: any = {}) {
-    return await prisma.hechoVisita.count({ where });
+  async contar(where: Prisma.HechoVisitaWhereInput = {}) {
+    return prisma.hechoVisita.count({ where });
   }
 
   async obtenerPorId(id: number) {
-    return await prisma.hechoVisita.findUnique({
+    return prisma.hechoVisita.findUnique({
       where: { id_visita: id },
       include: {
         controlDocente: true,
@@ -45,19 +45,24 @@ export class VisitaRepository {
     });
   }
 
-  async crear(datos: any) {
-    return await prisma.hechoVisita.create({ data: datos });
+  async crear(datos: Prisma.HechoVisitaUncheckedCreateInput) {
+    return prisma.hechoVisita.create({
+      data: datos,
+    });
   }
 
-  async actualizar(id: number, datos: any) {
-    return await prisma.hechoVisita.update({
+  async actualizar(
+    id: number,
+    datos: Prisma.HechoVisitaUncheckedUpdateInput
+  ) {
+    return prisma.hechoVisita.update({
       where: { id_visita: id },
       data: datos,
     });
   }
 
   async eliminar(id: number) {
-    return await prisma.hechoVisita.delete({
+    return prisma.hechoVisita.delete({
       where: { id_visita: id },
     });
   }

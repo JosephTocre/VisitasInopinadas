@@ -5,12 +5,21 @@ import Image from "next/image";
 type ResultadoStepProps = {
   onFinalizar: () => void;
   onRegistrarOtro: () => void;
+  visitaId: number;
 };
 
 export default function ResultadoStep({
   onFinalizar,
   onRegistrarOtro,
+  visitaId,
 }: ResultadoStepProps) {
+
+  const pdfUrl = `/api/ficha/${visitaId}/pdf`;
+
+  const qrUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}${pdfUrl}`
+      : "";
   return (
     <main className="page-container flex items-center justify-center">
 
@@ -42,12 +51,23 @@ export default function ResultadoStep({
 
           <div className="w-full border border-border rounded-2xl p-8 flex items-center justify-center bg-white">
             <Image
-              src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://tuapp.com/registro/12345"
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(
+                qrUrl
+              )}`}
               alt="Código QR"
               width={220}
               height={220}
             />
           </div>
+
+          <a
+            href={pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary"
+          >
+            Descargar PDF
+          </a>
 
           <div className="grid md:grid-cols-2 gap-4 w-full">
 

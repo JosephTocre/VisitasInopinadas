@@ -1,16 +1,35 @@
+import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
 export class ControlGuiaRepository {
-
-  async obtenerPorVisita(idVisita: number) {
-    void idVisita;
+  async crear(data: Prisma.ControlGuiaUncheckedCreateInput) {
+    return prisma.controlGuia.upsert({
+      where: {
+        visitaId: data.visitaId,
+      },
+      update: {
+        tema_programado: data.tema_programado,
+        logro: data.logro,
+        rubrica: data.rubrica,
+        observaciones: data.observaciones,
+        requerimientos: data.requerimientos,
+      },
+      create: data,
+    });
+  }
+  async obtenerPorVisita(visitaId: number) {
+    return prisma.controlGuia.findFirst({
+      where: { visitaId },
+    });
   }
 
-  async crear(datos: unknown) {
-    void datos;
+  async actualizarPorVisita(
+    visitaId: number,
+    data: Prisma.ControlGuiaUncheckedUpdateInput
+  ) {
+    return prisma.controlGuia.update({
+      where: { visitaId },
+      data,
+    });
   }
-
-  async actualizar(id: number, datos: unknown) {
-    void id;
-    void datos;
-  }
-
 }

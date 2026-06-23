@@ -43,7 +43,7 @@ export default function HistorialPage() {
 
     const res = await fetch(`/api/visitas?${query}`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Envías el token aquí
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -55,7 +55,6 @@ export default function HistorialPage() {
 
     const data = await res.json();
 
-    // Ajustado a la nueva estructura: { data, meta }
     setVisitas(data.data || []);
     setMeta(data.meta || { totalPages: 1 });
     setIsLoading(false);
@@ -66,15 +65,13 @@ export default function HistorialPage() {
     const data = await res.json();
     setVisitaSeleccionada(data);
   };
-
-  // Reiniciar a la página 1 cuando cambien los filtros
   useEffect(() => {
     setPagina(1);
   }, [filtros]);
 
   useEffect(() => {
     fetchVisitas();
-  }, [filtros, pagina]); // Dependemos de filtros y página
+  }, [filtros, pagina]);
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">

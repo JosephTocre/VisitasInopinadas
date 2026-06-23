@@ -1,38 +1,52 @@
 "use client";
 
 import { useState } from "react";
+import { useControlSilaboStore } from "@/store/controlSilabo";
 
 type ControlSilabicoStepProps = {
   onBack: () => void;
   onNext: () => void;
+  visitaId: number;
 };
 
-export default function ControlSilabicoStep({
+export default function ControlSilaboStep({
   onBack,
   onNext,
+  visitaId,
 }: ControlSilabicoStepProps) {
 
-  const [silabo1, setSilabo1] = useState<"cumple" | "no_cumple">("cumple");
-  const [silabo2, setSilabo2] = useState<"cumple" | "no_cumple">("cumple");
-  const [silabo3, setSilabo3] = useState<"cumple" | "no_cumple">("cumple");
-  const [observacionesSilabico, setObservacionesSilabico] = useState("");
-
+  const { controlSilabo, setControlSilabo } = useControlSilaboStore();
 
   const [error, setError] = useState("");
 
-  const continuar = () => {
-    setError("");
+  const continuar = async () => {
+    try {
+      setError("");
 
-    sessionStorage.setItem(
-      "controlSilabico",
-      JSON.stringify({
-        silabo1,
-        silabo2,
-        silabo3,
-        observacionesSilabico,
-      })
-    );
-    onNext();
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`/api/control-silabo/${visitaId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...controlSilabo,
+          visitaId,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.mensaje || "Error al guardar control silábico");
+      }
+
+      onNext();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Error desconocido");
+    }
   };
 
   return (
@@ -72,14 +86,14 @@ export default function ControlSilabicoStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Cumple"
-                  checked={silabo1 === "cumple"}
-                  onChange={() => setSilabo1("cumple")}
+                  checked={controlSilabo.silabo1 === "cumple"}
+                  onChange={() => setControlSilabo({ silabo1: "cumple" })}
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={silabo1 === "no_cumple"}
-                  onChange={() => setSilabo1("no_cumple")}
+                  checked={controlSilabo.silabo1 === "no_cumple"}
+                  onChange={() => setControlSilabo({ silabo1: "no_cumple" })}
                 />
               </div>
             </div>
@@ -91,14 +105,14 @@ export default function ControlSilabicoStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Cumple"
-                  checked={silabo2 === "cumple"}
-                  onChange={() => setSilabo2("cumple")}
+                  checked={controlSilabo.silabo2 === "cumple"}
+                  onChange={() => setControlSilabo({ silabo2: "cumple" })}
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={silabo2 === "no_cumple"}
-                  onChange={() => setSilabo2("no_cumple")}
+                  checked={controlSilabo.silabo2 === "no_cumple"}
+                  onChange={() => setControlSilabo({ silabo2: "no_cumple" })}
                 />
               </div>
             </div>
@@ -110,14 +124,14 @@ export default function ControlSilabicoStep({
               <div className="flex flex-col gap-3">
                 <RadioOption
                   label="Cumple"
-                  checked={silabo3 === "cumple"}
-                  onChange={() => setSilabo3("cumple")}
+                  checked={controlSilabo.silabo3 === "cumple"}
+                  onChange={() => setControlSilabo({ silabo3: "cumple" })}
                 />
 
                 <RadioOption
                   label="No cumple"
-                  checked={silabo3 === "no_cumple"}
-                  onChange={() => setSilabo3("no_cumple")}
+                  checked={controlSilabo.silabo3 === "no_cumple"}
+                  onChange={() => setControlSilabo({ silabo3: "no_cumple" })}
                 />
               </div>
             </div>
@@ -127,8 +141,8 @@ export default function ControlSilabicoStep({
                 Observaciones
               </label>
               <textarea
-                value={observacionesSilabico}
-                onChange={(e) => setObservacionesSilabico(e.target.value)}
+                value={controlSilabo.observacionesSilabo}
+                onChange={(e) => setControlSilabo({ observacionesSilabo: e.target.value })}
                 rows={4}
                 className="input-modern resize-none"
                 placeholder="Ingrese observaciones"

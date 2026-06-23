@@ -864,7 +864,7 @@ export function DetalleVisitaModal({
                 </p>
                 <p>
                   <span className="font-semibold">
-                    Ingreso del avance silabico en el aula virtual:
+                    Ingreso del avance del silabo en el aula virtual:
                   </span>{" "}
                   {formatField(
                     visita.controlSilabo.ingreso_avance,

@@ -1,5 +1,24 @@
 @import "tailwindcss";
 
+@keyframes starPulse {
+  0% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15) rotate(8deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.animate-star {
+  animation: starPulse 2.5s ease-in-out infinite;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #030213;

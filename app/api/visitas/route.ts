@@ -1,18 +1,18 @@
 import { VisitaService } from "@/services/visita.service";
 import { NextRequest, NextResponse } from "next/server";
 import { verify } from "jsonwebtoken";
+import { ControlVisitaService } from "@/services/controlVisita.service";
 
 const visitaService = new VisitaService();
+const controlVisitaService = new ControlVisitaService();
 
 export async function GET(request: NextRequest) {
-  // 1. Obtener token de cookies o headers
   const authHeader = request.headers.get("Authorization");
-  const token = authHeader?.split(" ")[1]; // Quita el "Bearer "
+  const token = authHeader?.split(" ")[1];
 
   if (!token)
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  // 2. Decodificar el token (asegúrate de usar la misma clave secreta)
   const decoded: any = verify(token, process.env.JWT_SECRET!);
   const idUsuario = decoded.id;
   const rol = decoded.rol;
@@ -22,8 +22,8 @@ export async function GET(request: NextRequest) {
   const filters = {
     periodo: searchParams.get("periodo") || undefined,
     docente: searchParams.get("docente") || undefined,
-    id_inspector: idUsuario, // Enviamos el ID siempre
-    rol: rol, // Enviamos el rol para que el servicio decida
+    id_inspector: idUsuario,
+    rol: rol, 
   };
 
   const page = parseInt(searchParams.get("page") || "1");
@@ -48,3 +48,40 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const authHeader = request.headers.get("Authorization");
+    const token = authHeader?.split(" ")[1];
+
+    if (!token) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const decoded: any = verify(token, process.env.JWT_SECRET!);
+    const idUsuario = decoded.id;
+
+    const body = await request.json();
+
+    const visita = await controlVisitaService.crearVisita({
+      ...body,
+      id_inspector: idUsuario,
+    });
+
+    return NextResponse.json({
+      id_visita: visita.id_visita,
+      mensaje: "Visita creada correctamente",
+    });
+  } catch (error) {
+    console.error("ERROR CREANDO VISITA:", error);
+
+    return NextResponse.json(
+      {
+        error: "Error al crear visita",
+        detalle: error instanceof Error ? error.message : error,
+      },
+      { status: 500 }
+    );
+  }
+}
+
