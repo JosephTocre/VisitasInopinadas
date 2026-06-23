@@ -22,9 +22,19 @@ export default function ControlDocenteStep({
     if (
       !controlDocente.nombreDocente.trim() ||
       !controlDocente.apellidoDocente.trim() ||
-      !controlDocente.actividad.trim()
+      !controlDocente.actividad.trim() ||
+      !controlDocente.presente ||
+      !controlDocente.horario ||
+      !controlDocente.interaccion ||
+      !controlDocente.materialCumple
     ) {
       setError("Debe completar todos los campos obligatorios.");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       return;
     }
 
@@ -33,52 +43,36 @@ export default function ControlDocenteStep({
 
       const token = localStorage.getItem("token");
 
-      const resDocente = await fetch("/api/control-docente", {
+      const res = await fetch("/api/control-docente", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          nombreDocente: controlDocente.nombreDocente,
-          apellidoDocente: controlDocente.apellidoDocente,
-          actividad: controlDocente.actividad,
-          presente: controlDocente.presente,
-          horario: controlDocente.horario,
-          interaccion: controlDocente.interaccion,
-          observaciones: controlDocente.observaciones,
+          ...controlDocente,
           visitaId,
         }),
       });
 
-      const dataDocente = await resDocente.json();
+      const data = await res.json();
 
-      if (!resDocente.ok) {
-        throw new Error(dataDocente.mensaje || "Error al guardar docente");
-      }
-
-      const resMaterial = await fetch("/api/control-material", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          cumple: controlDocente.materialCumple === "si",
-          observaciones: controlDocente.observacionesMaterial,
-          visitaId,
-        }),
-      });
-
-      const dataMaterial = await resMaterial.json();
-
-      if (!resMaterial.ok) {
-        throw new Error(dataMaterial.mensaje || "Error al guardar material");
+      if (!res.ok) {
+        throw new Error(data.mensaje || "Error al guardar");
       }
 
       onNext();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error desconocido"
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -336,6 +330,7 @@ function RadioOption({
 }) {
   return (
     <button
+      type="button"
       onClick={onChange}
       className="flex items-center gap-2 text-sm text-gray-800 font-medium"
     >

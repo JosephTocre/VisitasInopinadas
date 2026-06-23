@@ -17,8 +17,8 @@ export default function ControlVisitaStep({
   const setControlVisita = useVisitaStore((state) => state.setControlVisita);
   const formulario = useVisitaStore((state) => state.controlVisita);
 
-  const [turno, setTurno] = useState<"mañana" | "noche">("mañana");
-  const [tipoHora, setTipoHora] = useState<"practica" | "teoria">("teoria");
+  const [turno, setTurno] = useState<"mañana" | "noche" | "">("");
+  const [tipoHora, setTipoHora] = useState<"practica" | "teoria" | "">("");
 
   const [error, setError] = useState("");
 
@@ -26,12 +26,18 @@ export default function ControlVisitaStep({
     if (
       !formulario.sede ||
       !formulario.ciclo ||
+      !turno ||
       !formulario.curso ||
       !formulario.campoFormativo ||
       !formulario.semana ||
+      !tipoHora ||
       !formulario.lugarVisita.trim()
     ) {
       setError("Debe completar todos los campos.");
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       return;
     }
 

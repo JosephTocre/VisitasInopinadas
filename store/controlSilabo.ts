@@ -2,38 +2,45 @@
 
 import { create } from "zustand";
 
-const initialControlSilabo = {
-    silabo1: "cumple" as "cumple" | "no_cumple",
-    silabo2: "cumple" as "cumple" | "no_cumple",
-    silabo3: "cumple" as "cumple" | "no_cumple",
-    observacionesSilabo: "",
-};
+type EstadoCumplimiento = "cumple" | "no_cumple" | "";
+
+interface ControlSilaboState {
+    silabo1: EstadoCumplimiento;
+    silabo2: EstadoCumplimiento;
+    silabo3: EstadoCumplimiento;
+    observacionesSilabo: string;
+}
 
 interface ControlSilaboStore {
-    controlSilabo: typeof initialControlSilabo;
+    controlSilabo: ControlSilaboState;
 
     setControlSilabo: (
-        data: Partial<typeof initialControlSilabo>
+        data: Partial<ControlSilaboState>
     ) => void;
 
     reset: () => void;
 }
 
-export const useControlSilaboStore = create<ControlSilaboStore>(
-    (set) => ({
-        controlSilabo: initialControlSilabo,
+const initialControlSilabo: ControlSilaboState = {
+    silabo1: "",
+    silabo2: "",
+    silabo3: "",
+    observacionesSilabo: "",
+};
 
-        setControlSilabo: (data) =>
-            set((state) => ({
-                controlSilabo: {
-                    ...state.controlSilabo,
-                    ...data,
-                },
-            })),
+export const useControlSilaboStore = create<ControlSilaboStore>((set) => ({
+    controlSilabo: initialControlSilabo,
 
-        reset: () =>
-            set({
-                controlSilabo: initialControlSilabo,
-            }),
-    })
-);
+    setControlSilabo: (data) =>
+        set((state) => ({
+            controlSilabo: {
+                ...state.controlSilabo,
+                ...data,
+            },
+        })),
+
+    reset: () =>
+        set({
+            controlSilabo: initialControlSilabo,
+        }),
+}));

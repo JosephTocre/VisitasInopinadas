@@ -7,10 +7,10 @@ const initialControlDocente = {
     observaciones: "",
     observacionesMaterial: "",
 
-    presente: "si" as "si" | "no",
-    horario: "cumple" as "cumple" | "no_cumple",
-    interaccion: "si" as "si" | "no",
-    materialCumple: "si" as "si" | "no",
+    presente: "" as "si" | "no" | "",
+    horario: "" as "cumple" | "no_cumple" | "",
+    interaccion: "" as "si" | "no" | "",
+    materialCumple: "" as "si" | "no" | "",
 };
 
 interface ControlDocenteStore {

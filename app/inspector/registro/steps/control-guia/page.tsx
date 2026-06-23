@@ -8,30 +8,39 @@ type ControlGuiaStepProps = {
     visitaId: number;
 };
 
-type EstadoUI = "cumple" | "no_cumple" | "no_aplica";
-
 export default function ControlGuiaStep({
     onBack,
     onNext,
     visitaId,
 }: ControlGuiaStepProps) {
-    const [guia1, setGuia1] = useState<EstadoUI>("cumple");
-    const [guia2, setGuia2] = useState<EstadoUI>("cumple");
-    const [guia3, setGuia3] = useState<EstadoUI>("cumple");
+    const [guia1, setGuia1] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
+    const [guia2, setGuia2] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
+    const [guia3, setGuia3] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
 
     const [observacionesGuia, setObservacionesGuia] = useState("");
+    const [responsable, setResponsable] = useState("");
     const [requerimientos, setRequerimientos] = useState("");
     const [error, setError] = useState("");
-
-    const mapEstado = (valor: EstadoUI) => {
-        if (valor === "cumple") return "CUMPLE";
-        if (valor === "no_cumple") return "NO_CUMPLE";
-        return "NO_APLICA";
-    };
 
     const continuar = async () => {
         try {
             setError("");
+            if (!guia1 || !guia2 || !guia3 || !responsable) {
+                setError("Debe completar todos los campos obligatorios.");
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+
+                return;
+            }
+
+            const mapEstado = (valor: string) => {
+                if (valor === "cumple") return "CUMPLE";
+                if (valor === "no_cumple") return "NO_CUMPLE";
+                return "NO_APLICA";
+            };
 
             const res = await fetch("/api/control-guia", {
                 method: "POST",
@@ -41,11 +50,9 @@ export default function ControlGuiaStep({
                 },
                 body: JSON.stringify({
                     visitaId,
-
                     tema_programado: mapEstado(guia1),
                     logro: mapEstado(guia2),
                     rubrica: mapEstado(guia3),
-
                     observaciones: observacionesGuia,
                     requerimientos,
                 }),
@@ -53,10 +60,16 @@ export default function ControlGuiaStep({
 
             const data = await res.json();
 
-            if (!res.ok) throw new Error(data.error);
+            if (!res.ok) throw new Error(data.error || "Error al guardar");
+
             onNext();
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Error inesperado");
+            setError(err instanceof Error ? err.message : "Error");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth",
+            });
         }
     };
 
@@ -145,6 +158,30 @@ export default function ControlGuiaStep({
                         <div className="border-t border-gray-200 my-6" />
 
                         <div className="space-y-6">
+
+                            <div className="flex flex-col gap-1">
+                                <label className="label-modern">
+                                    Responsable de realizar la actividad
+                                </label>
+
+                                <div className="relative">
+                                    <select
+                                        value={responsable}
+                                        onChange={(e) => setResponsable(e.target.value)}
+                                        className="w-full appearance-none border border-gray-300 rounded-2xl py-2.5 px-3 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-black"
+                                    >
+                                        <option value=""></option>
+                                        <option>Inspector Harvey Specter</option>
+                                        <option>Inspector Mike Ross</option>
+                                        <option>Inspector Donna Paulsen</option>
+                                        <option>Inspector Jessica Pearson</option>
+                                    </select>
+
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                                        ▼
+                                    </span>
+                                </div>
+                            </div>
 
                             <div className="flex flex-col gap-1">
                                 <label className="label-modern">

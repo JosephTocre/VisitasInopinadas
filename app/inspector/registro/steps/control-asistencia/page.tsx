@@ -19,10 +19,16 @@ export default function ControlAsistenciaStep({
 
   const continuar = async () => {
     if (
-      !controlAsistencia.observacionAmbiente.trim() ||
-      !controlAsistencia.observacionIntranet.trim()
+      !controlAsistencia.ambienteCumple ||
+      !controlAsistencia.intranetCumple
     ) {
       setError("Debe completar todos los campos obligatorios.");
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       return;
     }
 
@@ -51,7 +57,16 @@ export default function ControlAsistenciaStep({
 
       onNext();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error desconocido");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Error desconocido"
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   };
 
@@ -233,6 +248,7 @@ function RadioOption({
 }) {
   return (
     <button
+      type="button"
       onClick={onChange}
       className={`flex items-center gap-2 text-sm text-gray-800 ${bold ? "font-bold" : "font-medium"}`}
     >

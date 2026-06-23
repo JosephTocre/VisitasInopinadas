@@ -1,12 +1,13 @@
 import { create } from "zustand";
 
 const initialControlAsistencia = {
-    ambienteCumple: "cumple" as "cumple" | "no_cumple",
-    intranetCumple: "cumple" as "cumple" | "no_cumple",
+    ambienteCumple: "" as "cumple" | "no_cumple" | "",
+    intranetCumple: "" as "cumple" | "no_cumple" | "",
 
     observacionAmbiente: "",
     observacionIntranet: "",
     observacionesGenerales: "",
+    observacionesSilabo: "",
 };
 
 interface ControlAsistenciaStore {
