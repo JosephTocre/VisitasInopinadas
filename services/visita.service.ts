@@ -85,6 +85,7 @@ export class VisitaService {
       meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     };
   }
+  
   async obtenerVisita(id: number) {
     return await this.repository.obtenerPorId(id);
   }

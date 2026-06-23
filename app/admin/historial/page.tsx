@@ -26,7 +26,7 @@ export default function HistorialPage() {
     periodo: "todos",
     docente: "",
   });
-  const [pagina, setPagina] = useState(1); 
+  const [pagina, setPagina] = useState(1);
   const [meta, setMeta] = useState({ totalPages: 1 });
   const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 

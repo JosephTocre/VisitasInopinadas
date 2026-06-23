@@ -13,6 +13,7 @@ interface FilterBarProps {
   values: Record<string, string>;
   onChange: (newValues: Record<string, string>) => void;
   children?: React.ReactNode;
+  title?: string;
 }
 
 export function FilterBar({
@@ -20,9 +21,15 @@ export function FilterBar({
   values,
   onChange,
   children,
+  title,
 }: FilterBarProps) {
   return (
     <div className="flex flex-wrap gap-4 mb-8 bg-white p-4 rounded-xl border border-gray-200 shadow-sm items-end">
+      {title && (
+        <div className="w-full text-xl font-bold text-gray-700">
+          {title}
+        </div>
+      )}
       {fields.map((field) => (
         <div
           key={field.key}

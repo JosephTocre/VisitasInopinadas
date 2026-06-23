@@ -60,7 +60,7 @@ export class ReporteService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Visitas");
 
-        // 3. Definir columnas
+    // 3. Definir columnas
     worksheet.columns = [
       { header: "ID Visita", key: "id", width: 10 },
       { header: "Inspector", key: "inspector", width: 25 },
@@ -82,7 +82,9 @@ export class ReporteService {
     visitas.forEach((v: any) => {
       worksheet.addRow({
         id: v.id_visita,
-        inspector: v.usuario ? `${v.usuario.nombre} ${v.usuario.apellidos}` : "N/A",
+        inspector: v.usuario
+          ? `${v.usuario.nombre} ${v.usuario.apellidos}`
+          : "N/A",
         fecha: new Date(v.fecha).toLocaleDateString(),
         hInicio: new Date(v.hora_inicio).toLocaleTimeString(),
         hTermino: new Date(v.hora_termino).toLocaleTimeString(),
