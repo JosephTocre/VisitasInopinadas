@@ -9,11 +9,12 @@ export async function PUT(
     const controlService = new ControlDocenteService();
 
     const { id } = await context.params;
+    const idVisita = Number(id);
 
     const body = await request.json();
 
     const resultado = await controlService.actualizarControl(
-      Number(id),
+      idVisita,
       body
     );
 

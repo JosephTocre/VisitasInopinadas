@@ -69,10 +69,6 @@ export default function ResultadoStep({
             Descargar PDF
           </a>
 
-          <button onClick={() => window.print()}>
-            Imprimir
-          </button>
-
           <div className="grid md:grid-cols-2 gap-4 w-full">
 
             <button

@@ -4,44 +4,47 @@ import { ControlGuiaService } from "@/services/controlGuia.service";
 const service = new ControlGuiaService();
 
 export async function GET(
-    req: Request,
-    { params }: { params: { id: string } }
+  req: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const idVisita = Number(params.id);
+  try {
+    const { id } = await context.params;
+    const idVisita = Number(id);
 
-        const data = await service.obtenerPorVisita(idVisita);
+    const data = await service.obtenerPorVisita(idVisita);
 
-        return NextResponse.json(data);
-    } catch (error) {
-        return NextResponse.json(
-            {
-                error: "Error al obtener control guía",
-                detalle: error instanceof Error ? error.message : error,
-            },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(data);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "Error al obtener control guía",
+        detalle: error instanceof Error ? error.message : error,
+      },
+      { status: 500 }
+    );
+  }
 }
 
 export async function PUT(
-    req: Request,
-    { params }: { params: { id: string } }
+  req: Request,
+  context: { params: Promise<{ id: string }> }
 ) {
-    try {
-        const idVisita = Number(params.id);
-        const body = await req.json();
+  try {
+    const { id } = await context.params;
+    const idVisita = Number(id);
 
-        const updated = await service.actualizarPorVisita(idVisita, body);
+    const body = await req.json();
 
-        return NextResponse.json(updated);
-    } catch (error) {
-        return NextResponse.json(
-            {
-                error: "Error al actualizar control guía",
-                detalle: error instanceof Error ? error.message : error,
-            },
-            { status: 500 }
-        );
-    }
+    const updated = await service.actualizarPorVisita(idVisita, body);
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: "Error al actualizar control guía",
+        detalle: error instanceof Error ? error.message : error,
+      },
+      { status: 500 }
+    );
+  }
 }
