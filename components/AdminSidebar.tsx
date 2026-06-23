@@ -32,8 +32,8 @@ export default function AdminSidebar() {
     router.push("/");
   };
 
-  return (
-    <aside className="w-56 bg-[#eaeaea] flex flex-col px-4 py-6 shrink-0">
+    return (
+    <aside className="w-56 bg-[#eaeaea] flex flex-col px-4 py-6 shrink-0 h-screen sticky top-0">
       <div className="mb-8">
         <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
           <svg

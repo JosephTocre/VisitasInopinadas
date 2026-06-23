@@ -31,7 +31,6 @@ model HechoVisita {
   lugar           String
   curso           String
   campo_formativo String
-  requerimientos  String?
 
   fecha                DateTime
   turno                String
@@ -43,6 +42,9 @@ model HechoVisita {
 
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
+
+  @@index([fecha])
+  @@index([usuarioId])
 
   controlDocente    ControlDocente?
   controlMaterial   ControlMaterial?
@@ -116,6 +118,7 @@ model ControlGuia {
   logro           EstadoCumplimiento
   rubrica         EstadoCumplimiento
   observaciones   String?
+  requerimientos  String?
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])

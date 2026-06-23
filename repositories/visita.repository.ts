@@ -3,17 +3,25 @@ import { prisma } from "@/lib/prisma";
 export class VisitaRepository {
   // Ahora pasamos la página y el tamaño como argumentos
   async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
-    return await prisma.hechoVisita.findMany({
-      where,
-      take: pageSize,
-      skip: (page - 1) * pageSize,
-      include: {
-        controlDocente: true,
-      },
-      orderBy: {
-        fecha: "desc",
-      },
-    });
+    try {
+      return await prisma.hechoVisita.findMany({
+        where,
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+        include: {
+          controlDocente: true,
+          usuario: {
+            select: { nombre: true, apellidos: true },
+          },
+        },
+        orderBy: {
+          fecha: "desc",
+        },
+      });
+    } catch (error) {
+      console.error("PRISMA ERROR:", error);
+      throw error;
+    }
   }
 
   // Método adicional para contar el total (útil para el frontend)
@@ -30,6 +38,9 @@ export class VisitaRepository {
         controlSilabo: true,
         controlEstudiante: true,
         controlGuia: true,
+        usuario: {
+          select: { nombre: true, apellidos: true },
+        },
       },
     });
   }

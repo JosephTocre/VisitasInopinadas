@@ -102,11 +102,17 @@ export function DetalleVisitaModal({
         ["Hora práctica/hora teoría", visita.hora_practica_teoria || "N/A"],
         [
           "Requerimientos solicitados en la visita inopinada",
-          typeof visita.requerimientos === "string"
-            ? visita.requerimientos
+          typeof visita.controlGuia.requerimientos === "string"
+            ? visita.controlGuia.requerimientos
             : "N/A",
         ],
         ["Lugar de la visita", visita.lugar || "N/A"],
+        [
+          "Responsable de realizar la actividad",
+          visita.usuario
+            ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
+            : "N/A",
+        ],
       ],
     });
 
@@ -355,6 +361,14 @@ export function DetalleVisitaModal({
               <p>
                 <span className="font-semibold">Lugar de la visita:</span>{" "}
                 {formatField(visita.lugar)}
+              </p>
+              <p>
+                <span className="font-semibold">
+                  Responsable de realizar la actividad:
+                </span>{" "}
+                {visita.usuario
+                  ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
+                  : "N/A"}
               </p>
             </div>
           </section>

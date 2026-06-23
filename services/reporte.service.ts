@@ -24,13 +24,21 @@ export class ReporteService {
       visitasHoy,
       visitantesActivos: inspectoresActivos,
       visitasCompletadas,
-      tendencia
+      tendencia,
     };
   }
 
-  async obtenerVisitasPorMes() {}
+  async obtenerVisitasPorMes() {
+    return await this.reporteRepository.obtenerVisitasPorMes();
+  }
 
-  async obtenerVisitasPorInspector() {}
+  async obtenerVisitasPorInspector() {
+    return await this.reporteRepository.obtenerVisitasPorInspector();
+  }
+
+  async obtenerVisitasPorPeriodo() {
+    return await this.reporteRepository.obtenerVisitasPorPeriodo();
+  }
 
   async obtenerReporteExcel(fechaInicio: string, fechaFin: string) {
     // 1. Obtener datos usando un método que filtre por fecha
@@ -52,9 +60,10 @@ export class ReporteService {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Visitas");
 
-    // 3. Definir columnas
+        // 3. Definir columnas
     worksheet.columns = [
       { header: "ID Visita", key: "id", width: 10 },
+      { header: "Inspector", key: "inspector", width: 25 },
       { header: "Fecha", key: "fecha", width: 15 },
       { header: "Hora Inicio", key: "hInicio", width: 15 },
       { header: "Hora Término", key: "hTermino", width: 15 },
@@ -66,13 +75,14 @@ export class ReporteService {
       { header: "Turno", key: "turno", width: 15 },
       { header: "Semana", key: "semana", width: 10 },
       { header: "Hora P/T", key: "horaPT", width: 15 },
-      { header: "Requerimientos", key: "req", width: 30 },
+      // { header: "Requerimientos", key: "req", width: 30 },
     ];
 
     // 4. Agregar filas
     visitas.forEach((v: any) => {
       worksheet.addRow({
         id: v.id_visita,
+        inspector: v.usuario ? `${v.usuario.nombre} ${v.usuario.apellidos}` : "N/A",
         fecha: new Date(v.fecha).toLocaleDateString(),
         hInicio: new Date(v.hora_inicio).toLocaleTimeString(),
         hTermino: new Date(v.hora_termino).toLocaleTimeString(),
@@ -84,7 +94,7 @@ export class ReporteService {
         turno: v.turno,
         semana: v.n_semana,
         horaPT: v.hora_practica_teoria,
-        req: v.requerimientos,
+        // req: v.requerimientos,
       });
     });
 

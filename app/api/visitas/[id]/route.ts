@@ -18,7 +18,7 @@ export async function GET(
     }
     return NextResponse.json(visita);
   } catch (error) {
-    console.error("ERROR DETALLADO:", error); // <-- ESTO TE DIRÁ QUÉ LÍNEA FALLA
+    console.error("ERROR DETALLADO:", error);
     return NextResponse.json(
       { error: "Error al obtener la visita" },
       { status: 500 },
