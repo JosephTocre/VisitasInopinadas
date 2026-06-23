@@ -2,23 +2,27 @@ import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
 export class VisitaRepository {
-
-  async obtenerTodas(
-    page: number = 1,
-    pageSize: number = 4,
-    where: Prisma.HechoVisitaWhereInput = {}
-  ) {
-    return prisma.hechoVisita.findMany({
-      where,
-      take: pageSize,
-      skip: (page - 1) * pageSize,
-      include: {
-        controlDocente: true,
-      },
-      orderBy: {
-        fecha: "desc",
-      },
-    });
+  // Ahora pasamos la página y el tamaño como argumentos
+  async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
+    try {
+      return await prisma.hechoVisita.findMany({
+        where,
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+        include: {
+          controlDocente: true,
+          usuario: {
+            select: { nombre: true, apellidos: true },
+          },
+        },
+        orderBy: {
+          fecha: "desc",
+        },
+      });
+    } catch (error) {
+      console.error("PRISMA ERROR:", error);
+      throw error;
+    }
   }
 
   async contar(where: Prisma.HechoVisitaWhereInput = {}) {
@@ -34,6 +38,9 @@ export class VisitaRepository {
         controlSilabo: true,
         controlEstudiante: true,
         controlGuia: true,
+        usuario: {
+          select: { nombre: true, apellidos: true },
+        },
       },
     });
   }

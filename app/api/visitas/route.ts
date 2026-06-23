@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
   const filters = {
-    ciclo: searchParams.get("ciclo") || undefined,
+    periodo: searchParams.get("periodo") || undefined,
     docente: searchParams.get("docente") || undefined,
     id_inspector: idUsuario,
     rol: rol, 
@@ -37,8 +37,13 @@ export async function GET(request: NextRequest) {
     );
     return NextResponse.json(visitas);
   } catch (error) {
+    console.error("ERROR GET VISITAS:", error);
+
     return NextResponse.json(
-      { error: "Error al obtener las visitas" },
+      {
+        error: "Error al obtener las visitas",
+        detail: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }

@@ -44,6 +44,9 @@ model HechoVisita {
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
 
+  @@index([fecha])
+  @@index([usuarioId])
+
   controlDocente    ControlDocente?
   controlMaterial   ControlMaterial?
   controlSilabo     ControlSilabo?
@@ -116,7 +119,6 @@ model ControlGuia {
   logro           EstadoCumplimiento
   rubrica         EstadoCumplimiento
   observaciones   String?
-  requerimientos String?
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])

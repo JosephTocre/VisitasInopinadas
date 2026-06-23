@@ -14,14 +14,16 @@ interface Visita {
   sede: string;
   curso: string;
   fecha: string;
-  ciclo: string;
+  periodo: string;
   controlDocente: { nombre_docente: string; apellido_docente: string } | null;
+  usuario: { nombre: string; apellidos: string } | null;
 }
 
 export default function HistorialPage() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
-    ciclo: "todos",
+    periodo: "todos",
     docente: "",
   });
   const [pagina, setPagina] = useState(1); 
@@ -31,20 +33,31 @@ export default function HistorialPage() {
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
 
-    const query = new URLSearchParams({
-      ...filtros,
-      page: pagina.toString(),
-    }).toString();
+    setIsLoading(true);
+    // Construimos los parámetros de búsqueda, ignorando valores vacíos
+    const params: any = { page: pagina.toString() };
+    if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
+    if (filtros.docente.trim() !== "") params.docente = filtros.docente;
+
+    const query = new URLSearchParams(params).toString();
 
     const res = await fetch(`/api/visitas?${query}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+    if (!res.ok) {
+      console.error("Error al cargar visitas:", await res.text());
+      setIsLoading(false);
+      return;
+    }
+
     const data = await res.json();
 
     setVisitas(data.data || []);
-    setMeta(data.meta);
+    setMeta(data.meta || { totalPages: 1 });
+    setIsLoading(false);
   };
 
   const abrirDetalle = async (id: number) => {
@@ -61,9 +74,10 @@ export default function HistorialPage() {
   }, [filtros, pagina]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="min-h-screen bg-[#f5f5f5] flex">
       <AdminSidebar />
-      <main className="p-8 w-full bg-[#eaeaea]">
+      <div className="w-px bg-gray-300" />
+      <main className="p-8 w-full">
         <PageHeader
           title="Historial de Visitas"
           description="Consulta y seguimiento de todas las visitas registradas."
@@ -72,13 +86,25 @@ export default function HistorialPage() {
         <FilterBar
           fields={[
             {
-              label: "Ciclo",
-              key: "ciclo",
+              label: "Periodo",
+              key: "periodo",
               type: "select",
               options: [
-                { value: "todos", label: "Todos los ciclos" },
-                { value: "2026-1", label: "2026 - Ciclo 1 Marzo" },
-                { value: "2026-2", label: "2026 - Ciclo 2 Agosto" },
+                { value: "todos", label: "Todos los periodos" },
+                { value: "2026-1", label: "2026 - Ciclo 1 (Marzo - Julio)" },
+                {
+                  value: "2026-verano",
+                  label: "2026 - Ciclo Verano (Enero - Febrero)",
+                },
+                {
+                  value: "2025-2",
+                  label: "2025 - Ciclo 2 (Agosto - Diciembre)",
+                },
+                { value: "2025-1", label: "2025 - Ciclo 1 (Marzo - Julio)" },
+                {
+                  value: "2025-verano",
+                  label: "2025 - Ciclo Verano (Enero - Febrero)",
+                },
               ],
             },
             {
@@ -91,7 +117,7 @@ export default function HistorialPage() {
           values={filtros}
           onChange={(newValues) =>
             setFiltros({
-              ciclo: newValues.ciclo ?? filtros.ciclo,
+              periodo: newValues.periodo ?? filtros.periodo,
               docente: newValues.docente ?? filtros.docente,
             })
           }
@@ -114,6 +140,13 @@ export default function HistorialPage() {
             { header: "Sede", accessor: (v) => v.sede },
             { header: "Curso", accessor: (v) => v.curso },
             {
+              header: "Inspector",
+              accessor: (v) =>
+                v.usuario
+                  ? `${v.usuario.nombre} ${v.usuario.apellidos}`
+                  : "N/A",
+            },
+            {
               header: "Docente",
               accessor: (v) =>
                 v.controlDocente
@@ -133,14 +166,17 @@ export default function HistorialPage() {
             },
           ]}
           data={visitas}
+          isLoading={isLoading}
         />
 
         {/* Controles de Paginación */}
-        <Pagination
-          currentPage={pagina}
-          totalPages={meta?.totalPages || 1}
-          onPageChange={setPagina}
-        />
+        {visitas.length > 0 && (
+          <Pagination
+            currentPage={pagina}
+            totalPages={meta?.totalPages || 1}
+            onPageChange={setPagina}
+          />
+        )}
 
         {/* Modal de Detalle */}
         {visitaSeleccionada && (
