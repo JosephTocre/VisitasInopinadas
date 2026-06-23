@@ -1,16 +1,31 @@
+import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
+
 export class ControlMaterialRepository {
 
+  async crear(
+    datos: Prisma.ControlMaterialUncheckedCreateInput
+  ) {
+    return prisma.controlMaterial.create({
+      data: datos,
+    });
+  }
+
   async obtenerPorVisita(idVisita: number) {
-    void idVisita;
+    return prisma.controlMaterial.findFirst({
+      where: { visitaId: idVisita },
+    });
   }
 
-  async crear(datos: unknown) {
-    void datos;
+  async actualizar(
+    id: number,
+    datos: Prisma.ControlMaterialUncheckedUpdateInput
+  ) {
+    return prisma.controlMaterial.update({
+      where: {
+        id_control_material: id,
+      },
+      data: datos,
+    });
   }
-
-  async actualizar(id: number, datos: unknown) {
-    void id;
-    void datos;
-  }
-
 }

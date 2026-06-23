@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useControlSilaboStore } from "@/store/controlSilabico";
+import { useControlSilaboStore } from "@/store/controlSilabo";
 
 type ControlSilabicoStepProps = {
   onBack: () => void;
@@ -9,7 +9,7 @@ type ControlSilabicoStepProps = {
   visitaId: number;
 };
 
-export default function ControlSilabicoStep({
+export default function ControlSilaboStep({
   onBack,
   onNext,
   visitaId,
@@ -141,8 +141,8 @@ export default function ControlSilabicoStep({
                 Observaciones
               </label>
               <textarea
-                value={controlSilabo.observacionesSilabico}
-                onChange={(e) => setControlSilabo({ observacionesSilabico: e.target.value })}
+                value={controlSilabo.observacionesSilabo}
+                onChange={(e) => setControlSilabo({ observacionesSilabo: e.target.value })}
                 rows={4}
                 className="input-modern resize-none"
                 placeholder="Ingrese observaciones"

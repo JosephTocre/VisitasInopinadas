@@ -5,7 +5,7 @@ interface RegistrarControlSilaboDTO {
   silabo1: "cumple" | "no_cumple";
   silabo2: "cumple" | "no_cumple";
   silabo3: "cumple" | "no_cumple";
-  observacionesSilabico?: string;
+  observacionesSilabo?: string;
 }
 
 export class ControlSilaboService {
@@ -26,7 +26,7 @@ export class ControlSilaboService {
       coincidencia_actual: datos.silabo1 === "cumple",
       coincidencia_anterior: datos.silabo2 === "cumple",
       ingreso_avance: datos.silabo3 === "cumple",
-      observaciones: datos.observacionesSilabico,
+      observaciones: datos.observacionesSilabo,
       visitaId: datos.visitaId,
     };
 

@@ -18,10 +18,11 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         const data = await service.crear({
-            tema_programado: body.guia1,
-            logro: body.guia2,
-            rubrica: body.guia3,
-            observaciones: body.observacionesGuia,
+            tema_programado: body.tema_programado,
+            logro: body.logro,
+            rubrica: body.rubrica,
+            observaciones: body.observaciones,
+            requerimientos: body.requerimientos,
             visitaId: body.visitaId,
         });
 

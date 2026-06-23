@@ -33,22 +33,47 @@ export default function ControlDocenteStep({
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch("/api/control-docente", {
+      const resDocente = await fetch("/api/control-docente", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...controlDocente,
+          nombreDocente: controlDocente.nombreDocente,
+          apellidoDocente: controlDocente.apellidoDocente,
+          actividad: controlDocente.actividad,
+          presente: controlDocente.presente,
+          horario: controlDocente.horario,
+          interaccion: controlDocente.interaccion,
+          observaciones: controlDocente.observaciones,
           visitaId,
         }),
       });
 
-      const data = await res.json();
+      const dataDocente = await resDocente.json();
 
-      if (!res.ok) {
-        throw new Error(data.mensaje || "Error al guardar");
+      if (!resDocente.ok) {
+        throw new Error(dataDocente.mensaje || "Error al guardar docente");
+      }
+
+      const resMaterial = await fetch("/api/control-material", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          cumple: controlDocente.materialCumple === "si",
+          observaciones: controlDocente.observacionesMaterial,
+          visitaId,
+        }),
+      });
+
+      const dataMaterial = await resMaterial.json();
+
+      if (!resMaterial.ok) {
+        throw new Error(dataMaterial.mensaje || "Error al guardar material");
       }
 
       onNext();
@@ -186,7 +211,7 @@ export default function ControlDocenteStep({
                 <RadioOption
                   label="No cumple"
                   checked={controlDocente.horario === "no_cumple"}
-                  onChange={() => setControlDocente({ ...controlDocente, horario: "no_cumple" } )}
+                  onChange={() => setControlDocente({ ...controlDocente, horario: "no_cumple" })}
                 />
               </div>
             </div>
@@ -248,7 +273,7 @@ export default function ControlDocenteStep({
                   <RadioOption
                     label="Sí"
                     checked={controlDocente.materialCumple === "si"}
-                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "si" } )}
+                    onChange={() => setControlDocente({ ...controlDocente, materialCumple: "si" })}
                   />
 
                   <RadioOption

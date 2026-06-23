@@ -102,11 +102,17 @@ export function DetalleVisitaModal({
         ["Hora práctica/hora teoría", visita.hora_practica_teoria || "N/A"],
         [
           "Requerimientos solicitados en la visita inopinada",
-          typeof visita.requerimientos === "string"
-            ? visita.requerimientos
+          typeof visita.controlGuia.requerimientos === "string"
+            ? visita.controlGuia.requerimientos
             : "N/A",
         ],
         ["Lugar de la visita", visita.lugar || "N/A"],
+        [
+          "Responsable de realizar la actividad",
+          visita.usuario
+            ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
+            : "N/A",
+        ],
       ],
     });
 
@@ -121,25 +127,25 @@ export function DetalleVisitaModal({
       startY: y,
       body: visita.controlDocente
         ? [
-            [
-              "Docente",
-              `${formatField(
-                visita.controlDocente.nombre_docente,
-              )} ${formatField(visita.controlDocente.apellido_docente)}`,
-            ],
-            ["Actividad", formatField(visita.controlDocente.actividad)],
-            ["Presente", formatField(visita.controlDocente.presente)],
-            [
-              "Horario programado",
-              formatField(
-                visita.controlDocente.horario_programado,
-                undefined,
-                true,
-              ),
-            ],
-            ["Interacción", formatField(visita.controlDocente.interaccion)],
-            ["Observaciones", formatField(visita.controlDocente.observaciones)],
-          ]
+          [
+            "Docente",
+            `${formatField(
+              visita.controlDocente.nombre_docente,
+            )} ${formatField(visita.controlDocente.apellido_docente)}`,
+          ],
+          ["Actividad", formatField(visita.controlDocente.actividad)],
+          ["Presente", formatField(visita.controlDocente.presente)],
+          [
+            "Horario programado",
+            formatField(
+              visita.controlDocente.horario_programado,
+              undefined,
+              true,
+            ),
+          ],
+          ["Interacción", formatField(visita.controlDocente.interaccion)],
+          ["Observaciones", formatField(visita.controlDocente.observaciones)],
+        ]
         : [["Información", "Sin datos"]],
     });
 
@@ -157,12 +163,12 @@ export function DetalleVisitaModal({
       startY: y,
       body: visita.controlMaterial
         ? [
-            ["Cumple", formatField(visita.controlMaterial.cumple)],
-            [
-              "Observaciones",
-              formatField(visita.controlMaterial.observaciones),
-            ],
-          ]
+          ["Cumple", formatField(visita.controlMaterial.cumple)],
+          [
+            "Observaciones",
+            formatField(visita.controlMaterial.observaciones),
+          ],
+        ]
         : [["Información", "Sin datos"]],
     });
 
@@ -176,35 +182,35 @@ export function DetalleVisitaModal({
       startY: y,
       body: visita.controlEstudiante
         ? [
-            [
-              "Control en ambiente",
-              formatField(
-                visita.controlEstudiante.control_ambiente,
-                undefined,
-                true,
-              ),
-            ],
-            [
-              "Observaciones ambiente",
-              formatField(visita.controlEstudiante.observaciones_ambiente),
-            ],
-            [
-              "Control en intranet",
-              formatField(
-                visita.controlEstudiante.control_intranet,
-                undefined,
-                true,
-              ),
-            ],
-            [
-              "Observaciones intranet",
-              formatField(visita.controlEstudiante.observaciones_intranet),
-            ],
-            [
-              "Observaciones",
-              formatField(visita.controlEstudiante.observaciones),
-            ],
-          ]
+          [
+            "Control en ambiente",
+            formatField(
+              visita.controlEstudiante.control_ambiente,
+              undefined,
+              true,
+            ),
+          ],
+          [
+            "Observaciones ambiente",
+            formatField(visita.controlEstudiante.observaciones_ambiente),
+          ],
+          [
+            "Control en intranet",
+            formatField(
+              visita.controlEstudiante.control_intranet,
+              undefined,
+              true,
+            ),
+          ],
+          [
+            "Observaciones intranet",
+            formatField(visita.controlEstudiante.observaciones_intranet),
+          ],
+          [
+            "Observaciones",
+            formatField(visita.controlEstudiante.observaciones),
+          ],
+        ]
         : [["Información", "Sin datos"]],
     });
 
@@ -218,28 +224,28 @@ export function DetalleVisitaModal({
       startY: y,
       body: visita.controlSilabo
         ? [
-            [
-              "El tema del sílabo coincide con la clase desarrollada en la fecha de la visita",
-              formatField(
-                visita.controlSilabo.coincidencia_actual,
-                undefined,
-                true,
-              ),
-            ],
-            [
-              "El tema desarrollado en la fecha anterior a la visita coincide con el sílabo",
-              formatField(
-                visita.controlSilabo.coincidencia_anterior,
-                undefined,
-                true,
-              ),
-            ],
-            [
-              "Ingreso del avance silabico en el aula virtual",
-              formatField(visita.controlSilabo.ingreso_avance, undefined, true),
-            ],
-            ["Observaciones", formatField(visita.controlSilabo.observaciones)],
-          ]
+          [
+            "El tema del sílabo coincide con la clase desarrollada en la fecha de la visita",
+            formatField(
+              visita.controlSilabo.coincidencia_actual,
+              undefined,
+              true,
+            ),
+          ],
+          [
+            "El tema desarrollado en la fecha anterior a la visita coincide con el sílabo",
+            formatField(
+              visita.controlSilabo.coincidencia_anterior,
+              undefined,
+              true,
+            ),
+          ],
+          [
+            "Ingreso del avance del silabo en el aula virtual",
+            formatField(visita.controlSilabo.ingreso_avance, undefined, true),
+          ],
+          ["Observaciones", formatField(visita.controlSilabo.observaciones)],
+        ]
         : [["Información", "Sin datos"]],
     });
 
@@ -253,23 +259,23 @@ export function DetalleVisitaModal({
       startY: y,
       body: visita.controlGuia
         ? [
-            [
-              "Cumple con el tema programado en la guía de práctica para el desarrollo de la clase práctica",
-              formatField(visita.controlGuia.tema_programado, undefined, true),
-            ],
-            [
-              "Se evidencia el logro a medir en la práctica desarrollada",
-              formatField(visita.controlGuia.logro, undefined, true),
-            ],
-            [
-              "Cuenta con una rúbrica de evaluación",
-              formatField(visita.controlGuia.rubrica, undefined, true),
-            ],
-            [
-              "Observaciones",
-              formatField(visita.controlGuia.observaciones, undefined, true),
-            ],
-          ]
+          [
+            "Cumple con el tema programado en la guía de práctica para el desarrollo de la clase práctica",
+            formatField(visita.controlGuia.tema_programado, undefined, true),
+          ],
+          [
+            "Se evidencia el logro a medir en la práctica desarrollada",
+            formatField(visita.controlGuia.logro, undefined, true),
+          ],
+          [
+            "Cuenta con una rúbrica de evaluación",
+            formatField(visita.controlGuia.rubrica, undefined, true),
+          ],
+          [
+            "Observaciones",
+            formatField(visita.controlGuia.observaciones, undefined, true),
+          ],
+        ]
         : [["Información", "Sin datos"]],
     });
 
@@ -355,6 +361,14 @@ export function DetalleVisitaModal({
               <p>
                 <span className="font-semibold">Lugar de la visita:</span>{" "}
                 {formatField(visita.lugar)}
+              </p>
+              <p>
+                <span className="font-semibold">
+                  Responsable de realizar la actividad:
+                </span>{" "}
+                {visita.usuario
+                  ? `${visita.usuario.nombre} ${visita.usuario.apellidos}`
+                  : "N/A"}
               </p>
             </div>
           </section>
@@ -492,7 +506,7 @@ export function DetalleVisitaModal({
                 </p>
                 <p>
                   <span className="font-semibold">
-                    Ingreso del avance silabico en el aula virtual:
+                    Ingreso del avance del silabo en el aula virtual:
                   </span>{" "}
                   {formatField(
                     visita.controlSilabo.ingreso_avance,

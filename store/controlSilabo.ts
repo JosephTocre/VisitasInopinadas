@@ -6,7 +6,7 @@ const initialControlSilabo = {
     silabo1: "cumple" as "cumple" | "no_cumple",
     silabo2: "cumple" as "cumple" | "no_cumple",
     silabo3: "cumple" as "cumple" | "no_cumple",
-    observacionesSilabico: "",
+    observacionesSilabo: "",
 };
 
 interface ControlSilaboStore {

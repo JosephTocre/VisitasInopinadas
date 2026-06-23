@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
             silabo2: body.silabo2,
             silabo3: body.silabo3,
 
-            observacionesSilabico: body.observacionesSilabico,
+            observacionesSilabo: body.observacionesSilabo,
         });
 
         return NextResponse.json({
