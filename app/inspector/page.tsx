@@ -23,29 +23,69 @@ export default function InspectorPage() {
   return (
     <main className="min-h-screen bg-[#f5f5f5] flex flex-col p-8">
       {/* Header */}
-      <div className="flex items-center gap-4 self-end">
-        <p className="text-sm font-medium text-gray-800">
-          Hola, {nombreUsuario}
-        </p>
+<div className="w-full flex items-center justify-between mb-6">
 
-        <button
-          onClick={cerrarSesion}
-          className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black transition-colors"
-        >
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            <polyline points="16 17 21 12 16 7" />
-            <line x1="21" y1="12" x2="9" y2="12" />
-          </svg>
-        </button>
-      </div>
+  {/* Saludo */}
+  <div className="flex items-center gap-4">
+
+    {/* Icono mano saludando */}
+    <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className="text-blue-600 animate-bounce"
+      >
+        <path
+          d="M12 2v6m0 0l2-2m-2 2l-2-2M6 10v2c0 2 2 4 6 4s6-2 6-4v-2"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <path
+          d="M6 10V8a2 2 0 012-2h1v4"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+
+    {/* Texto saludo */}
+    <div>
+      <p className="text-sm text-gray-500">
+        Bienvenido de nuevo
+      </p>
+
+      <h2 className="text-xl font-bold text-black leading-tight">
+        {nombreUsuario}
+      </h2>
+    </div>
+  </div>
+
+  {/* Botón cerrar sesión */}
+  <button
+    onClick={cerrarSesion}
+    className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-black transition-colors"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+    Cerrar sesión
+  </button>
+
+</div>
 
       {/* Contenido */}
       <div className="flex-1 w-full flex flex-col items-center justify-center gap-8">
