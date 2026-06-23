@@ -66,7 +66,7 @@ export function VisitsByMonthChart({ data }: StatsChartProps) {
 export function VisitsByInspectorChart({ data }: StatsChartProps) {
   // Convertir data al formato del gráfico
   const dataForChart = data.map((item) => ({
-    inspector: item.inspector +" "+ item,
+    inspector: item.inspector,
     visitas: item._count.id,
   }));
 
