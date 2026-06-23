@@ -16,6 +16,14 @@ export default function ControlAsistenciaStep({
 }: ControlAsistenciaStepProps) {
   const { controlAsistencia, setControlAsistencia } = useControlAsistenciaStore();
   const [error, setError] = useState("");
+  const MAX_CARACTERES = 100;
+
+  const limpiarTexto = (valor: string) => {
+    return valor
+      .replace(/\s{2,}/g, " ")
+      .replace(/^\s+/, "")
+      .slice(0, MAX_CARACTERES);
+  };
 
   const continuar = async () => {
     if (
@@ -130,8 +138,11 @@ export default function ControlAsistenciaStep({
             </div>
 
             <div>
-              <label className="label-modern">
-                Observaciones
+              <label className="label-modern flex justify-between items-center">
+                <span>Observaciones</span>
+                <span className="text-xs text-gray-500">
+                  {controlAsistencia.observacionAmbiente?.length || 0}/{MAX_CARACTERES}
+                </span>
               </label>
 
               <input
@@ -140,10 +151,11 @@ export default function ControlAsistenciaStep({
                 onChange={(e) =>
                   setControlAsistencia({
                     ...controlAsistencia,
-                    observacionAmbiente: e.target.value,
+                    observacionAmbiente: limpiarTexto(e.target.value),
                   })
                 }
                 className="input-modern"
+                placeholder="Ingrese observaciones sobre el ambiente"
               />
             </div>
           </div>
@@ -179,8 +191,11 @@ export default function ControlAsistenciaStep({
             </div>
 
             <div>
-              <label className="label-modern">
-                Observaciones
+              <label className="label-modern flex justify-between items-center">
+                <span>Observaciones</span>
+                <span className="text-xs text-gray-500">
+                  {controlAsistencia.observacionIntranet?.length || 0}/{MAX_CARACTERES}
+                </span>
               </label>
 
               <input
@@ -189,18 +204,22 @@ export default function ControlAsistenciaStep({
                 onChange={(e) =>
                   setControlAsistencia({
                     ...controlAsistencia,
-                    observacionIntranet: e.target.value,
+                    observacionIntranet: limpiarTexto(e.target.value),
                   })
                 }
                 className="input-modern"
+                placeholder="Ingrese observaciones sobre la intranet"
               />
             </div>
           </div>
 
           {/*observaciones generales */}
-          <div className="space-y-4 border-t border-border pt-6">
-            <label className="label-modern">
-              Observaciones generales
+          <div>
+            <label className="label-modern flex justify-between items-center">
+              <span>Observaciones generales</span>
+              <span className="text-xs text-gray-500">
+                {controlAsistencia.observacionesGenerales?.length || 0}/{MAX_CARACTERES}
+              </span>
             </label>
 
             <input
@@ -209,10 +228,11 @@ export default function ControlAsistenciaStep({
               onChange={(e) =>
                 setControlAsistencia({
                   ...controlAsistencia,
-                  observacionesGenerales: e.target.value,
+                  observacionesGenerales: limpiarTexto(e.target.value),
                 })
               }
               className="input-modern"
+              placeholder="Ingrese observaciones generales"
             />
           </div>
 

@@ -13,6 +13,15 @@ export default function RegistroUsuarioPage() {
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
 
+  const MAX_CARACTERES = 100;
+
+  const limpiarTexto = (valor: string) => {
+    return valor
+      .replace(/\s{2,}/g, " ")
+      .replace(/^\s+/, "")
+      .slice(0, MAX_CARACTERES);
+  };
+
   const registrarUsuario = async (
     e: React.FormEvent
   ) => {
@@ -20,6 +29,13 @@ export default function RegistroUsuarioPage() {
 
     setMensaje("");
     setError("");
+
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+
+    if (!correoValido) {
+      setError("Correo inválido");
+      return;
+    }
 
     try {
       const respuesta = await fetch(
@@ -44,7 +60,7 @@ export default function RegistroUsuarioPage() {
       if (!respuesta.ok) {
         throw new Error(
           data.mensaje ||
-            "Error al registrar usuario"
+          "Error al registrar usuario"
         );
       }
 
@@ -117,8 +133,7 @@ export default function RegistroUsuarioPage() {
                 type="text"
                 value={nombre}
                 onChange={(e) =>
-                  setNombre(e.target.value)
-                }
+                  setNombre(limpiarTexto(e.target.value))}
                 required
                 className="
                   w-full
@@ -149,8 +164,7 @@ export default function RegistroUsuarioPage() {
                 type="text"
                 value={apellidos}
                 onChange={(e) =>
-                  setApellidos(e.target.value)
-                }
+                  setApellidos(limpiarTexto(e.target.value))}
                 required
                 className="
                   w-full
@@ -180,9 +194,13 @@ export default function RegistroUsuarioPage() {
               <input
                 type="email"
                 value={correo}
-                onChange={(e) =>
-                  setCorreo(e.target.value)
-                }
+                onChange={(e) => {
+                  const valor = e.target.value
+                    .replace(/\s/g, "")
+                    .slice(0, 100);
+
+                  setCorreo(valor);
+                }}
                 required
                 className="
                   w-full
@@ -213,7 +231,11 @@ export default function RegistroUsuarioPage() {
                 type="password"
                 value={contrasena}
                 onChange={(e) =>
-                  setContrasena(e.target.value)
+                  setContrasena(
+                    e.target.value
+                      .replace(/\s/g, "")
+                      .slice(0, 100)
+                  )
                 }
                 required
                 className="
