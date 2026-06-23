@@ -18,14 +18,13 @@ export default function ControlGuiaStep({
     const [guia3, setGuia3] = useState<"cumple" | "no_cumple" | "no_aplica" | "">("");
 
     const [observacionesGuia, setObservacionesGuia] = useState("");
-    const [responsable, setResponsable] = useState("");
     const [requerimientos, setRequerimientos] = useState("");
     const [error, setError] = useState("");
 
     const continuar = async () => {
         try {
             setError("");
-            if (!guia1 || !guia2 || !guia3 || !responsable) {
+            if (!guia1 || !guia2 || !guia3 ) {
                 setError("Debe completar todos los campos obligatorios.");
 
                 window.scrollTo({
