@@ -30,15 +30,21 @@ export default function FirmaPad() {
       .getTrimmedCanvas()
       .toDataURL("image/png");
 
-    const res = await fetch(`/api/visita/${visitaId}/firmar`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        firma: firmaBase64,
-      }),
-    });
+     const res = await fetch(`/api/visita/${visitaId}/firmar`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      firma: firmaBase64,
+    }),
+  });
+
+  console.log("STATUS:", res.status);
+
+  const text = await res.text();
+
+  console.log("RESPONSE:", text);
 
     const data = await res.json();
 
