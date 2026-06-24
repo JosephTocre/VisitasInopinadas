@@ -48,7 +48,7 @@ export function DetalleVisitaModal({
     return date.toLocaleTimeString("es-ES", {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // Cambia a false si prefieres formato 24h
+      hour12: true, 
     });
   };
 
@@ -68,7 +68,7 @@ export function DetalleVisitaModal({
   const exportarVisitaPDF = (visita: any) => {
     const doc = new jsPDF();
 
-    let y = 20; // Aumentado de 10 a 20
+    let y = 20; 
 
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
@@ -78,7 +78,7 @@ export function DetalleVisitaModal({
     doc.text(
       "FACULTAD DE INGENIERÍAS - ESCUELA PROFESIONAL DE INGENIERÍA DE SISTEMAS",
       105,
-      30, // Ajustado de 20 a 30
+      30, 
       { align: "center" },
     );
 
@@ -232,10 +232,7 @@ export function DetalleVisitaModal({
             },
             {
               content: formatField(
-                visita.controlDocente.horario_programado,
-                undefined,
-                true,
-              ),
+                visita.controlDocente.horario_programado),
               styles: {
                 halign: "center",
               },
@@ -366,11 +363,7 @@ export function DetalleVisitaModal({
               },
             },
             {
-              content: formatField(
-                visita.controlEstudiante.control_ambiente,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlEstudiante.control_ambiente),
             },
             // {
             //   content: "OBSERVACIONES AMBIENTE:",
@@ -385,11 +378,7 @@ export function DetalleVisitaModal({
               ),
             },
             {
-              content: formatField(
-                visita.controlEstudiante.control_intranet,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlEstudiante.control_intranet),
             },
             // {
             //   content: "OBSERVACIONES INTRANET:",
@@ -449,10 +438,7 @@ export function DetalleVisitaModal({
             },
             {
               content: formatField(
-                visita.controlSilabo.coincidencia_actual,
-                undefined,
-                true,
-              ),
+                visita.controlSilabo.coincidencia_actual),
             },
           ],
           [
@@ -462,11 +448,7 @@ export function DetalleVisitaModal({
               styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
             },
             {
-              content: formatField(
-                visita.controlSilabo.coincidencia_anterior,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlSilabo.coincidencia_anterior),
             },
           ],
           [
@@ -475,11 +457,7 @@ export function DetalleVisitaModal({
               styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
             },
             {
-              content: formatField(
-                visita.controlSilabo.ingreso_avance,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlSilabo.ingreso_avance),
             },
           ],
           [
@@ -521,11 +499,7 @@ export function DetalleVisitaModal({
               styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
             },
             {
-              content: formatField(
-                visita.controlGuia.tema_programado,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlGuia.tema_programado),
             },
           ],
           [
@@ -535,7 +509,7 @@ export function DetalleVisitaModal({
               styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
             },
             {
-              content: formatField(visita.controlGuia.logro, undefined, true),
+              content: formatField(visita.controlGuia.logro),
             },
           ],
           [
@@ -544,11 +518,7 @@ export function DetalleVisitaModal({
               styles: { fillColor: [230, 230, 230], fontStyle: "bold" },
             },
             {
-              content: formatField(
-                visita.controlGuia.rubrica,
-                undefined,
-                true,
-              ),
+              content: formatField(visita.controlGuia.rubrica),
             },
           ],
           [
@@ -558,11 +528,7 @@ export function DetalleVisitaModal({
             },
             {
               content: visita.controlGuia.observaciones
-                ? formatField(
-                  visita.controlGuia.observaciones,
-                  undefined,
-                  true,
-                )
+                ? formatField(visita.controlGuia.observaciones)
                 : "N/A",
             },
           ],
@@ -748,11 +714,7 @@ export function DetalleVisitaModal({
                 </p>
                 <p>
                   <span className="font-semibold">Horario programado:</span>{" "}
-                  {formatField(
-                    visita.controlDocente.horario_programado,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlDocente.horario_programado)}
                 </p>
                 <p>
                   <span className="font-semibold">Interacción:</span>{" "}
@@ -796,11 +758,7 @@ export function DetalleVisitaModal({
               <div className="grid grid-cols-2 gap-2 px-2">
                 <p>
                   <span className="font-semibold">Control en ambiente:</span>{" "}
-                  {formatField(
-                    visita.controlEstudiante.control_ambiente,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlEstudiante.control_ambiente)}
                 </p>
                 <p>
                   <span className="font-semibold">
@@ -810,11 +768,7 @@ export function DetalleVisitaModal({
                 </p>
                 <p>
                   <span className="font-semibold">Control en intranet:</span>{" "}
-                  {formatField(
-                    visita.controlEstudiante.control_intranet,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlEstudiante.control_intranet)}
                 </p>
                 <p>
                   <span className="font-semibold">
@@ -842,32 +796,20 @@ export function DetalleVisitaModal({
                     El tema del sílabo coincide con la clase desarrollada en la
                     fecha de la visita:
                   </span>{" "}
-                  {formatField(
-                    visita.controlSilabo.coincidencia_actual,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlSilabo.coincidencia_actual)}
                 </p>
                 <p>
                   <span className="font-semibold">
                     El tema desarrollado en la fecha anterior a la visita
                     coincide con el sílabo:
                   </span>{" "}
-                  {formatField(
-                    visita.controlSilabo.coincidencia_anterior,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlSilabo.coincidencia_anterior)}
                 </p>
                 <p>
                   <span className="font-semibold">
                     Ingreso del avance del silabo en el aula virtual:
                   </span>{" "}
-                  {formatField(
-                    visita.controlSilabo.ingreso_avance,
-                    undefined,
-                    true,
-                  )}
+                  {formatField(visita.controlSilabo.ingreso_avance)}
                 </p>
                 <p>
                   <span className="font-semibold">Observaciones:</span>{" "}
