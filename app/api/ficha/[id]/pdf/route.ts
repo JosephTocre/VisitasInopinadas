@@ -2,12 +2,26 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { PDFDocument, StandardFonts, rgb, PDFPage, PDFFont, RGB } from "pdf-lib";
 
+
 // ─── helpers ────────────────────────────────────────────────────────────────
 
 const BLACK = rgb(0, 0, 0);
 const WHITE = rgb(1, 1, 1);
 const LIGHT_GRAY = rgb(0.85, 0.85, 0.85);
+async function embedSignature(pdfDoc: PDFDocument, dataUrl: string) {
+  const base64 = dataUrl.split(",")[1];
+  const bytes = Buffer.from(base64, "base64");
 
+  if (dataUrl.includes("image/png")) {
+    return await pdfDoc.embedPng(bytes);
+  }
+
+  if (dataUrl.includes("image/jpeg") || dataUrl.includes("image/jpg")) {
+    return await pdfDoc.embedJpg(bytes);
+  }
+
+  throw new Error("Formato de firma no soportado");
+}
 function drawRect(
   page: PDFPage,
   x: number,
@@ -117,6 +131,7 @@ export async function GET(
 
     // ── shortcuts ──────────────────────────────────────────────────────────
     const cd = visita.controlDocente;
+    const firmaBase64 = visita?.firma ?? null;
     const cm = visita.controlMaterial;
     const cs = visita.controlSilabo;
     const ce = visita.controlEstudiante;
@@ -539,17 +554,48 @@ export async function GET(
     // FIRMAS
     // ─────────────────────────────────────────────────────────────────────
     {
-      const sigY = rowTop - 35;
+      const sigY = 120;
       const lineLen = 150;
+
       const leftSigX = L + 60;
       const rightSigX = L + W - 60 - lineLen;
 
-      page.drawLine({ start: { x: leftSigX, y: sigY }, end: { x: leftSigX + lineLen, y: sigY }, thickness: 0.8, color: BLACK });
-      centeredText(page, "FIRMA DEL   DOCENTE", leftSigX, sigY - 14, lineLen, 11, fontB, 7.5);
+      // FIRMA DOCENTE LINEA
+      page.drawLine({
+        start: { x: leftSigX, y: sigY },
+        end: { x: leftSigX + lineLen, y: sigY },
+        thickness: 0.8,
+        color: BLACK,
+      });
 
+      centeredText(
+        page,
+        "FIRMA DEL DOCENTE",
+        leftSigX,
+        sigY - 14,
+        lineLen,
+        11,
+        fontB,
+        7.5
+      );
+
+      // FIRMA DOCENTE IMAGEN
+      if (visita.firma) {
+        const img = await embedSignature(pdfDoc, visita.firma);
+
+        page.drawImage(img, {
+          x: leftSigX,
+          y: sigY + 10,
+          width: 140,
+          height: 50,
+        });
+      }
       page.drawLine({ start: { x: rightSigX, y: sigY }, end: { x: rightSigX + lineLen, y: sigY }, thickness: 0.8, color: BLACK });
       centeredText(page, "FIRMA DEL RESPONSABLE DE LA VISITA", rightSigX, sigY - 14, lineLen, 11, fontB, 7.5);
     }
+
+    console.log("firma existe?", !!visita.firma);
+console.log("inicio dataUrl:", visita.firma?.slice(0, 30));
 
     // ─────────────────────────────────────────────────────────────────────
     const pdfBytes = await pdfDoc.save();
