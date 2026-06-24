@@ -1,26 +1,18 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(
-    request: Request,
-    { params }: { params: { id: string | string[] } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const rawId = params.id;
-        let visitaId = Array.isArray(rawId)
-            ? parseInt(rawId[0], 10)
-            : parseInt(rawId ?? "", 10);
+        const { id } = await params;
 
-        if (isNaN(visitaId)) {
-            const url = new URL(request.url);
-            const parts = url.pathname.split("/").filter(Boolean);
-            const fallbackId = parts[2];
-            visitaId = parseInt(fallbackId ?? "", 10);
-        }
+        const visitaId = parseInt(id, 10);
 
         if (isNaN(visitaId)) {
             return NextResponse.json(
-                { message: "ID inválido", rawId, pathname: new URL(request.url).pathname },
+                { message: "ID inválido" },
                 { status: 400 }
             );
         }
@@ -35,7 +27,7 @@ export async function POST(
         }
 
         const updated = await prisma.hechoVisita.update({
-            where: { id_visita: visitaId }, // 👈 revisa si esto es UNIQUE
+            where: { id_visita: visitaId },
             data: {
                 firma,
                 firmado: true,
