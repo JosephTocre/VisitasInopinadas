@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReusableTable } from "@/components/ui/ReusableTable";
@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { DetalleVisitaModal } from "@/components/DetalleVisitaModal";
 import { ExportButton } from "@/components/ExportButton";
 import { FilterBar } from "@/components/ui/FilterBar";
+import { DashboardCard } from "@/components/ui/DashboardCard";
 
 interface Visita {
   id_visita: number;
@@ -25,19 +26,70 @@ export default function HistorialPage() {
   const [filtros, setFiltros] = useState({
     periodo: "todos",
     docente: "",
+    sede: "todos",
+    curso: "todos",
   });
   const [pagina, setPagina] = useState(1);
-  const [meta, setMeta] = useState({ totalPages: 1 });
-  const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
+  const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
+  const [sedes, setSedes] = useState<string[]>([]);
+  const [cursos, setCursos] = useState<string[]>([]);
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
+
+  const fetchFiltros = useCallback(
+    async (periodo?: string, sede?: string, curso?: string) => {
+      const token = localStorage.getItem("token");
+
+      const params = new URLSearchParams({
+        mode: "filtros",
+      });
+
+      if (periodo && periodo !== "todos") {
+        params.append("periodo", periodo);
+      }
+      if (sede && sede !== "todos") {
+        params.append("sede", sede);
+      }
+      if (curso && curso !== "todos") {
+        params.append("curso", curso);
+      }
+
+      const res = await fetch(`/api/visitas?${params.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setSedes(data.sedes || []);
+      setCursos(data.cursos || []);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const loadFiltros = async () => {
+      setSedes([]);
+      setCursos([]);
+      await fetchFiltros(filtros.periodo, filtros.sede, filtros.curso);
+    };
+
+    loadFiltros();
+  }, [filtros.periodo, filtros.sede, filtros.curso, fetchFiltros]);
 
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
 
     setIsLoading(true);
     // Construimos los parámetros de búsqueda, ignorando valores vacíos
-    const params: any = { page: pagina.toString() };
+    const params: Record<string, string> = { page: pagina.toString() };
     if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
     if (filtros.docente.trim() !== "") params.docente = filtros.docente;
+    if (filtros.sede !== "todos") params.sede = filtros.sede;
+    if (filtros.curso !== "todos") params.curso = filtros.curso;
 
     const query = new URLSearchParams(params).toString();
 
@@ -65,12 +117,13 @@ export default function HistorialPage() {
     const data = await res.json();
     setVisitaSeleccionada(data);
   };
-  useEffect(() => {
-    setPagina(1);
-  }, [filtros]);
 
   useEffect(() => {
-    fetchVisitas();
+    const loadVisitas = async () => {
+      await fetchVisitas();
+    };
+
+    loadVisitas();
   }, [filtros, pagina]);
 
   return (
@@ -113,14 +166,62 @@ export default function HistorialPage() {
               type: "text",
               placeholder: "Buscar por apellido...",
             },
+            {
+              label: "Sede",
+              key: "sede",
+              type: "select",
+              options: [
+                { value: "todos", label: "Todas las sedes" },
+                ...sedes.map((sede) => ({
+                  value: sede,
+                  label: sede,
+                })),
+              ],
+            },
+            {
+              label: "Curso",
+              key: "curso",
+              type: "select",
+              options: [
+                { value: "todos", label: "Todos los cursos" },
+                ...cursos.map((curso) => ({
+                  value: curso,
+                  label: curso,
+                })),
+              ],
+            },
           ]}
           values={filtros}
-          onChange={(newValues) =>
-            setFiltros({
-              periodo: newValues.periodo ?? filtros.periodo,
-              docente: newValues.docente ?? filtros.docente,
-            })
-          }
+          onChange={(newValues) => {
+            setFiltros((previousFiltros) => {
+              const updatedFiltros = {
+                ...previousFiltros,
+                ...newValues,
+              };
+
+              if (newValues.periodo !== undefined) {
+                updatedFiltros.sede = "todos";
+                updatedFiltros.curso = "todos";
+                setSedes([]);
+                setCursos([]);
+              }
+
+              if (newValues.sede !== undefined && newValues.sede !== "todos") {
+                updatedFiltros.curso = "todos";
+                setCursos([]);
+              }
+
+              if (
+                newValues.curso !== undefined &&
+                newValues.curso !== "todos"
+              ) {
+                setSedes([]);
+              }
+
+              return updatedFiltros;
+            });
+            setPagina(1);
+          }}
         />
 
         <div className="flex justify-end mb-8">

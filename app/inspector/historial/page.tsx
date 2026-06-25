@@ -8,6 +8,7 @@ import { Pagination } from "@/components/ui/Pagination";
 import { DetalleVisitaModal } from "@/components/DetalleVisitaModal";
 import { ExportButton } from "@/components/ExportButton";
 import { FilterBar } from "@/components/ui/FilterBar";
+import { DashboardCard } from "@/components/ui/DashboardCard";
 
 interface Visita {
   id_visita: number;
@@ -29,6 +30,10 @@ export default function HistorialPage() {
   });
   const [pagina, setPagina] = useState(1);
   const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
   const [sedes, setSedes] = useState<string[]>([]);
   const [cursos, setCursos] = useState<string[]>([]);
 
@@ -73,11 +78,6 @@ export default function HistorialPage() {
 
     loadFiltros();
   }, [filtros.periodo, filtros.sede, filtros.curso, fetchFiltros]);
-
-  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
 
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
@@ -135,40 +135,31 @@ export default function HistorialPage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-5 border">
-            <p className="text-sm text-gray-500">Total de visitas</p>
-            <h3 className="text-3xl font-bold">{meta.total}</h3>
-          </div>
+          <DashboardCard title="Total de visitas" value={meta.total} />
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border">
-            <p className="text-sm text-gray-500">Docentes</p>
-            <h3 className="text-3xl font-bold">
-              {
-                new Set(
-                  visitas.map(
-                    (v) =>
-                      `${v.controlDocente?.nombre_docente ?? ""} ${
-                        v.controlDocente?.apellido_docente ?? ""
-                      }`,
-                  ),
-                ).size
-              }
-            </h3>
-          </div>
+          <DashboardCard
+            title="Docentes"
+            value={
+              new Set(
+                visitas.map(
+                  (v) =>
+                    `${v.controlDocente?.nombre_docente ?? ""} ${
+                      v.controlDocente?.apellido_docente ?? ""
+                    }`,
+                ),
+              ).size
+            }
+          />
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border">
-            <p className="text-sm text-gray-500">Cursos</p>
-            <h3 className="text-3xl font-bold">
-              {new Set(visitas.map((v) => v.curso)).size}
-            </h3>
-          </div>
+          <DashboardCard
+            title="Cursos"
+            value={new Set(visitas.map((v) => v.curso)).size}
+          />
 
-          <div className="bg-white rounded-xl shadow-sm p-5 border">
-            <p className="text-sm text-gray-500">Sedes</p>
-            <h3 className="text-3xl font-bold">
-              {new Set(visitas.map((v) => v.sede)).size}
-            </h3>
-          </div>
+          <DashboardCard
+            title="Sedes"
+            value={new Set(visitas.map((v) => v.sede)).size}
+          />
         </div>
 
         <FilterBar
