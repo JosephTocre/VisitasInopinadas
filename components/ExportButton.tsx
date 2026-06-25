@@ -9,8 +9,9 @@ export function ExportButton({
   filename,
   type = "pdf",
   filtros,
+  selectedIds = [],
 }: any) {
-    const exportar = async () => {
+  const exportar = async () => {
     if (type === "excel") {
       const token = localStorage.getItem("token");
 
@@ -21,11 +22,10 @@ export function ExportButton({
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (!res.ok) {
-
         Swal.fire({
           icon: "error",
           title: "Acceso denegado",
@@ -41,21 +41,29 @@ export function ExportButton({
       a.download = `${filename}.xlsx`;
       a.click();
     } else {
-      const doc = new jsPDF();
-      doc.text(title, 14, 15);
-      autoTable(doc, {
-        startY: 20,
-        head: [["Fecha", "Sede", "Curso", "Docente"]],
-        body: data.map((v: { fecha: string | number | Date; sede: any; curso: any; controlDocente: { nombre_docente: any; apellido_docente: any; }; }) => [
-          new Date(v.fecha).toLocaleDateString(),
-          v.sede,
-          v.curso,
-          v.controlDocente
-            ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
-            : "N/A",
-        ]),
-      });
-      doc.save(`${filename}.pdf`);
+      const params = new URLSearchParams();
+      selectedIds.forEach((id: number | string) =>
+        params.append("id", id.toString()),
+      );
+
+      const res = await fetch(`/api/ficha/pdf?${params.toString()}`);
+
+      // AÑADE ESTO: Verifica si la respuesta es exitosa
+      if (!res.ok) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudieron generar los PDFs.",
+        });
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${filename}.pdf`;
+      a.click();
     }
   };
 

@@ -74,7 +74,10 @@ export default function HistorialPage() {
     loadFiltros();
   }, [filtros.periodo, filtros.sede, filtros.curso, fetchFiltros]);
 
-  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<string, unknown> | null>(null);
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
@@ -113,7 +116,6 @@ export default function HistorialPage() {
     setVisitaSeleccionada(data);
   };
 
-
   useEffect(() => {
     const loadVisitas = async () => {
       await fetchVisitas();
@@ -141,13 +143,16 @@ export default function HistorialPage() {
           <div className="bg-white rounded-xl shadow-sm p-5 border">
             <p className="text-sm text-gray-500">Docentes</p>
             <h3 className="text-3xl font-bold">
-              {new Set(
-                visitas.map(
-                  (v) =>
-                    `${v.controlDocente?.nombre_docente ?? ""} ${v.controlDocente?.apellido_docente ?? ""
-                    }`
-                )
-              ).size}
+              {
+                new Set(
+                  visitas.map(
+                    (v) =>
+                      `${v.controlDocente?.nombre_docente ?? ""} ${
+                        v.controlDocente?.apellido_docente ?? ""
+                      }`,
+                  ),
+                ).size
+              }
             </h3>
           </div>
 
@@ -241,7 +246,10 @@ export default function HistorialPage() {
                 setCursos([]);
               }
 
-              if (newValues.curso !== undefined && newValues.curso !== "todos") {
+              if (
+                newValues.curso !== undefined &&
+                newValues.curso !== "todos"
+              ) {
                 setSedes([]);
               }
 
@@ -257,6 +265,7 @@ export default function HistorialPage() {
             data={visitas}
             title="Historial de Visitas"
             filename="historial-visitas"
+            selectedIds={visitas.map((v) => v.id_visita)}
           />
         </div>
 

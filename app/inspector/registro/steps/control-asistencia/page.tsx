@@ -14,7 +14,8 @@ export default function ControlAsistenciaStep({
   onNext,
   visitaId,
 }: ControlAsistenciaStepProps) {
-  const { controlAsistencia, setControlAsistencia } = useControlAsistenciaStore();
+  const { controlAsistencia, setControlAsistencia } =
+    useControlAsistenciaStore();
   const [error, setError] = useState("");
   const MAX_CARACTERES = 100;
 
@@ -65,11 +66,7 @@ export default function ControlAsistenciaStep({
 
       onNext();
     } catch (err: unknown) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Error desconocido"
-      );
+      setError(err instanceof Error ? err.message : "Error desconocido");
 
       window.scrollTo({
         top: 0,
@@ -92,12 +89,11 @@ export default function ControlAsistenciaStep({
       <div className="max-w-3xl mx-auto card-modern">
         <div className="space-y-6">
           <div>
-            <h1 className="page-title">
-              Registro asistencia de estudiantes
-            </h1>
+            <h1 className="page-title">Registro asistencia de estudiantes</h1>
 
             <p className="page-subtitle">
-              Completa el siguiente formulario para registrar la asistencia de los estudiantes durante la visita.
+              Completa el siguiente formulario para registrar la asistencia de
+              los estudiantes durante la visita.
             </p>
 
             {error && (
@@ -109,14 +105,10 @@ export default function ControlAsistenciaStep({
 
           {/* Controles ambiente */}
           <div className="space-y-4">
-            <h2 className="text-xl font-bold border-b border-border pb-3">
-              Control ambiente
-            </h2>
+            <h2 className="text-xl font-bold">Control en ambiente</h2>
 
             <div className="flex flex-col gap-3">
-              <label className="label-modern">
-                Estado
-              </label>
+              <label className="label-modern">Estado</label>
 
               <div className="flex gap-8">
                 <RadioOption
@@ -141,7 +133,8 @@ export default function ControlAsistenciaStep({
               <label className="label-modern flex justify-between items-center">
                 <span>Observaciones</span>
                 <span className="text-xs text-gray-500">
-                  {controlAsistencia.observacionAmbiente?.length || 0}/{MAX_CARACTERES}
+                  {controlAsistencia.observacionAmbiente?.length || 0}/
+                  {MAX_CARACTERES}
                 </span>
               </label>
 
@@ -162,14 +155,10 @@ export default function ControlAsistenciaStep({
 
           {/* Controles intranet */}
           <div className="space-y-4 border-t border-border pt-6">
-            <h2 className="text-xl font-bold">
-              Control en intranet
-            </h2>
+            <h2 className="text-xl font-bold">Control en intranet</h2>
 
             <div className="flex flex-col gap-3">
-              <label className="label-modern">
-                Estado
-              </label>
+              <label className="label-modern">Estado</label>
 
               <div className="flex gap-8">
                 <RadioOption
@@ -194,7 +183,8 @@ export default function ControlAsistenciaStep({
               <label className="label-modern flex justify-between items-center">
                 <span>Observaciones</span>
                 <span className="text-xs text-gray-500">
-                  {controlAsistencia.observacionIntranet?.length || 0}/{MAX_CARACTERES}
+                  {controlAsistencia.observacionIntranet?.length || 0}/
+                  {MAX_CARACTERES}
                 </span>
               </label>
 
@@ -214,11 +204,12 @@ export default function ControlAsistenciaStep({
           </div>
 
           {/*observaciones generales */}
-          <div>
+          <div className="space-y-4 border-t border-border pt-6">
             <label className="label-modern flex justify-between items-center">
               <span>Observaciones generales</span>
               <span className="text-xs text-gray-500">
-                {controlAsistencia.observacionesGenerales?.length || 0}/{MAX_CARACTERES}
+                {controlAsistencia.observacionesGenerales?.length || 0}/
+                {MAX_CARACTERES}
               </span>
             </label>
 
@@ -242,15 +233,12 @@ export default function ControlAsistenciaStep({
             className="btn-primary w-full flex items-center justify-center gap-3 group mt-2"
           >
             Continuar
-
             <span className="transition-transform group-hover:translate-x-1">
               →
             </span>
           </button>
-
         </div>
       </div>
-
     </main>
   );
 }
@@ -273,10 +261,13 @@ function RadioOption({
       className={`flex items-center gap-2 text-sm text-gray-800 ${bold ? "font-bold" : "font-medium"}`}
     >
       <span
-        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${checked ? "border-black" : "border-gray-400"
-          }`}
+        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
+          checked ? "border-black" : "border-gray-400"
+        }`}
       >
-        {checked && <span className="w-2.5 h-2.5 rounded-full bg-black block" />}
+        {checked && (
+          <span className="w-2.5 h-2.5 rounded-full bg-black block" />
+        )}
       </span>
       {label}
     </button>

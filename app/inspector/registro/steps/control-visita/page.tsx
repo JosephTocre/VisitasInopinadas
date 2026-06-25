@@ -213,10 +213,10 @@ export default function ControlVisitaStep({
                 onClick={() =>
                   setControlVisita({
                     ...formulario,
-                    turno: "mañana",
+                    turno: "Mañana",
                   })
                 }
-                className={`btn-option ${turno === "mañana"
+                className={`btn-option ${turno === "Mañana"
                   ? "btn-option-active"
                   : ""
                   }`}
@@ -229,10 +229,10 @@ export default function ControlVisitaStep({
                 onClick={() =>
                   setControlVisita({
                     ...formulario,
-                    turno: "noche",
+                    turno: "Noche",
                   })
                 }
-                className={`btn-option ${turno === "noche"
+                className={`btn-option ${turno === "Noche"
                   ? "btn-option-active"
                   : ""
                   }`}
@@ -339,9 +339,9 @@ export default function ControlVisitaStep({
                 onClick={() =>
                   setControlVisita({
                     ...formulario,
-                    tipoHora: "practica",
+                    tipoHora: "Práctica",
                   })
-                } className={`btn-option ${tipoHora === "practica"
+                } className={`btn-option ${tipoHora === "Práctica"
                   ? "btn-option-active"
                   : ""
                   }`}
@@ -354,9 +354,9 @@ export default function ControlVisitaStep({
                 onClick={() =>
                   setControlVisita({
                     ...formulario,
-                    tipoHora: "teoria",
+                    tipoHora: "Teoría",
                   })
-                } className={`btn-option ${tipoHora === "teoria"
+                } className={`btn-option ${tipoHora === "Teoría"
                   ? "btn-option-active"
                   : ""
                   }`}
