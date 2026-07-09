@@ -25,12 +25,31 @@ model Usuario {
   visitas HechoVisita[]
 }
 
+model Sede {
+  id_sede   Int     @id @default(autoincrement())
+  nombre    String  @unique
+  is_active Boolean @default(true)
+  visitas   HechoVisita[]
+}
+
+model Curso {
+  id_curso  Int     @id @default(autoincrement())
+  nombre    String  @unique
+  is_active Boolean @default(true)
+  visitas   HechoVisita[]
+}
+
 model HechoVisita {
   id_visita Int @id @default(autoincrement())
 
-  sede            String
+  sedeId Int
+  sede   Sede @relation(fields: [sedeId], references: [id_sede])
+
   lugar           String
-  curso           String
+  
+  cursoId Int
+  curso   Curso @relation(fields: [cursoId], references: [id_curso])
+
   campo_formativo String
 
   fecha                DateTime
@@ -61,8 +80,8 @@ model HechoVisita {
 model ControlDocente {
   id_control_docente Int @id @default(autoincrement())
 
-  nombre_docente     String
-  apellido_docente   String
+  docenteId Int
+  docente   Docente @relation(fields: [docenteId], references: [id_docente])
   actividad          String
   presente           Boolean
   horario_programado Boolean
@@ -71,6 +90,15 @@ model ControlDocente {
 
   visitaId Int @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
+}
+
+model Docente {
+  id_docente       Int    @id @default(autoincrement())
+  nombre_docente   String
+  apellido_docente String
+  is_active        Boolean @default(true)
+
+  controlDocente ControlDocente[]
 }
 
 model ControlMaterial {

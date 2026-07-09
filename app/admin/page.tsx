@@ -4,7 +4,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 
 export default function AdminPage() {
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen bg-[#f5f5f5]">
 
             <AdminSidebar />
 
@@ -69,7 +69,7 @@ export default function AdminPage() {
                     <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition">
                         <svg className="w-8 h-8 mb-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                d="M11 5h6M11 9h6M11 13h6M7 5h.01M7 9h.01M7 13h.01M7 17h.01" />
+                                d="M11 5h6M11 9h6M11 13h6M7 5h.01M7 9h.01M7 13h.01M7 17h" />
                         </svg>
 
                         <h2 className="text-lg font-semibold mb-2">

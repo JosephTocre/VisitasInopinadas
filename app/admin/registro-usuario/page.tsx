@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { ReusableTable } from "@/components/ui/ReusableTable";
 
 export default function RegistroUsuarioPage() {
   const [nombre, setNombre] = useState("");
@@ -22,9 +24,18 @@ export default function RegistroUsuarioPage() {
       .slice(0, MAX_CARACTERES);
   };
 
-  const registrarUsuario = async (
-    e: React.FormEvent
-  ) => {
+  const [usuarios, setUsuarios] = useState([]);
+  const fetchUsuarios = async () => {
+    const res = await fetch("/api/usuarios");
+    const data = await res.json();
+    setUsuarios(data);
+  };
+
+  useEffect(() => {
+    fetchUsuarios();
+  }, []);
+
+  const registrarUsuario = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setMensaje("");
@@ -38,73 +49,50 @@ export default function RegistroUsuarioPage() {
     }
 
     try {
-      const respuesta = await fetch(
-        "/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nombre,
-            apellidos,
-            correo,
-            contrasena,
-            rol,
-          }),
-        }
-      );
+      const respuesta = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nombre,
+          apellidos,
+          correo,
+          contrasena,
+          rol,
+        }),
+      });
 
       const data = await respuesta.json();
 
       if (!respuesta.ok) {
-        throw new Error(
-          data.mensaje ||
-          "Error al registrar usuario"
-        );
+        throw new Error(data.mensaje || "Error al registrar usuario");
       }
 
-      setMensaje(
-        "Usuario registrado correctamente"
-      );
+      setMensaje("Usuario registrado correctamente");
 
       setNombre("");
       setApellidos("");
       setCorreo("");
       setContrasena("");
       setRol("");
+      fetchUsuarios(); // Refresh the user list after successful registration
     } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Error inesperado"
-      );
+      setError(error instanceof Error ? error.message : "Error inesperado");
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex min-h-screen bg-[#f5f5f5]">
       <AdminSidebar />
 
-      <div className="w-px bg-gray-200" />
+      <div className="w-px bg-gray-300" />
 
-      <main className="flex-1 px-10 py-8 overflow-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <p className="text-sm text-gray-500 font-medium">
-            Administración
-          </p>
-
-          <h1 className="text-3xl font-bold text-black mt-1">
-            Registro de usuarios
-          </h1>
-
-          <p className="text-gray-500 mt-2">
-            Crea nuevas cuentas para
-            administradores e inspectores del
-            sistema.
-          </p>
-        </div>
+      <main className="p-8 w-full">
+        <PageHeader
+          title="Registro de usuarios"
+          description="Crea nuevas cuentas para administradores e inspectores del sistema."
+        />
 
         {/* Card */}
         <div className="bg-white border border-gray-200 rounded-3xl shadow-sm p-8 max-w-5xl">
@@ -114,15 +102,11 @@ export default function RegistroUsuarioPage() {
             </h2>
 
             <p className="text-sm text-gray-500 mt-1">
-              Complete los datos para registrar
-              una nueva cuenta.
+              Complete los datos para registrar una nueva cuenta.
             </p>
           </div>
 
-          <form
-            onSubmit={registrarUsuario}
-            className="grid grid-cols-2 gap-5"
-          >
+          <form onSubmit={registrarUsuario} className="grid grid-cols-2 gap-5">
             {/* Nombre */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -132,8 +116,7 @@ export default function RegistroUsuarioPage() {
               <input
                 type="text"
                 value={nombre}
-                onChange={(e) =>
-                  setNombre(limpiarTexto(e.target.value))}
+                onChange={(e) => setNombre(limpiarTexto(e.target.value))}
                 required
                 className="
                   w-full
@@ -163,8 +146,7 @@ export default function RegistroUsuarioPage() {
               <input
                 type="text"
                 value={apellidos}
-                onChange={(e) =>
-                  setApellidos(limpiarTexto(e.target.value))}
+                onChange={(e) => setApellidos(limpiarTexto(e.target.value))}
                 required
                 className="
                   w-full
@@ -195,9 +177,7 @@ export default function RegistroUsuarioPage() {
                 type="email"
                 value={correo}
                 onChange={(e) => {
-                  const valor = e.target.value
-                    .replace(/\s/g, "")
-                    .slice(0, 100);
+                  const valor = e.target.value.replace(/\s/g, "").slice(0, 100);
 
                   setCorreo(valor);
                 }}
@@ -231,11 +211,7 @@ export default function RegistroUsuarioPage() {
                 type="password"
                 value={contrasena}
                 onChange={(e) =>
-                  setContrasena(
-                    e.target.value
-                      .replace(/\s/g, "")
-                      .slice(0, 100)
-                  )
+                  setContrasena(e.target.value.replace(/\s/g, "").slice(0, 100))
                 }
                 required
                 className="
@@ -265,9 +241,7 @@ export default function RegistroUsuarioPage() {
 
               <select
                 value={rol}
-                onChange={(e) =>
-                  setRol(e.target.value)
-                }
+                onChange={(e) => setRol(e.target.value)}
                 required
                 className="
                   w-full
@@ -286,35 +260,25 @@ export default function RegistroUsuarioPage() {
                   transition
                 "
               >
-                <option value="">
-                  Seleccione un rol
-                </option>
+                <option value="">Seleccione un rol</option>
 
-                <option value="ADMIN">
-                  Administrador
-                </option>
+                <option value="ADMIN">Administrador</option>
 
-                <option value="INSPECTOR">
-                  Inspector
-                </option>
+                <option value="INSPECTOR">Inspector</option>
               </select>
             </div>
 
             {/* Mensaje éxito */}
             {mensaje && (
               <div className="col-span-2 bg-green-50 border border-green-200 rounded-xl p-4">
-                <p className="text-sm text-green-700">
-                  {mensaje}
-                </p>
+                <p className="text-sm text-green-700">{mensaje}</p>
               </div>
             )}
 
             {/* Mensaje error */}
             {error && (
               <div className="col-span-2 bg-red-50 border border-red-200 rounded-xl p-4">
-                <p className="text-sm text-red-700">
-                  {error}
-                </p>
+                <p className="text-sm text-red-700">{error}</p>
               </div>
             )}
 
@@ -336,6 +300,19 @@ export default function RegistroUsuarioPage() {
               Crear usuario
             </button>
           </form>
+        </div>
+        <div className="mt-8">
+          <ReusableTable
+            columns={[
+              {
+                header: "Nombre",
+                accessor: (u: any) => `${u.nombre} ${u.apellidos}`,
+              },
+              { header: "Correo", accessor: (u: any) => u.correo },
+              { header: "Rol", accessor: (u: any) => u.rol },
+            ]}
+            data={usuarios}
+          />
         </div>
       </main>
     </div>

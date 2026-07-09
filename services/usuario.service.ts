@@ -1,6 +1,11 @@
-export class UsuarioService {
+import { UsuarioRepository } from "@/repositories/usuario.repository";
 
-  async obtenerTodos() {}
+export class UsuarioService {
+  private repository = new UsuarioRepository();
+
+  async obtenerTodos() {
+    return await this.repository.obtenerTodos();
+  }
 
   async obtenerPorId(id: number) {
     void id;
@@ -18,5 +23,4 @@ export class UsuarioService {
   async eliminarUsuario(id: number) {
     void id;
   }
-
 }
