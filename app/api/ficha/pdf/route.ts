@@ -137,12 +137,16 @@ export async function GET(request: Request) {
     const visitas = await prisma.hechoVisita.findMany({
       where: { id_visita: { in: ids } },
       include: {
-        usuario: true,
-        controlDocente: true,
+        sede: { select: { nombre: true } },
+        curso: { select: { nombre: true } },
+        controlDocente: { include: { docente: true } },
         controlMaterial: true,
         controlSilabo: true,
         controlEstudiante: true,
         controlGuia: true,
+        usuario: {
+          select: { nombre: true, apellidos: true },
+        },
       },
     });
 
@@ -172,7 +176,7 @@ export async function GET(request: Request) {
       const str = (v: string | null | undefined) => v ?? "";
 
       const docenteNombre =
-        `${str(cd?.nombre_docente)} ${str(cd?.apellido_docente)}`.trim();
+        `${str(cd?.docente.nombre_docente)} ${str(cd?.docente.apellido_docente)}`.trim();
       const responsable =
         `${str(visita.usuario?.nombre)} ${str(visita.usuario?.apellidos)}`.trim();
       const fecha = visita.fecha
@@ -291,7 +295,7 @@ export async function GET(request: Request) {
 
         const colW = W / 3;
 
-        labelCell("SEDE O FILIAL:", str(visita.sede), L, top, colW, h);
+        labelCell("SEDE O FILIAL:", str(visita.sede.nombre), L, top, colW, h);
         labelCell("CICLO:", str(visita.ciclo), L + colW, top, colW, h);
         labelCell("TURNO:", str(visita.turno), L + colW * 2, top, colW, h);
       }
@@ -303,7 +307,7 @@ export async function GET(request: Request) {
 
         const colW = W / 2;
 
-        labelCell("ASIGNATURA:", str(visita.curso), L, top, colW, h);
+        labelCell("ASIGNATURA:", str(visita.curso.nombre), L, top, colW, h);
         labelCell(
           "CAMPO FORMATIVO:",
           str(visita.campo_formativo),
