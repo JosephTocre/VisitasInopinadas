@@ -42,7 +42,15 @@ export function ExportButton({
       a.click();
     } else {
       const params = new URLSearchParams();
-      selectedIds.forEach((id: number | string) =>
+
+      const idsToUse =
+        selectedIds && selectedIds.length > 0
+          ? selectedIds
+          : data && Array.isArray(data)
+            ? data.map((v: any) => v.id_visita)
+            : [];
+
+      idsToUse.forEach((id: number | string) =>
         params.append("id", id.toString()),
       );
 
