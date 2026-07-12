@@ -9,7 +9,9 @@ export class VisitaRepository {
         take: pageSize,
         skip: (page - 1) * pageSize,
         include: {
-          controlDocente: true,
+          sede: { select: { nombre: true } },
+          curso: { select: { nombre: true } },
+          controlDocente: { include: { docente: true } },
           controlMaterial: true,
           controlSilabo: true,
           controlEstudiante: true,
@@ -36,7 +38,9 @@ export class VisitaRepository {
     return prisma.hechoVisita.findUnique({
       where: { id_visita: id },
       include: {
-        controlDocente: true,
+        sede: { select: { nombre: true } },
+        curso: { select: { nombre: true } },
+        controlDocente: { include: { docente: true } },
         controlMaterial: true,
         controlSilabo: true,
         controlEstudiante: true,
@@ -49,27 +53,25 @@ export class VisitaRepository {
   }
 
   async obtenerSedes(where: any = {}) {
-    return prisma.hechoVisita.findMany({
-      where,
-      distinct: ["sede"],
+    return prisma.sede.findMany({
+      where: { visitas: where },
       select: {
-        sede: true,
+        nombre: true,
       },
       orderBy: {
-        sede: "asc",
+        nombre: "asc",
       },
     });
   }
 
   async obtenerCursos(where: any = {}) {
-    return prisma.hechoVisita.findMany({
-      where,
-      distinct: ["curso"],
+    return prisma.curso.findMany({
+      where: { visitas: where },
       select: {
-        curso: true,
+        nombre: true,
       },
       orderBy: {
-        curso: "asc",
+        nombre: "asc",
       },
     });
   }
@@ -80,10 +82,7 @@ export class VisitaRepository {
     });
   }
 
-  async actualizar(
-    id: number,
-    datos: Prisma.HechoVisitaUncheckedUpdateInput
-  ) {
+  async actualizar(id: number, datos: Prisma.HechoVisitaUncheckedUpdateInput) {
     return prisma.hechoVisita.update({
       where: { id_visita: id },
       data: datos,

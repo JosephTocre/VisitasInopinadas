@@ -74,11 +74,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (sede && sede !== "todos") {
-      filters.sede = sede;
+      filters.sede = { nombre: sede };
     }
 
     if (curso && curso !== "todos") {
-      filters.curso = curso;
+      filters.curso = { nombre: curso };
     }
 
     const [sedes, cursos] = await Promise.all([
@@ -87,8 +87,8 @@ export async function GET(request: NextRequest) {
     ]);
 
     return NextResponse.json({
-      sedes: sedes.map((s: any) => s.sede),
-      cursos: cursos.map((c: any) => c.curso),
+      sedes: sedes.map((s: any) => s.nombre),
+      cursos: cursos.map((c: any) => c.nombre),
     });
   }
 
@@ -143,8 +143,7 @@ export async function POST(request: NextRequest) {
         error: "Error al crear visita",
         detalle: error instanceof Error ? error.message : error,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

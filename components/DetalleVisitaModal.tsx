@@ -115,7 +115,7 @@ export function DetalleVisitaModal({
               </p>
               <p>
                 <span className="font-semibold">Sede o filial:</span>{" "}
-                {formatField(visita.sede)}
+                {formatField(visita.sede?.nombre)}
               </p>
               <p>
                 <span className="font-semibold">Ciclo:</span>{" "}
@@ -127,7 +127,7 @@ export function DetalleVisitaModal({
               </p>
               <p>
                 <span className="font-semibold">Curso o asignatura:</span>{" "}
-                {formatField(visita.curso)}
+                {formatField(visita.curso?.nombre)}
               </p>
               <p>
                 <span className="font-semibold">Campo Formativo:</span>{" "}
@@ -171,8 +171,8 @@ export function DetalleVisitaModal({
               <div className="grid grid-cols-2 gap-2 px-2">
                 <p>
                   <span className="font-semibold">Docente:</span>{" "}
-                  {formatField(visita.controlDocente.nombre_docente)}{" "}
-                  {formatField(visita.controlDocente.apellido_docente)}
+                  {formatField(visita.controlDocente.docente.nombre_docente)}{" "}
+                  {formatField(visita.controlDocente.docente.apellido_docente)}
                 </p>
                 <p>
                   <span className="font-semibold">Actividad:</span>{" "}

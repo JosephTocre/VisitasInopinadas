@@ -12,11 +12,13 @@ import { DashboardCard } from "@/components/ui/DashboardCard";
 
 interface Visita {
   id_visita: number;
-  sede: string;
-  curso: string;
+  sede: { nombre: string };
+  curso: { nombre: string };
   fecha: string;
   ciclo: string;
-  controlDocente: { nombre_docente: string; apellido_docente: string } | null;
+  controlDocente: {
+    docente: { nombre_docente: string; apellido_docente: string };
+  } | null;
 }
 
 export default function HistorialPage() {
@@ -37,47 +39,37 @@ export default function HistorialPage() {
   const [sedes, setSedes] = useState<string[]>([]);
   const [cursos, setCursos] = useState<string[]>([]);
 
-  const fetchFiltros = useCallback(
-    async (periodo?: string, sede?: string, curso?: string) => {
-      const token = localStorage.getItem("token");
+  const fetchFiltros = useCallback(async (periodo?: string) => {
+    const token = localStorage.getItem("token");
 
-      const params = new URLSearchParams({
-        mode: "filtros",
-      });
+    const params = new URLSearchParams({ mode: "filtros" });
+    if (periodo && periodo !== "todos") params.append("periodo", periodo);
 
-      if (periodo && periodo !== "todos") {
-        params.append("periodo", periodo);
-      }
-      if (sede && sede !== "todos") {
-        params.append("sede", sede);
-      }
-      if (curso && curso !== "todos") {
-        params.append("curso", curso);
-      }
+    const res = await fetch(`/api/visitas?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
 
-      const res = await fetch(`/api/visitas?${params.toString()}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    if (!res.ok) {
+      return;
+    }
 
-      const data = await res.json();
+    const text = await res.text();
+    if (!text || text.trim() === "") {
+      return;
+    }
 
+    try {
+      const data = JSON.parse(text);
       setSedes(data.sedes || []);
       setCursos(data.cursos || []);
-    },
-    [],
-  );
+    } catch (e) {
+      console.error("Error al procesar respuesta de filtros:", e);
+    }
+  }, []);
 
   useEffect(() => {
-    const loadFiltros = async () => {
-      setSedes([]);
-      setCursos([]);
-      await fetchFiltros(filtros.periodo, filtros.sede, filtros.curso);
-    };
-
-    loadFiltros();
-  }, [filtros.periodo, filtros.sede, filtros.curso, fetchFiltros]);
+    fetchFiltros(filtros.periodo);
+  }, [filtros.periodo, fetchFiltros]);
 
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
@@ -135,7 +127,7 @@ export default function HistorialPage() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <DashboardCard title="Total de visitas" value={meta.total} />
+          <DashboardCard title="Visitas" value={meta.total} />
 
           <DashboardCard
             title="Docentes"
@@ -143,8 +135,8 @@ export default function HistorialPage() {
               new Set(
                 visitas.map(
                   (v) =>
-                    `${v.controlDocente?.nombre_docente ?? ""} ${
-                      v.controlDocente?.apellido_docente ?? ""
+                    `${v.controlDocente?.docente.nombre_docente ?? ""} ${
+                      v.controlDocente?.docente.apellido_docente ?? ""
                     }`,
                 ),
               ).size
@@ -153,12 +145,12 @@ export default function HistorialPage() {
 
           <DashboardCard
             title="Cursos"
-            value={new Set(visitas.map((v) => v.curso)).size}
+            value={new Set(visitas.map((v) => v.curso.nombre)).size}
           />
 
           <DashboardCard
             title="Sedes"
-            value={new Set(visitas.map((v) => v.sede)).size}
+            value={new Set(visitas.map((v) => v.sede.nombre)).size}
           />
         </div>
 
@@ -220,33 +212,11 @@ export default function HistorialPage() {
           values={filtros}
           onChange={(newValues) => {
             setFiltros((previousFiltros) => {
-              const updatedFiltros = {
+              return {
                 ...previousFiltros,
                 ...newValues,
               };
-
-              if (newValues.periodo !== undefined) {
-                updatedFiltros.sede = "todos";
-                updatedFiltros.curso = "todos";
-                setSedes([]);
-                setCursos([]);
-              }
-
-              if (newValues.sede !== undefined && newValues.sede !== "todos") {
-                updatedFiltros.curso = "todos";
-                setCursos([]);
-              }
-
-              if (
-                newValues.curso !== undefined &&
-                newValues.curso !== "todos"
-              ) {
-                setSedes([]);
-              }
-
-              return updatedFiltros;
             });
-
             setPagina(1);
           }}
         />
@@ -266,13 +236,13 @@ export default function HistorialPage() {
               header: "Fecha",
               accessor: (v) => new Date(v.fecha).toLocaleDateString(),
             },
-            { header: "Sede", accessor: (v) => v.sede },
-            { header: "Curso", accessor: (v) => v.curso },
+            { header: "Sede", accessor: (v) => v.sede.nombre },
+            { header: "Curso", accessor: (v) => v.curso.nombre },
             {
               header: "Docente",
               accessor: (v) =>
                 v.controlDocente
-                  ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
+                  ? `${v.controlDocente.docente.nombre_docente} ${v.controlDocente.docente.apellido_docente}`
                   : "N/A",
             },
             {
