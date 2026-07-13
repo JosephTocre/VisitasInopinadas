@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AdminSidebar from "@/components/AdminSidebar";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { ReusableTable } from "@/components/ui/ReusableTable";
@@ -11,13 +11,11 @@ import { FilterBar } from "@/components/ui/FilterBar";
 
 interface Visita {
   id_visita: number;
-  sede: { nombre: string };
-  curso: { nombre: string };
+  sede: string;
+  curso: string;
   fecha: string;
   periodo: string;
-  controlDocente: {
-    docente: { nombre_docente: string; apellido_docente: string };
-  } | null;
+  controlDocente: { nombre_docente: string; apellido_docente: string } | null;
   usuario: { nombre: string; apellidos: string } | null;
 }
 
@@ -27,78 +25,25 @@ export default function HistorialPage() {
   const [filtros, setFiltros] = useState({
     periodo: "todos",
     docente: "",
-    sede: "todos",
-    curso: "todos",
   });
-  const [pagina, setPagina] = useState(1);
-  const [meta, setMeta] = useState({ total: 0, totalPages: 1 });
-  const [sedes, setSedes] = useState<string[]>([]);
-  const [cursos, setCursos] = useState<string[]>([]);
-  const [visitaSeleccionada, setVisitaSeleccionada] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
-
-  const fetchFiltros = useCallback(async (periodo?: string) => {
-    const token = localStorage.getItem("token");
-
-    const params = new URLSearchParams({ mode: "filtros" });
-    if (periodo && periodo !== "todos") params.append("periodo", periodo);
-
-    const res = await fetch(`/api/visitas?${params.toString()}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) {
-      return;
-    }
-
-    const text = await res.text();
-    if (!text || text.trim() === "") {
-      return;
-    }
-
-    try {
-      const data = JSON.parse(text);
-      setSedes(data.sedes || []);
-      setCursos(data.cursos || []);
-
-      setFiltros((prev) => ({
-        ...prev,
-        sede:
-          prev.sede === "todos" || data.sedes.includes(prev.sede)
-            ? prev.sede
-            : "todos",
-        curso:
-          prev.curso === "todos" || data.cursos.includes(prev.curso)
-            ? prev.curso
-            : "todos",
-      }));
-    } catch (e) {
-      console.error("Error al procesar respuesta de filtros:", e);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchFiltros(filtros.periodo);
-  }, [filtros.periodo, fetchFiltros]);
+  const [pagina, setPagina] = useState(1); // Nuevo estado
+  const [meta, setMeta] = useState({ totalPages: 1 }); // Nuevo estado para controlar paginación
+  const [visitaSeleccionada, setVisitaSeleccionada] = useState<any>(null);
 
   const fetchVisitas = async () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token"); // Aquí sí puedes leerlo
 
     setIsLoading(true);
     // Construimos los parámetros de búsqueda, ignorando valores vacíos
-    const params: Record<string, string> = { page: pagina.toString() };
+    const params: any = { page: pagina.toString() };
     if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
     if (filtros.docente.trim() !== "") params.docente = filtros.docente;
-    if (filtros.sede !== "todos") params.sede = filtros.sede;
-    if (filtros.curso !== "todos") params.curso = filtros.curso;
 
     const query = new URLSearchParams(params).toString();
 
     const res = await fetch(`/api/visitas?${query}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`, // Envías el token aquí
       },
     });
 
@@ -110,6 +55,7 @@ export default function HistorialPage() {
 
     const data = await res.json();
 
+    // Ajustado a la nueva estructura: { data, meta }
     setVisitas(data.data || []);
     setMeta(data.meta || { totalPages: 1 });
     setIsLoading(false);
@@ -121,13 +67,14 @@ export default function HistorialPage() {
     setVisitaSeleccionada(data);
   };
 
+  // Reiniciar a la página 1 cuando cambien los filtros
   useEffect(() => {
-    const loadVisitas = async () => {
-      await fetchVisitas();
-    };
+    setPagina(1);
+  }, [filtros]);
 
-    loadVisitas();
-  }, [filtros, pagina]);
+  useEffect(() => {
+    fetchVisitas();
+  }, [filtros, pagina]); // Dependemos de filtros y página
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">
@@ -169,53 +116,14 @@ export default function HistorialPage() {
               type: "text",
               placeholder: "Buscar por apellido...",
             },
-            {
-              label: "Sede",
-              key: "sede",
-              type: "select",
-              options: [
-                { value: "todos", label: "Todas las sedes" },
-                ...sedes.map((sede) => ({
-                  value: sede,
-                  label: sede,
-                })),
-              ],
-            },
-            {
-              label: "Curso",
-              key: "curso",
-              type: "select",
-              options: [
-                { value: "todos", label: "Todos los cursos" },
-                ...cursos.map((curso) => ({
-                  value: curso,
-                  label: curso,
-                })),
-              ],
-            },
           ]}
           values={filtros}
-          onChange={(newValues) => {
-            setFiltros((prev) => {
-              const nuevosFiltros = {
-                ...prev,
-                ...newValues,
-              };
-
-              // Si cambió el periodo, reiniciar filtros dependientes
-              if (
-                newValues.periodo !== undefined &&
-                newValues.periodo !== prev.periodo
-              ) {
-                nuevosFiltros.sede = "todos";
-                nuevosFiltros.curso = "todos";
-              }
-
-              return nuevosFiltros;
-            });
-
-            setPagina(1);
-          }}
+          onChange={(newValues) =>
+            setFiltros({
+              periodo: newValues.periodo ?? filtros.periodo,
+              docente: newValues.docente ?? filtros.docente,
+            })
+          }
         />
 
         <div className="flex justify-end mb-8">
@@ -232,8 +140,8 @@ export default function HistorialPage() {
               header: "Fecha",
               accessor: (v) => new Date(v.fecha).toLocaleDateString(),
             },
-            { header: "Sede", accessor: (v) => v.sede.nombre },
-            { header: "Curso", accessor: (v) => v.curso.nombre },
+            { header: "Sede", accessor: (v) => v.sede },
+            { header: "Curso", accessor: (v) => v.curso },
             {
               header: "Inspector",
               accessor: (v) =>
@@ -245,7 +153,7 @@ export default function HistorialPage() {
               header: "Docente",
               accessor: (v) =>
                 v.controlDocente
-                  ? `${v.controlDocente.docente.nombre_docente} ${v.controlDocente.docente.apellido_docente}`
+                  ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
                   : "N/A",
             },
             {

@@ -1,21 +1,15 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@prisma/client";
 
 export class VisitaRepository {
-  async obtenerTodas(page: number = 1, pageSize: number = 15, where: any = {}) {
+  // Ahora pasamos la página y el tamaño como argumentos
+  async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
     try {
       return await prisma.hechoVisita.findMany({
         where,
         take: pageSize,
         skip: (page - 1) * pageSize,
         include: {
-          sede: { select: { nombre: true } },
-          curso: { select: { nombre: true } },
-          controlDocente: { include: { docente: true } },
-          controlMaterial: true,
-          controlSilabo: true,
-          controlEstudiante: true,
-          controlGuia: true,
+          controlDocente: true,
           usuario: {
             select: { nombre: true, apellidos: true },
           },
@@ -30,17 +24,16 @@ export class VisitaRepository {
     }
   }
 
-  async contar(where: Prisma.HechoVisitaWhereInput = {}) {
-    return prisma.hechoVisita.count({ where });
+  // Método adicional para contar el total (útil para el frontend)
+  async contar(where: any = {}) {
+    return await prisma.hechoVisita.count({ where });
   }
 
   async obtenerPorId(id: number) {
-    return prisma.hechoVisita.findUnique({
+    return await prisma.hechoVisita.findUnique({
       where: { id_visita: id },
       include: {
-        sede: { select: { nombre: true } },
-        curso: { select: { nombre: true } },
-        controlDocente: { include: { docente: true } },
+        controlDocente: true,
         controlMaterial: true,
         controlSilabo: true,
         controlEstudiante: true,
@@ -52,57 +45,19 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerSedes(
-    where: Prisma.HechoVisitaWhereInput = {}
-  ) {
-    return prisma.sede.findMany({
-      where: {
-        visitas: {
-          some: where,
-        },
-      },
-      select: {
-        nombre: true,
-      },
-      orderBy: {
-        nombre: "asc",
-      },
-    });
+  async crear(datos: any) {
+    return await prisma.hechoVisita.create({ data: datos });
   }
 
-  async obtenerCursos(
-    where: Prisma.HechoVisitaWhereInput = {}
-  ) {
-    return prisma.curso.findMany({
-      where: {
-        visitas: {
-          some: where,
-        },
-      },
-      select: {
-        nombre: true,
-      },
-      orderBy: {
-        nombre: "asc",
-      },
-    });
-  }
-
-  async crear(datos: Prisma.HechoVisitaCreateInput) {
-    return prisma.hechoVisita.create({
-      data: datos,
-    });
-  }
-
-  async actualizar(id: number, datos: Prisma.HechoVisitaUpdateInput) {
-    return prisma.hechoVisita.update({
+  async actualizar(id: number, datos: any) {
+    return await prisma.hechoVisita.update({
       where: { id_visita: id },
       data: datos,
     });
   }
 
   async eliminar(id: number) {
-    return prisma.hechoVisita.delete({
+    return await prisma.hechoVisita.delete({
       where: { id_visita: id },
     });
   }

@@ -1,21 +1,11 @@
-import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
+import { DocenteService } from "@/services/docente.service";
+
+const docenteService = new DocenteService();
 
 export async function GET() {
     try {
-        const docentes = await prisma.docente.findMany({
-            where: {
-                is_active: true,
-            },
-            select: {
-                id_docente: true,
-                nombre_docente: true,
-                apellido_docente: true,
-            },
-            orderBy: {
-                apellido_docente: "asc",
-            },
-        });
+        const docentes = await docenteService.obtenerTodos();
 
         return NextResponse.json(docentes);
 
@@ -25,7 +15,30 @@ export async function GET() {
         return NextResponse.json(
             {
                 error: "Error al obtener docentes",
-                detalle: error instanceof Error ? error.message : error,
+            },
+            { status: 500 }
+        );
+    }
+}
+
+
+export async function POST(request: NextRequest) {
+    try {
+        const body = await request.json();
+
+        const docente = await docenteService.registrarDocente({
+            nombre_docente: body.nombre_docente,
+            apellido_docente: body.apellido_docente,
+        });
+
+        return NextResponse.json(docente, { status: 201 });
+
+    } catch (error) {
+        console.error("ERROR REGISTRANDO DOCENTE:", error);
+
+        return NextResponse.json(
+            {
+                error: "Error al registrar docente",
             },
             { status: 500 }
         );
