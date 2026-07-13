@@ -11,8 +11,7 @@ export class ControlDocenteRepository {
   }
 
   async crear(datos: {
-    nombre_docente: string;
-    apellido_docente: string;
+    docenteId: number;
     actividad: string;
     presente: boolean;
     horario_programado: boolean;
@@ -28,8 +27,7 @@ export class ControlDocenteRepository {
   async actualizar(
     idVisita: number,
     datos: Partial<{
-      nombre_docente: string;
-      apellido_docente: string;
+      docenteId: number;
       actividad: string;
       presente: boolean;
       horario_programado: boolean;
