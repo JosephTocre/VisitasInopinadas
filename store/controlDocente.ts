@@ -1,8 +1,7 @@
 import { create } from "zustand";
 
 const initialControlDocente = {
-    nombreDocente: "",
-    apellidoDocente: "",
+    id_docente: 0,
     actividad: "",
     observaciones: "",
     observacionesMaterial: "",

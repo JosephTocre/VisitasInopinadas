@@ -8,8 +8,7 @@ export async function POST(request: Request) {
         const body = await request.json();
 
         const resultado = await controlService.registrarControl({
-            nombreDocente: body.nombreDocente,
-            apellidoDocente: body.apellidoDocente,
+            id_docente: body.id_docente,
             actividad: body.actividad,
             presente: body.presente,
             horario: body.horario,

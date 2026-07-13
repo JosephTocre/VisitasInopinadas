@@ -2,7 +2,7 @@
 
 import { useControlDocenteStore } from "@/store/controlDocente";
 import { useControlMaterialStore } from "@/store/controlMaterial";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type ControlDocenteStepProps = {
   onBack: () => void;
@@ -18,13 +18,21 @@ export default function ControlDocenteStep({
   const { controlDocente, setControlDocente } = useControlDocenteStore();
   const { controlMaterial, setControlMaterial } = useControlMaterialStore();
 
+  const [docentes, setDocentes] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/docentes")
+      .then(res => res.json())
+      .then(data => setDocentes(data));
+  }, []);
+
   const [error, setError] = useState("");
   const MAX_CARACTERES = 100;
 
   const limpiarTexto = (valor: string) => {
     return valor
-      .replace(/\s{2,}/g, " ") // evita doble espacio
-      .replace(/^\s+/, "") // opcional: evita espacios al inicio
+      .replace(/\s{2,}/g, " ")
+      .replace(/^\s+/, "")
       .slice(0, MAX_CARACTERES);
   };
 
@@ -33,8 +41,7 @@ export default function ControlDocenteStep({
     const m = controlMaterial;
 
     const camposInvalidos =
-      !d.nombreDocente?.trim() ||
-      !d.apellidoDocente?.trim() ||
+      !d.id_docente ||
       !d.actividad?.trim() ||
       !d.presente ||
       !d.horario ||
@@ -137,49 +144,38 @@ export default function ControlDocenteStep({
 
           {/* Docente */}
           {/* Nombre y apellido */}
-          <div className="grid md:grid-cols-2 gap-4">
+          <div>
             <div>
-              <label className="label-modern flex justify-between items-center">
-                <span>Nombre del docente</span>
-                <span className="text-xs text-gray-500">
-                  {controlDocente.nombreDocente?.length || 0}/{MAX_CARACTERES}
-                </span>
-              </label>
+              <div>
+                <label className="label-modern">
+                  Docente
+                </label>
 
-              <input
-                type="text"
-                value={controlDocente.nombreDocente}
-                onChange={(e) =>
-                  setControlDocente({
-                    ...controlDocente,
-                    nombreDocente: limpiarTexto(e.target.value),
-                  })
-                }
-                className="input-modern"
-                placeholder="Ingrese el nombre"
-              />
-            </div>
+                <select
+                  value={controlDocente.id_docente || ""}
+                  onChange={(e) =>
+                    setControlDocente({
+                      ...controlDocente,
+                      id_docente: Number(e.target.value),
+                    })
+                  }
+                  className="select-modern"
+                >
+                  <option value="">
+                    Seleccione docente
+                  </option>
 
-            <div>
-              <label className="label-modern flex justify-between items-center">
-                <span>Apellido del docente</span>
-                <span className="text-xs text-gray-500">
-                  {controlDocente.apellidoDocente?.length || 0}/{MAX_CARACTERES}
-                </span>
-              </label>
+                  {docentes.map((docente) => (
+                    <option
+                      key={docente.id_docente}
+                      value={docente.id_docente}
+                    >
+                      {docente.nombre_docente} {docente.apellido_docente}
+                    </option>
+                  ))}
 
-              <input
-                type="text"
-                value={controlDocente.apellidoDocente}
-                onChange={(e) =>
-                  setControlDocente({
-                    ...controlDocente,
-                    apellidoDocente: limpiarTexto(e.target.value),
-                  })
-                }
-                className="input-modern"
-                placeholder="Ingrese el apellido"
-              />
+                </select>
+              </div>
             </div>
           </div>
 

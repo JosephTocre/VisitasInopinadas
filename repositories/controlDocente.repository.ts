@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 export class ControlDocenteRepository {
 
@@ -7,33 +8,23 @@ export class ControlDocenteRepository {
       where: {
         visitaId: idVisita,
       },
+      include: {
+        docente: true,
+      },
     });
   }
 
-  async crear(datos: {
-    docenteId: number;
-    actividad: string;
-    presente: boolean;
-    horario_programado: boolean;
-    interaccion: boolean;
-    observaciones?: string;
-    visitaId: number;
-  }) {
+
+  async crear(datos: Prisma.ControlDocenteUncheckedCreateInput) {
     return prisma.controlDocente.create({
       data: datos,
     });
   }
 
+
   async actualizar(
     idVisita: number,
-    datos: Partial<{
-      docenteId: number;
-      actividad: string;
-      presente: boolean;
-      horario_programado: boolean;
-      interaccion: boolean;
-      observaciones?: string;
-    }>
+    datos: Prisma.ControlDocenteUncheckedUpdateInput
   ) {
     return prisma.controlDocente.update({
       where: {

@@ -2,8 +2,7 @@ import { ControlDocenteRepository } from "@/repositories/controlDocente.reposito
 
 interface RegistrarControlDocenteDTO {
   visitaId: number;
-  nombreDocente: string;
-  apellidoDocente: string;
+  id_docente: number;
   actividad: string;
   presente: "si" | "no";
   horario: "cumple" | "no_cumple";
@@ -15,11 +14,15 @@ export class ControlDocenteService {
   private repo = new ControlDocenteRepository();
 
   async registrarControl(datos: RegistrarControlDocenteDTO) {
+
+    if (!datos.id_docente) {
+      throw new Error("Debe seleccionar un docente");
+    }
+
     const existe = await this.repo.obtenerPorVisita(datos.visitaId);
 
     const data = {
-      nombre_docente: datos.nombreDocente,
-      apellido_docente: datos.apellidoDocente,
+      docenteId: datos.id_docente,
       actividad: datos.actividad,
       presente: datos.presente === "si",
       horario_programado: datos.horario === "cumple",
@@ -35,14 +38,12 @@ export class ControlDocenteService {
     return this.repo.crear(data);
   }
 
-
   async obtenerPorVisita(idVisita: number) {
     return this.repo.obtenerPorVisita(idVisita);
   }
 
   async actualizarControl(id: number, datos: {
-    nombreDocente?: string;
-    apellidoDocente?: string;
+    id_docente?: number;
     actividad?: string;
     presente?: "si" | "no";
     horario?: "cumple" | "no_cumple";
@@ -51,12 +52,22 @@ export class ControlDocenteService {
   }) {
 
     const data = {
-      nombre_docente: datos.nombreDocente,
-      apellido_docente: datos.apellidoDocente,
+      docenteId: datos.id_docente,
+
       actividad: datos.actividad,
-      presente: datos.presente ? datos.presente === "si" : undefined,
-      horario_programado: datos.horario ? datos.horario === "cumple" : undefined,
-      interaccion: datos.interaccion ? datos.interaccion === "si" : undefined,
+
+      presente: datos.presente
+        ? datos.presente === "si"
+        : undefined,
+
+      horario_programado: datos.horario
+        ? datos.horario === "cumple"
+        : undefined,
+
+      interaccion: datos.interaccion
+        ? datos.interaccion === "si"
+        : undefined,
+
       observaciones: datos.observaciones,
     };
 

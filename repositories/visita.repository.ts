@@ -52,9 +52,15 @@ export class VisitaRepository {
     });
   }
 
-    async obtenerSedes(where: any = {}) {
+  async obtenerSedes(
+    where: Prisma.HechoVisitaWhereInput = {}
+  ) {
     return prisma.sede.findMany({
-      where: { visitas: { some: where } }, // <-- AQUI ESTA EL CAMBIO
+      where: {
+        visitas: {
+          some: where,
+        },
+      },
       select: {
         nombre: true,
       },
@@ -64,9 +70,15 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerCursos(where: any = {}) {
+  async obtenerCursos(
+    where: Prisma.HechoVisitaWhereInput = {}
+  ) {
     return prisma.curso.findMany({
-      where: { visitas: { some: where } }, // <-- AQUI ESTA EL CAMBIO
+      where: {
+        visitas: {
+          some: where,
+        },
+      },
       select: {
         nombre: true,
       },
@@ -76,13 +88,13 @@ export class VisitaRepository {
     });
   }
 
-  async crear(datos: Prisma.HechoVisitaUncheckedCreateInput) {
+  async crear(datos: Prisma.HechoVisitaCreateInput) {
     return prisma.hechoVisita.create({
       data: datos,
     });
   }
 
-  async actualizar(id: number, datos: Prisma.HechoVisitaUncheckedUpdateInput) {
+  async actualizar(id: number, datos: Prisma.HechoVisitaUpdateInput) {
     return prisma.hechoVisita.update({
       where: { id_visita: id },
       data: datos,

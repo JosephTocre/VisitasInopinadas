@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useVisitaStore } from "@/store/visitaStore";
 
 type ControlVisitaStepProps = {
@@ -19,13 +19,46 @@ export default function ControlVisitaStep({
   const turno = useVisitaStore((state) => state.controlVisita.turno);
   const tipoHora = useVisitaStore((state) => state.controlVisita.tipoHora);
 
+  const [sedes, setSedes] = useState<
+    { id_sede: number; nombre: string }[]
+  >([]);
+  const [cursos, setCursos] = useState<
+    { id_curso: number; nombre: string }[]
+  >([]);
+
+  useEffect(() => {
+    const cargarCursos = async () => {
+      try {
+        const res = await fetch("/api/cursos");
+        const data = await res.json();
+        setCursos(data);
+      } catch (error) {
+        console.error("Error al cargar cursos:", error);
+      }
+    };
+
+    const cargarSedes = async () => {
+      try {
+        const res = await fetch("/api/sedes");
+        const data = await res.json();
+
+        setSedes(data);
+      } catch (error) {
+        console.error("Error al cargar sedes:", error);
+      }
+    };
+
+    cargarSedes();
+    cargarCursos();
+  }, []);
+
   const [error, setError] = useState("");
   const MAX_CARACTERES = 100;
 
   const limpiarTexto = (valor: string) => {
     return valor
-      .replace(/\s{2,}/g, " ") // evita doble o más espacios
-      .slice(0, MAX_CARACTERES); // limita a 100
+      .replace(/\s{2,}/g, " ")
+      .slice(0, MAX_CARACTERES);
   };
 
   const continuar = async () => {
@@ -157,22 +190,16 @@ export default function ControlVisitaStep({
                 }
                 className="select-modern"
               >
-                <option value=""></option>
-                <option>Lima Centro</option>
-                <option>Lima Norte</option>
-                <option>Lima Sur</option>
-                <option>San Juan de Lurigancho</option>
-                <option>Ate</option>
-                <option>Arequipa</option>
-                <option>Chiclayo</option>
-                <option>Chimbote</option>
-                <option>Piura</option>
-                <option>Huancayo</option>
-                <option>Ica</option>
-                <option>Trujillo</option>
-                <option>Tacna</option>
-                <option>Iquitos</option>
-                <option>Pucallpa</option>
+                <option value="">Seleccione una sede</option>
+
+                {sedes.map((sede) => (
+                  <option
+                    key={sede.id_sede}
+                    value={sede.nombre}
+                  >
+                    {sede.nombre}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -258,20 +285,17 @@ export default function ControlVisitaStep({
               }
               className="select-modern"
             >
-              <option value=""></option>
-              <option>DESARROLLO FULL STACK</option>
-              <option>TALLER DE PROGRAMACIÓN WEB</option>
-              <option>SISTEMAS OPERATIVOS</option>
-              <option>ALGORITMOS Y ESTRUCTURAS DE DATOS</option>
-              <option>REDES Y COMUNICACIÓN DE DATOS 1</option>
-              <option>REDES Y COMUNICACIÓN DE DATOS 2</option>
-              <option>DISEÑO DE PATRONES</option>
-              <option>BASE DE DATOS</option>
-              <option>CURSO INTEGRADOR 1</option>
-              <option>CURSO INTEGRADOR 2</option>
-              <option>SEGURIDAD INFORMÁTICA</option>
-              <option>DESARROLLO WEB INTEGRADO</option>
-              <option>CALIDAD DE SOFTWARE</option>
+              <option value="">Seleccione curso</option>
+
+              {cursos.map((curso) => (
+                <option
+                  key={curso.id_curso}
+                  value={curso.id_curso}
+                >
+                  {curso.nombre}
+                </option>
+              ))}
+
             </select>
           </div>
 
