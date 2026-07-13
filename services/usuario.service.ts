@@ -1,4 +1,5 @@
 import { UsuarioRepository } from "@/repositories/usuario.repository";
+import bcrypt from "bcrypt";
 
 export class UsuarioService {
   private repository = new UsuarioRepository();
@@ -8,19 +9,16 @@ export class UsuarioService {
   }
 
   async obtenerPorId(id: number) {
-    void id;
+    return await this.repository.obtenerPorId(id);
   }
 
-  async registrarUsuario(datos: unknown) {
-    void datos;
-  }
+  async actualizarUsuario(id: number, datos: any) {
+    const { contrasena, ...datosSinContrasena } = datos;
 
-  async actualizarUsuario(id: number, datos: unknown) {
-    void id;
-    void datos;
-  }
+    const datosActualizacion = contrasena
+      ? { ...datosSinContrasena, contrasena: await bcrypt.hash(contrasena, 10) }
+      : datosSinContrasena;
 
-  async eliminarUsuario(id: number) {
-    void id;
+    return await this.repository.editar(id, datosActualizacion);
   }
 }

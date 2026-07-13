@@ -253,7 +253,7 @@ export default function HistorialPage() {
               accessor: (v) => (
                 <button
                   onClick={() => abrirDetalle(v.id_visita)}
-                  className="text-black font-medium hover:underline px-3 py-1 bg-gray-100 rounded-md"
+                  className="text-sm text-black-600 hover:underline px-3 py-1 bg-gray-50 rounded-md"
                 >
                   Detalle
                 </button>
