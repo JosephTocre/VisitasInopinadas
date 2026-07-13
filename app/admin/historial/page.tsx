@@ -15,8 +15,18 @@ interface Visita {
   curso: string;
   fecha: string;
   periodo: string;
-  controlDocente: { nombre_docente: string; apellido_docente: string } | null;
-  usuario: { nombre: string; apellidos: string } | null;
+
+  controlDocente?: {
+    docente?: {
+      nombre_docente: string;
+      apellido_docente: string;
+    };
+  } | null;
+
+  usuario: {
+    nombre: string;
+    apellidos: string;
+  } | null;
 }
 
 export default function HistorialPage() {
@@ -152,8 +162,8 @@ export default function HistorialPage() {
             {
               header: "Docente",
               accessor: (v) =>
-                v.controlDocente
-                  ? `${v.controlDocente.nombre_docente} ${v.controlDocente.apellido_docente}`
+                v.controlDocente?.docente
+                  ? `${v.controlDocente.docente.nombre_docente} ${v.controlDocente.docente.apellido_docente}`
                   : "N/A",
             },
             {

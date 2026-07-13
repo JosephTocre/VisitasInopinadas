@@ -9,9 +9,31 @@ export class VisitaRepository {
         take: pageSize,
         skip: (page - 1) * pageSize,
         include: {
-          controlDocente: true,
+          sede: {
+            select: {
+              nombre: true,
+            },
+          },
+          curso: {
+            select: {
+              nombre: true,
+            },
+          },
+          controlDocente: {
+            include: {
+              docente: {
+                select: {
+                  nombre_docente: true,
+                  apellido_docente: true,
+                },
+              },
+            },
+          },
           usuario: {
-            select: { nombre: true, apellidos: true },
+            select: {
+              nombre: true,
+              apellidos: true,
+            },
           },
         },
         orderBy: {
@@ -33,7 +55,16 @@ export class VisitaRepository {
     return await prisma.hechoVisita.findUnique({
       where: { id_visita: id },
       include: {
-        controlDocente: true,
+        controlDocente: {
+          include: {
+            docente: {
+              select: {
+                nombre_docente: true,
+                apellido_docente: true,
+              },
+            },
+          },
+        },
         controlMaterial: true,
         controlSilabo: true,
         controlEstudiante: true,
@@ -41,6 +72,28 @@ export class VisitaRepository {
         usuario: {
           select: { nombre: true, apellidos: true },
         },
+      },
+    });
+  }
+
+  async obtenerSedes() {
+    return await prisma.sede.findMany({
+      select: {
+        nombre: true,
+      },
+      orderBy: {
+        nombre: "asc",
+      },
+    });
+  }
+
+  async obtenerCursos() {
+    return await prisma.curso.findMany({
+      select: {
+        nombre: true,
+      },
+      orderBy: {
+        nombre: "asc",
       },
     });
   }

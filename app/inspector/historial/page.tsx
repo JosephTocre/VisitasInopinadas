@@ -16,8 +16,11 @@ interface Visita {
   curso: { nombre: string };
   fecha: string;
   ciclo: string;
-  controlDocente: {
-    docente: { nombre_docente: string; apellido_docente: string };
+  controlDocente?: {
+    docente?: {
+      nombre_docente: string;
+      apellido_docente: string;
+    };
   } | null;
 }
 
@@ -146,9 +149,7 @@ export default function HistorialPage() {
             value={
               new Set(
                 visitas.map(
-                  (v) =>
-                    `${v.controlDocente?.docente.nombre_docente ?? ""} ${
-                      v.controlDocente?.docente.apellido_docente ?? ""
+                  (v) => `${v.controlDocente?.docente?.nombre_docente ?? ""} ${v.controlDocente?.docente?.apellido_docente ?? ""
                     }`,
                 ),
               ).size
@@ -157,12 +158,12 @@ export default function HistorialPage() {
 
           <DashboardCard
             title="Cursos"
-            value={new Set(visitas.map((v) => v.curso.nombre)).size}
+            value={new Set(visitas.map((v) => v.curso?.nombre ?? "")).size}
           />
 
           <DashboardCard
             title="Sedes"
-            value={new Set(visitas.map((v) => v.sede.nombre)).size}
+            value={new Set(visitas.map((v) => v.sede?.nombre ?? "")).size}
           />
         </div>
 
@@ -229,7 +230,6 @@ export default function HistorialPage() {
                 ...newValues,
               };
 
-              // Si cambió el periodo, reiniciar filtros dependientes
               if (
                 newValues.periodo !== undefined &&
                 newValues.periodo !== prev.periodo
@@ -265,7 +265,7 @@ export default function HistorialPage() {
             {
               header: "Docente",
               accessor: (v) =>
-                v.controlDocente
+                v.controlDocente?.docente
                   ? `${v.controlDocente.docente.nombre_docente} ${v.controlDocente.docente.apellido_docente}`
                   : "N/A",
             },

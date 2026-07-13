@@ -7,6 +7,8 @@ export class VisitaService {
     filters: {
       periodo?: string;
       docente?: string;
+      sede?: string;
+      curso?: string;
       id_inspector?: number;
       rol?: string;
     },
@@ -53,17 +55,36 @@ export class VisitaService {
     // Filtro por docente
     if (filters.docente && filters.docente.trim() !== "") {
       where.controlDocente = {
-        OR: [
-          {
-            nombre_docente: { contains: filters.docente, mode: "insensitive" },
-          },
-          {
-            apellido_docente: {
-              contains: filters.docente,
-              mode: "insensitive",
+        docente: {
+          OR: [
+            {
+              nombre_docente: {
+                contains: filters.docente,
+                mode: "insensitive",
+              },
             },
-          },
-        ],
+            {
+              apellido_docente: {
+                contains: filters.docente,
+                mode: "insensitive",
+              },
+            },
+          ],
+        },
+      };
+    }
+
+    // Filtro por sede
+    if (filters.sede && filters.sede !== "todos") {
+      where.sede = {
+        nombre: filters.sede,
+      };
+    }
+
+    // Filtro por curso
+    if (filters.curso && filters.curso !== "todos") {
+      where.curso = {
+        nombre: filters.curso,
       };
     }
 
@@ -85,6 +106,14 @@ export class VisitaService {
       meta: { total, page, pageSize, totalPages: Math.ceil(total / pageSize) },
     };
   }
+  async obtenerSedes(filters: any = {}) {
+    return await this.repository.obtenerSedes(filters);
+  }
+
+  async obtenerCursos(filters: any = {}) {
+    return await this.repository.obtenerCursos(filters);
+  }
+
   async obtenerVisita(id: number) {
     return await this.repository.obtenerPorId(id);
   }
