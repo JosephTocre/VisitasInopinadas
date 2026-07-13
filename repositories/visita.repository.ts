@@ -1,26 +1,45 @@
 import { prisma } from "@/lib/prisma";
 
 export class VisitaRepository {
-  // Ahora pasamos la página y el tamaño como argumentos
-  async obtenerTodas(page: number = 1, pageSize: number = 4, where: any = {}) {
+
+  async obtenerTodas(
+    page: number = 1,
+    pageSize: number = 15,
+    where: any = {}
+  ) {
     try {
       return await prisma.hechoVisita.findMany({
         where,
+
         take: pageSize,
+
         skip: (page - 1) * pageSize,
-        include: {
+
+        select: {
+          id_visita: true,
+          fecha: true,
+
           sede: {
             select: {
               nombre: true,
             },
           },
+
           curso: {
             select: {
               nombre: true,
             },
           },
+
+          usuario: {
+            select: {
+              nombre: true,
+              apellidos: true,
+            },
+          },
+
           controlDocente: {
-            include: {
+            select: {
               docente: {
                 select: {
                   nombre_docente: true,
@@ -29,26 +48,24 @@ export class VisitaRepository {
               },
             },
           },
-          usuario: {
-            select: {
-              nombre: true,
-              apellidos: true,
-            },
-          },
         },
+
         orderBy: {
           fecha: "desc",
         },
       });
+
     } catch (error) {
       console.error("PRISMA ERROR:", error);
       throw error;
     }
   }
 
-  // Método adicional para contar el total (útil para el frontend)
+
   async contar(where: any = {}) {
-    return await prisma.hechoVisita.count({ where });
+    return await prisma.hechoVisita.count({
+      where,
+    });
   }
 
   async obtenerPorId(id: number) {
@@ -76,25 +93,33 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerSedes(filters: any = {}) {
+  async obtenerSedes() {
     return await prisma.sede.findMany({
+      where: {
+        is_active: true
+      },
       select: {
-        nombre: true,
+        id_sede: true,
+        nombre: true
       },
       orderBy: {
-        nombre: "asc",
-      },
+        nombre: "asc"
+      }
     });
   }
 
-  async obtenerCursos(filters: any = {}) {
+  async obtenerCursos() {
     return await prisma.curso.findMany({
+      where: {
+        is_active: true
+      },
       select: {
-        nombre: true,
+        id_curso: true,
+        nombre: true
       },
       orderBy: {
-        nombre: "asc",
-      },
+        nombre: "asc"
+      }
     });
   }
 

@@ -184,14 +184,17 @@ export default function RegistroDocentePage() {
               },
               {
                 header: "Acciones",
+                align: "center",
+                width: "150px",
                 accessor: (d: any) => (
-                  <div className="flex gap-2">
+                  <div className="flex justify-center gap-2">
                     <button
                       onClick={() => editarDocente(d)}
                       className="text-sm text-blue-600 hover:underline px-3 py-1 bg-blue-50 rounded-md"
                     >
                       Editar
                     </button>
+
                     <button
                       onClick={() => eliminarDocente(d.id_docente)}
                       className="text-sm text-red-600 hover:underline px-3 py-1 bg-red-50 rounded-md"

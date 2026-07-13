@@ -4,6 +4,9 @@ import { prisma } from "@/lib/prisma";
 export async function GET() {
     try {
         const cursos = await prisma.curso.findMany({
+            where: {
+                is_active: true,
+            },
             select: {
                 id_curso: true,
                 nombre: true,

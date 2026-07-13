@@ -1,7 +1,12 @@
 import React from "react";
 
 interface ReusableTableProps<T> {
-  columns: { header: string; accessor: (item: T) => React.ReactNode }[];
+  columns: {
+    header: string;
+    accessor: (item: T) => React.ReactNode;
+    align?: "left" | "center" | "right";
+    width?: string;
+  }[];
   data: T[];
   isLoading?: boolean;
   emptyMessage?: string;
@@ -21,7 +26,15 @@ export function ReusableTable<T>({
             {columns.map((col, index) => (
               <th
                 key={index}
-                className="px-6 py-3 text-left text-xs font-semibold text-white uppercase tracking-wider"
+                className={`
+  px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider
+  ${col.align === "right"
+                    ? "text-right"
+                    : col.align === "center"
+                      ? "text-center"
+                      : "text-left"}
+`}
+                style={col.width ? { width: col.width } : undefined}
               >
                 {col.header}
               </th>
@@ -53,7 +66,15 @@ export function ReusableTable<T>({
                 {columns.map((col, colIndex) => (
                   <td
                     key={colIndex}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                    className={`
+  px-6 py-4 whitespace-nowrap text-sm text-gray-700
+  ${col.align === "right"
+                        ? "text-right"
+                        : col.align === "center"
+                          ? "text-center"
+                          : "text-left"}
+`}
+                    style={col.width ? { width: col.width } : undefined}
                   >
                     {col.accessor(item)}
                   </td>

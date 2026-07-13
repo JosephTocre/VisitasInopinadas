@@ -10,13 +10,21 @@ export class ReporteService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [visitasHoy, visitasCompletadas, inspectoresActivos, tendencia] =
+    const [
+      visitasHoy,
+      visitasCompletadas,
+      inspectoresActivos,
+      tendencia
+    ] =
       await Promise.all([
         this.reporteRepository.obtenerCantidadVisitas({
           fecha: { gte: today },
         }),
+
         this.reporteRepository.obtenerCantidadVisitas(),
+
         this.reporteRepository.obtenerInspectoresCount(),
+
         this.reporteRepository.obtenerCantidadVisitasPorDia(7),
       ]);
 

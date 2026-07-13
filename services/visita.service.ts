@@ -13,7 +13,7 @@ export class VisitaService {
       rol?: string;
     },
     page: number = 1,
-    pageSize: number = 4,
+    pageSize: number = 15
   ) {
     const where: any = {};
 

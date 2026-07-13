@@ -6,6 +6,7 @@ import AdminSidebar from "@/components/AdminSidebar";
 import { useState, useEffect } from "react";
 import { ExportButton } from "@/components/ExportButton";
 import { FilterBar } from "@/components/ui/FilterBar";
+import { CalendarDays, UserRound, CircleCheck } from "lucide-react";
 import {
   VisitsTrendChart,
   VisitsByInspectorChart,
@@ -80,17 +81,19 @@ export default function ReportesPage() {
             <DashboardCard
               title="Visitas del día"
               value={stats?.visitasHoy || 0}
-              icon="📅"
+              icon={<CalendarDays size={24} />}
             />
+
             <DashboardCard
               title="Visitantes activos"
               value={stats?.visitantesActivos || 0}
-              icon="👤"
+              icon={<UserRound size={24} />}
             />
+
             <DashboardCard
               title="Visitas completadas"
               value={stats?.visitasCompletadas || 0}
-              icon="✅"
+              icon={<CircleCheck size={24} />}
             />
           </div>
         )}

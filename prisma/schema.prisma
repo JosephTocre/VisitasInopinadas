@@ -45,8 +45,8 @@ model HechoVisita {
   sedeId Int
   sede   Sede @relation(fields: [sedeId], references: [id_sede])
 
-  lugar           String
-  
+  lugar String
+
   cursoId Int
   curso   Curso @relation(fields: [cursoId], references: [id_curso])
 
@@ -63,18 +63,16 @@ model HechoVisita {
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
 
-  firma      String?   @db.Text
-  firmado    Boolean   @default(false)
+  firma      String? @db.Text
+  firmado    Boolean @default(false)
   fechaFirma DateTime?
+
 
   @@index([fecha])
   @@index([usuarioId])
-
-  controlDocente    ControlDocente?
-  controlMaterial   ControlMaterial?
-  controlSilabo     ControlSilabo?
-  controlEstudiante ControlEstudiante?
-  controlGuia       ControlGuia?
+  @@index([sedeId])
+  @@index([cursoId])
+  @@index([usuarioId, fecha])
 }
 
 model ControlDocente {

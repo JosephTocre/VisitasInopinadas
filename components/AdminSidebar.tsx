@@ -78,6 +78,24 @@ const navItems = [
       </svg>
     ),
   },
+  {
+    label: "Gestión académica",
+    href: "/admin/gestion-academica",
+    icon: (
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path d="M3 3h18v18H3z" />
+        <path d="M3 9h18" />
+        <path d="M12 9v12" />
+      </svg>
+    ),
+  },
 ];
 
 export default function AdminSidebar() {
@@ -120,11 +138,10 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                isActive
+              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
                   ? "bg-black text-white shadow-sm"
                   : "text-gray-600 hover:bg-gray-100 hover:text-black"
-              }`}
+                }`}
             >
               {isActive && (
                 <div className="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full" />

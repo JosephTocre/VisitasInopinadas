@@ -6,76 +6,151 @@ export class ReporteRepository {
   }
 
   async obtenerCantidadVisitasPorDia(dias: number) {
-    const resultados = [];
-    for (let i = dias - 1; i >= 0; i--) {
-      const fecha = new Date();
-      fecha.setDate(fecha.getDate() - i);
-      fecha.setHours(0, 0, 0, 0);
 
-      const fin = new Date(fecha);
-      fin.setHours(23, 59, 59, 999);
+    const fechaInicio = new Date();
 
-      const count = await prisma.hechoVisita.count({
-        where: {
-          fecha: {
-            gte: fecha,
-            lte: fin,
-          },
-        },
-      });
+    fechaInicio.setDate(
+      fechaInicio.getDate() - dias + 1
+    );
 
-      resultados.push({
-        name: `${fecha.getDate()}/${fecha.getMonth() + 1}`,
-        visitas: count,
-      });
-    }
-    return resultados;
-  }
+    fechaInicio.setHours(0, 0, 0, 0);
 
-  async obtenerVisitasPorMes() {
+
     const visitas = await prisma.hechoVisita.findMany({
-      select: { fecha: true },
+      where: {
+        fecha: {
+          gte: fechaInicio
+        }
+      },
+      select: {
+        fecha: true
+      }
     });
 
-    const conteoPorMes: Record<string, number> = {};
 
-    visitas.forEach((v) => {
+    const resultado: any = {};
+
+
+    visitas.forEach(v => {
+
       const fecha = new Date(v.fecha);
-      const mesAnio = `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}`;
-      conteoPorMes[mesAnio] = (conteoPorMes[mesAnio] || 0) + 1;
+
+      const dia =
+        `${fecha.getDate()}/${fecha.getMonth() + 1}`;
+
+
+      resultado[dia] =
+        (resultado[dia] || 0) + 1;
+
     });
 
-    return Object.entries(conteoPorMes)
-      .map(([mes, count]) => ({
-        mes,
-        visitas: count,
-      }))
-      .sort((a, b) => a.mes.localeCompare(b.mes));
-  }
 
-  async obtenerVisitasPorInspector() {
+    const datos = [];
+
+
+    for (let i = dias - 1; i >= 0; i--) {
+
+      const fecha = new Date();
+
+      fecha.setDate(
+        fecha.getDate() - i
+      );
+
+
+      const dia =
+        `${fecha.getDate()}/${fecha.getMonth() + 1}`;
+
+
+      datos.push({
+        name: dia,
+        visitas: resultado[dia] || 0
+      });
+
+    }
+
+
+    return datos;
+  }
+  
+  async obtenerVisitasPorMes() {
+
     const visitas = await prisma.hechoVisita.findMany({
-      include: {
-        usuario: {
-          select: { nombre: true, apellidos: true },
-        },
+      select: {
+        fecha: true,
       },
     });
 
-    const conteoPorInspector: Record<string, number> = {};
+
+    const conteoPorMes: Record<string, number> = {};
+
 
     visitas.forEach((v) => {
-      const nombreCompleto = v.usuario
-        ? `${v.usuario.nombre} ${v.usuario.apellidos}`
-        : "Desconocido";
-      conteoPorInspector[nombreCompleto] =
-        (conteoPorInspector[nombreCompleto] || 0) + 1;
+
+      const fecha = new Date(v.fecha);
+
+      const mesAnio =
+        `${fecha.getFullYear()}-${String(
+          fecha.getMonth() + 1
+        ).padStart(2, "0")}`;
+
+
+      conteoPorMes[mesAnio] =
+        (conteoPorMes[mesAnio] || 0) + 1;
+
     });
 
-    return Object.entries(conteoPorInspector).map(([nombre, count]) => ({
-      inspector: nombre,
-      _count: { id: count },
-    }));
+
+    return Object.entries(conteoPorMes)
+      .map(([mes, visitas]) => ({
+        mes,
+        visitas,
+      }))
+      .sort((a, b) =>
+        a.mes.localeCompare(b.mes)
+      );
+  }
+
+  async obtenerVisitasPorInspector() {
+
+    const resultado = await prisma.hechoVisita.groupBy({
+      by: ["usuarioId"],
+      _count: {
+        id_visita: true,
+      },
+    });
+
+
+    const usuarios = await prisma.usuario.findMany({
+      where: {
+        id_usuario: {
+          in: resultado.map(r => r.usuarioId),
+        },
+      },
+      select: {
+        id_usuario: true,
+        nombre: true,
+        apellidos: true,
+      },
+    });
+
+
+    return resultado.map(r => {
+
+      const usuario = usuarios.find(
+        u => u.id_usuario === r.usuarioId
+      );
+
+
+      return {
+        inspector: usuario
+          ? `${usuario.nombre} ${usuario.apellidos}`
+          : "Desconocido",
+
+        _count: {
+          id: r._count.id_visita,
+        }
+      };
+    });
   }
 
   async obtenerInspectoresCount() {

@@ -19,7 +19,6 @@ interface Visita {
     nombre: string;
   };
   fecha: string;
-  periodo: string;
 
   controlDocente?: {
     docente?: {
