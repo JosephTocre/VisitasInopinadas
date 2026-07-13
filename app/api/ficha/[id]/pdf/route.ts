@@ -135,7 +135,7 @@ export async function GET(
 
     // ── shortcuts ──────────────────────────────────────────────────────────
     const cd = visita.controlDocente;
-    const firmaBase64 = visita?.firma ?? null;
+    const firmaBase64 = visita?.firma_docente ?? null;
     const cm = visita.controlMaterial;
     const cs = visita.controlSilabo;
     const ce = visita.controlEstudiante;
@@ -625,7 +625,7 @@ export async function GET(
         });
       }
     }
-    
+
     // ─────────────────────────────────────────────────────────────────────
     const pdfBytes = await pdfDoc.save();
 

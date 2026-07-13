@@ -166,7 +166,7 @@ export async function GET(request: Request) {
 
       // ── shortcuts ──────────────────────────────────────────────────────────
       const cd = visita.controlDocente;
-      const firmaBase64 = visita?.firma ?? null;
+      const firmaBase64 = visita?.firma_docente ?? null;
       const cm = visita.controlMaterial;
       const cs = visita.controlSilabo;
       const ce = visita.controlEstudiante;
