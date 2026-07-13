@@ -76,7 +76,7 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerSedes() {
+  async obtenerSedes(filters: any = {}) {
     return await prisma.sede.findMany({
       select: {
         nombre: true,
@@ -87,7 +87,7 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerCursos() {
+  async obtenerCursos(filters: any = {}) {
     return await prisma.curso.findMany({
       select: {
         nombre: true,
