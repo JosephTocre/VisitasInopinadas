@@ -62,6 +62,18 @@ export default function HistorialPage() {
       const data = JSON.parse(text);
       setSedes(data.sedes || []);
       setCursos(data.cursos || []);
+
+      setFiltros((prev) => ({
+        ...prev,
+        sede:
+          prev.sede === "todos" || data.sedes.includes(prev.sede)
+            ? prev.sede
+            : "todos",
+        curso:
+          prev.curso === "todos" || data.cursos.includes(prev.curso)
+            ? prev.curso
+            : "todos",
+      }));
     } catch (e) {
       console.error("Error al procesar respuesta de filtros:", e);
     }
@@ -184,12 +196,24 @@ export default function HistorialPage() {
           ]}
           values={filtros}
           onChange={(newValues) => {
-            setFiltros((previousFiltros) => {
-              return {
-                ...previousFiltros,
+            setFiltros((prev) => {
+              const nuevosFiltros = {
+                ...prev,
                 ...newValues,
               };
+
+              // Si cambió el periodo, reiniciar filtros dependientes
+              if (
+                newValues.periodo !== undefined &&
+                newValues.periodo !== prev.periodo
+              ) {
+                nuevosFiltros.sede = "todos";
+                nuevosFiltros.curso = "todos";
+              }
+
+              return nuevosFiltros;
             });
+
             setPagina(1);
           }}
         />

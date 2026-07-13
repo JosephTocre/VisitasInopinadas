@@ -52,9 +52,9 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerSedes(where: any = {}) {
+    async obtenerSedes(where: any = {}) {
     return prisma.sede.findMany({
-      where: { visitas: where },
+      where: { visitas: { some: where } }, // <-- AQUI ESTA EL CAMBIO
       select: {
         nombre: true,
       },
@@ -66,7 +66,7 @@ export class VisitaRepository {
 
   async obtenerCursos(where: any = {}) {
     return prisma.curso.findMany({
-      where: { visitas: where },
+      where: { visitas: { some: where } }, // <-- AQUI ESTA EL CAMBIO
       select: {
         nombre: true,
       },
