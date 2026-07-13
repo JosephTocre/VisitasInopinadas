@@ -11,8 +11,13 @@ import { FilterBar } from "@/components/ui/FilterBar";
 
 interface Visita {
   id_visita: number;
-  sede: string;
-  curso: string;
+  sede: {
+    nombre: string;
+  };
+
+  curso: {
+    nombre: string;
+  };
   fecha: string;
   periodo: string;
 
@@ -150,8 +155,14 @@ export default function HistorialPage() {
               header: "Fecha",
               accessor: (v) => new Date(v.fecha).toLocaleDateString(),
             },
-            { header: "Sede", accessor: (v) => v.sede },
-            { header: "Curso", accessor: (v) => v.curso },
+            {
+              header: "Sede",
+              accessor: (v) => v.sede?.nombre ?? "-",
+            },
+            {
+              header: "Curso",
+              accessor: (v) => v.curso?.nombre ?? "-",
+            },
             {
               header: "Inspector",
               accessor: (v) =>
