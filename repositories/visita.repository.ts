@@ -108,36 +108,38 @@ export class VisitaRepository {
     });
   }
 
-  async obtenerSedes() {
+  async obtenerSedes(filters: any = {}) {
     return await prisma.sede.findMany({
       where: {
-        is_active: true
+        ...filters,
+        is_active: true,
       },
       select: {
         id_sede: true,
-        nombre: true
+        nombre: true,
       },
       orderBy: {
-        nombre: "asc"
-      }
+        nombre: "asc",
+      },
     });
   }
 
-  async obtenerCursos() {
+  async obtenerCursos(filters: any = {}) {
     return await prisma.curso.findMany({
       where: {
-        is_active: true
+        is_active: true,
+        ...filters,
       },
       select: {
         id_curso: true,
-        nombre: true
+        nombre: true,
       },
       orderBy: {
-        nombre: "asc"
-      }
+        nombre: "asc",
+      },
     });
   }
-
+  
   async crear(datos: any) {
     return await prisma.hechoVisita.create({ data: datos });
   }
