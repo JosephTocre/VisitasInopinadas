@@ -72,6 +72,18 @@ export class VisitaRepository {
     return await prisma.hechoVisita.findUnique({
       where: { id_visita: id },
       include: {
+        sede: {
+          select: {
+            nombre: true,
+          },
+        },
+
+        curso: {
+          select: {
+            nombre: true,
+          },
+        },
+
         controlDocente: {
           include: {
             docente: {
@@ -87,7 +99,10 @@ export class VisitaRepository {
         controlEstudiante: true,
         controlGuia: true,
         usuario: {
-          select: { nombre: true, apellidos: true },
+          select: {
+            nombre: true,
+            apellidos: true,
+          },
         },
       },
     });

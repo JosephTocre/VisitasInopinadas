@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -22,20 +22,22 @@ model Usuario {
   contrasena String
   rol        Rol
 
+  firma String? @db.Text
+
   visitas HechoVisita[]
 }
 
 model Sede {
-  id_sede   Int     @id @default(autoincrement())
-  nombre    String  @unique
-  is_active Boolean @default(true)
+  id_sede   Int           @id @default(autoincrement())
+  nombre    String        @unique
+  is_active Boolean       @default(true)
   visitas   HechoVisita[]
 }
 
 model Curso {
-  id_curso  Int     @id @default(autoincrement())
-  nombre    String  @unique
-  is_active Boolean @default(true)
+  id_curso  Int           @id @default(autoincrement())
+  nombre    String        @unique
+  is_active Boolean       @default(true)
   visitas   HechoVisita[]
 }
 
@@ -63,10 +65,16 @@ model HechoVisita {
   usuarioId Int
   usuario   Usuario @relation(fields: [usuarioId], references: [id_usuario])
 
-  firma      String? @db.Text
-  firmado    Boolean @default(false)
-  fechaFirma DateTime?
+  firma_docente String?   @db.Text
+  firmado       Boolean   @default(false)
+  fechaFirma    DateTime?
 
+  // Relaciones con controles
+  controlDocente    ControlDocente?
+  controlMaterial   ControlMaterial?
+  controlSilabo     ControlSilabo?
+  controlEstudiante ControlEstudiante?
+  controlGuia       ControlGuia?
 
   @@index([fecha])
   @@index([usuarioId])
@@ -78,20 +86,20 @@ model HechoVisita {
 model ControlDocente {
   id_control_docente Int @id @default(autoincrement())
 
-  docenteId Int
-  docente   Docente @relation(fields: [docenteId], references: [id_docente])
+  docenteId          Int
+  docente            Docente @relation(fields: [docenteId], references: [id_docente])
   actividad          String
   presente           Boolean
   horario_programado Boolean
   interaccion        Boolean
   observaciones      String?
 
-  visitaId Int @unique
+  visitaId Int         @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
 
 model Docente {
-  id_docente       Int    @id @default(autoincrement())
+  id_docente       Int     @id @default(autoincrement())
   nombre_docente   String
   apellido_docente String
   is_active        Boolean @default(true)
@@ -105,7 +113,7 @@ model ControlMaterial {
   cumple        Boolean
   observaciones String?
 
-  visitaId Int @unique
+  visitaId Int         @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
 
@@ -117,7 +125,7 @@ model ControlSilabo {
   ingreso_avance        Boolean
   observaciones         String?
 
-  visitaId Int @unique
+  visitaId Int         @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
 
@@ -132,7 +140,7 @@ model ControlEstudiante {
 
   observaciones String?
 
-  visitaId Int @unique
+  visitaId Int         @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }
 
@@ -149,8 +157,8 @@ model ControlGuia {
   logro           EstadoCumplimiento
   rubrica         EstadoCumplimiento
   observaciones   String?
-  requerimientos String?
+  requerimientos  String?
 
-  visitaId Int @unique
+  visitaId Int         @unique
   visita   HechoVisita @relation(fields: [visitaId], references: [id_visita])
 }

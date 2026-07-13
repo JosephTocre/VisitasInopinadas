@@ -89,7 +89,7 @@ export default function HistorialPage() {
   useEffect(() => {
     fetchVisitas();
   }, [filtros, pagina]); // Dependemos de filtros y página
-
+  
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">
       <AdminSidebar />

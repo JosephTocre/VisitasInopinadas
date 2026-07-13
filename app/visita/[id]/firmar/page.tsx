@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Swal from "sweetalert2";
 import SignatureCanvas from "react-signature-canvas";
@@ -18,6 +18,8 @@ export default function FirmaPad() {
   const visitaId = Number(initialId ?? rutaId ?? 0);
 
   const sigRef = useRef<SignatureCanvas>(null);
+  const [tieneFirma, setTieneFirma] = useState(false);
+  const [cargando, setCargando] = useState(true);
 
   const limpiar = () => {
     sigRef.current?.clear();
@@ -64,11 +66,12 @@ export default function FirmaPad() {
       if (res.ok) {
         Swal.fire({
           icon: "success",
-          title: "Firma guardada",
-          text: "La firma se registró correctamente.",
+          title: "Firma registrada",
+          text: "Su firma fue guardada correctamente.",
           confirmButtonText: "Aceptar",
         });
 
+        setTieneFirma(true);
         sigRef.current?.clear();
       } else {
         Swal.fire({
@@ -88,42 +91,118 @@ export default function FirmaPad() {
     }
   };
 
+  useEffect(() => {
+    const verificarFirma = async () => {
+      if (!visitaId || isNaN(visitaId)) {
+        setCargando(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/visita/${visitaId}/firmar`);
+        const data = await res.json();
+
+        if (data?.firma) {
+          setTieneFirma(true);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    verificarFirma();
+  }, [visitaId]);
+
+  if (cargando) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        Cargando...
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-4 sm:p-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-center mb-2">
-          Firma Digital
+      <div className="w-full max-w-xl bg-white rounded-2xl shadow-xl p-6">
+        <h1 className="text-2xl font-bold text-center">
+          Firma del Docente
         </h1>
 
-        <p className="text-sm text-gray-500 text-center mb-4">
-          Firme dentro del recuadro
+        <p className="text-center text-sm text-gray-500 mt-2 mb-6">
+          Firme dentro del recuadro para confirmar la visita.
         </p>
 
         <div className="border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-white">
-          <SignatureCanvas
-            ref={sigRef}
-            penColor="black"
-            canvasProps={{
-              className:
-                "w-full h-56 sm:h-72 md:h-80 touch-none bg-white",
-            }}
-          />
-        </div>
+          {
+            tieneFirma ? (
+              <div
+                className="
+        bg-green-50
+        border
+        border-green-200
+        rounded-xl
+        p-5
+        text-center
+      "
+              >
+                <h2 className="text-green-700 font-bold">
+                  ✓ Firma registrada
+                </h2>
 
-        <div className="mt-5 flex flex-col sm:flex-row gap-3">
-          <button
-            onClick={limpiar}
-            className="w-full sm:w-auto flex-1 py-3 px-4 rounded-xl font-medium bg-gray-100 hover:bg-gray-200 active:scale-[0.98] transition"
-          >
-            Limpiar
-          </button>
+                <p className="text-sm text-gray-600 mt-2">
+                  La firma del docente ya fue registrada para esta visita.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-white">
+                  <SignatureCanvas
+                    ref={sigRef}
+                    penColor="black"
+                    canvasProps={{
+                      className: "w-full h-64 sm:h-72 bg-white touch-none",
+                    }}
+                  />
+                </div>
 
-          <button
-            onClick={guardar}
-            className="w-full sm:w-auto flex-1 py-3 px-4 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition shadow-md"
-          >
-            Guardar Firma
-          </button>
+                <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                  <button
+                    onClick={limpiar}
+                    className="
+            flex-1
+            py-3
+            rounded-xl
+            bg-gray-100
+            hover:bg-gray-200
+            transition
+            font-semibold
+          "
+                  >
+                    Limpiar
+                  </button>
+
+                  <button
+                    onClick={guardar}
+                    className="
+            flex-1
+            py-3
+            rounded-xl
+            bg-black
+            text-white
+            hover:bg-gray-900
+            transition
+            font-semibold
+            shadow-md
+          "
+                  >
+                    Guardar firma
+                  </button>
+                </div>
+              </>
+            )
+          }
         </div>
       </div>
     </div>

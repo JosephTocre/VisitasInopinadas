@@ -124,7 +124,7 @@ export async function GET(
         controlEstudiante: true,
         controlGuia: true,
         usuario: {
-          select: { nombre: true, apellidos: true },
+          select: { nombre: true, apellidos: true, firma: true },
         },
       },
     });
@@ -580,12 +580,12 @@ export async function GET(
         lineLen,
         11,
         fontB,
-        7.5
+        7.5,
       );
 
       // FIRMA DOCENTE IMAGEN
-      if (visita.firma) {
-        const img = await embedSignature(pdfDoc, visita.firma);
+      if (visita.firma_docente) {
+        const img = await embedSignature(pdfDoc, visita.firma_docente);
 
         page.drawImage(img, {
           x: leftSigX,
@@ -594,13 +594,38 @@ export async function GET(
           height: 50,
         });
       }
-      page.drawLine({ start: { x: rightSigX, y: sigY }, end: { x: rightSigX + lineLen, y: sigY }, thickness: 0.8, color: BLACK });
-      centeredText(page, "FIRMA DEL RESPONSABLE DE LA VISITA", rightSigX, sigY - 14, lineLen, 11, fontB, 7.5);
+
+      // FIRMA RESPONSABLE LINEA
+      page.drawLine({
+        start: { x: rightSigX, y: sigY },
+        end: { x: rightSigX + lineLen, y: sigY },
+        thickness: 0.8,
+        color: BLACK,
+      });
+      centeredText(
+        page,
+        "FIRMA DEL RESPONSABLE DE LA VISITA",
+        rightSigX,
+        sigY - 14,
+        lineLen,
+        11,
+        fontB,
+        7.5,
+      );
+
+      // FIRMA INSPECTOR
+      if (visita.usuario?.firma) {
+        const img = await embedSignature(pdfDoc, visita.usuario.firma);
+
+        page.drawImage(img, {
+          x: rightSigX + 5,
+          y: sigY + 15,
+          width: 130,
+          height: 45,
+        });
+      }
     }
-
-    console.log("firma existe?", !!visita.firma);
-console.log("inicio dataUrl:", visita.firma?.slice(0, 30));
-
+    
     // ─────────────────────────────────────────────────────────────────────
     const pdfBytes = await pdfDoc.save();
 

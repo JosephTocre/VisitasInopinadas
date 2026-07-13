@@ -126,7 +126,7 @@ function leftText(
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const ids = searchParams.getAll("id").map(Number); // Obtiene ?id=1&id=2...
+    const ids = searchParams.getAll("id").map(Number);
 
     if (ids.length === 0) {
       return NextResponse.json(
@@ -145,7 +145,7 @@ export async function GET(request: Request) {
         controlEstudiante: true,
         controlGuia: true,
         usuario: {
-          select: { nombre: true, apellidos: true },
+          select: { nombre: true, apellidos: true, firma: true },
         },
       },
     });
@@ -1018,8 +1018,8 @@ export async function GET(request: Request) {
         );
 
         // FIRMA DOCENTE IMAGEN
-        if (visita.firma) {
-          const img = await embedSignature(pdfDoc, visita.firma);
+        if (visita.firma_docente) {
+          const img = await embedSignature(pdfDoc, visita.firma_docente);
 
           page.drawImage(img, {
             x: leftSigX,
@@ -1044,6 +1044,18 @@ export async function GET(request: Request) {
           fontB,
           7.5,
         );
+
+        // FIRMA INSPECTOR
+        if (visita.usuario?.firma) {
+          const img = await embedSignature(pdfDoc, visita.usuario.firma);
+
+          page.drawImage(img, {
+            x: rightSigX + 5,
+            y: sigY + 15,
+            width: 130,
+            height: 45,
+          });
+        }
       }
     }
 
