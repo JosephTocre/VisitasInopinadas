@@ -99,9 +99,12 @@ model ControlDocente {
 }
 
 model Docente {
-  id_docente       Int     @id @default(autoincrement())
+  id_docente       Int    @id @default(autoincrement())
+  dni              String? @unique
   nombre_docente   String
   apellido_docente String
+  correo           String? @unique
+  telefono         String? @unique
   is_active        Boolean @default(true)
 
   controlDocente ControlDocente[]

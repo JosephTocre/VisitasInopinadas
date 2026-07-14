@@ -7,6 +7,14 @@ export class DocenteRepository {
       where: {
         is_active: true,
       },
+      select: {
+        id_docente: true,
+        dni: true,
+        nombre_docente: true,
+        apellido_docente: true,
+        correo: true,
+        telefono: true,
+      },
       orderBy: {
         apellido_docente: "asc",
       },
@@ -27,10 +35,7 @@ export class DocenteRepository {
     });
   }
 
-  async editar(
-    id: number,
-    datos: Prisma.DocenteUpdateInput,
-  ) {
+  async editar(id: number, datos: Prisma.DocenteUpdateInput) {
     return prisma.docente.update({
       where: {
         id_docente: id,

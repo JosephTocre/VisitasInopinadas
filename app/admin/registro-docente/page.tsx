@@ -8,14 +8,25 @@ import { DynamicForm, FieldConfig } from "@/components/ui/DynamicForm"; // Assum
 import Swal from "sweetalert2";
 
 const camposDocente: FieldConfig[] = [
-  { name: "nombre_docente", label: "Nombre", type: "text" },
-  { name: "apellido_docente", label: "Apellidos", type: "text" },
+  { name: "dni", label: "DNI", type: "text", required: false },
+  { name: "nombre_docente", label: "Nombre", type: "text", required: true },
+  {
+    name: "apellido_docente",
+    label: "Apellidos",
+    type: "text",
+    required: true,
+  },
+  { name: "telefono", label: "Teléfono", type: "text", required: false },
+  { name: "correo", label: "Correo", type: "email", required: false },
 ];
 
 export default function RegistroDocentePage() {
   const [formData, setFormData] = useState({
+    dni: "",
     nombre_docente: "",
     apellido_docente: "",
+    correo: "",
+    telefono: "",
   });
 
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -51,6 +62,22 @@ export default function RegistroDocentePage() {
     setMensaje("");
     setError("");
 
+    if (
+      (formData.dni ?? "").trim() !== "" &&
+      (formData.dni ?? "").length !== 8
+    ) {
+      setError("El DNI debe tener 8 dígitos");
+      return;
+    }
+
+    if (
+      (formData.telefono ?? "").trim() !== "" &&
+      (formData.telefono ?? "").length !== 9
+    ) {
+      setError("El teléfono debe tener 9 dígitos");
+      return;
+    }
+
     try {
       const url = editingId ? `/api/docentes/${editingId}` : "/api/docentes";
       const method = editingId ? "PUT" : "POST";
@@ -76,8 +103,11 @@ export default function RegistroDocentePage() {
       );
 
       setFormData({
+        dni: "",
         nombre_docente: "",
         apellido_docente: "",
+        correo: "",
+        telefono: "",
       });
       setEditingId(null);
       fetchDocentes();
@@ -89,8 +119,11 @@ export default function RegistroDocentePage() {
   const editarDocente = (docente: any) => {
     setEditingId(docente.id_docente);
     setFormData({
+      dni: docente.dni,
       nombre_docente: docente.nombre_docente,
       apellido_docente: docente.apellido_docente,
+      correo: docente.correo,
+      telefono: docente.telefono,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -140,8 +173,11 @@ export default function RegistroDocentePage() {
   const cancelarEdicion = () => {
     setEditingId(null);
     setFormData({
+      dni: "",
       nombre_docente: "",
       apellido_docente: "",
+      correo: "",
+      telefono: "",
     });
   };
 
@@ -178,14 +214,24 @@ export default function RegistroDocentePage() {
           <ReusableTable
             columns={[
               {
+                header: "DNI",
+                accessor: (d: any) => d.dni,
+              },
+              {
                 header: "Nombre",
                 accessor: (d: any) =>
                   `${d.nombre_docente} ${d.apellido_docente}`,
               },
               {
+                header: "Correo",
+                accessor: (d: any) => d.correo,
+              },
+              {
+                header: "Teléfono",
+                accessor: (d: any) => d.telefono,
+              },
+              {
                 header: "Acciones",
-                align: "center",
-                width: "150px",
                 accessor: (d: any) => (
                   <div className="flex justify-center gap-2">
                     <button

@@ -9,10 +9,7 @@ interface Params {
   }>;
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: Params,
-) {
+export async function GET(request: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
 
@@ -36,21 +33,18 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: Params,
-) {
+export async function PUT(request: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
     const body = await request.json();
 
-    const docente = await docenteService.actualizarDocente(
-      Number(id),
-      {
-        nombre_docente: body.nombre_docente,
-        apellido_docente: body.apellido_docente,
-      },
-    );
+    const docente = await docenteService.actualizarDocente(Number(id), {
+      dni: body.dni,
+      nombre_docente: body.nombre_docente,
+      apellido_docente: body.apellido_docente,
+      correo: body.correo,
+      telefono: body.telefono,
+    });
 
     return NextResponse.json(docente);
   } catch (error) {
@@ -63,10 +57,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: Params,
-) {
+export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     const { id } = await params;
 

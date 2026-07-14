@@ -4,43 +4,43 @@ import { DocenteService } from "@/services/docente.service";
 const docenteService = new DocenteService();
 
 export async function GET() {
-    try {
-        const docentes = await docenteService.obtenerTodos();
+  try {
+    const docentes = await docenteService.obtenerTodos();
 
-        return NextResponse.json(docentes);
+    return NextResponse.json(docentes);
+  } catch (error) {
+    console.error("ERROR OBTENIENDO DOCENTES:", error);
 
-    } catch (error) {
-        console.error("ERROR OBTENIENDO DOCENTES:", error);
-
-        return NextResponse.json(
-            {
-                error: "Error al obtener docentes",
-            },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(
+      {
+        error: "Error al obtener docentes",
+      },
+      { status: 500 },
+    );
+  }
 }
 
-
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
+  try {
+    const body = await request.json();
 
-        const docente = await docenteService.registrarDocente({
-            nombre_docente: body.nombre_docente,
-            apellido_docente: body.apellido_docente,
-        });
+    const docente = await docenteService.registrarDocente({
+      dni: body.dni,
+      nombre_docente: body.nombre_docente,
+      apellido_docente: body.apellido_docente,
+      correo: body.correo,
+      telefono: body.telefono,
+    });
 
-        return NextResponse.json(docente, { status: 201 });
+    return NextResponse.json(docente, { status: 201 });
+  } catch (error) {
+    console.error("ERROR REGISTRANDO DOCENTE:", error);
 
-    } catch (error) {
-        console.error("ERROR REGISTRANDO DOCENTE:", error);
-
-        return NextResponse.json(
-            {
-                error: "Error al registrar docente",
-            },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(
+      {
+        error: "Error al registrar docente",
+      },
+      { status: 500 },
+    );
+  }
 }
