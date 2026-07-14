@@ -37,7 +37,8 @@ export default function HistorialPage() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
-    periodo: "todos",
+    fechaInicio: "",
+    fechaFin: "",
     docente: "",
   });
   const [pagina, setPagina] = useState(1); // Nuevo estado
@@ -50,7 +51,8 @@ export default function HistorialPage() {
     setIsLoading(true);
     // Construimos los parámetros de búsqueda, ignorando valores vacíos
     const params: any = { page: pagina.toString() };
-    if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
+    if (filtros.fechaInicio) params.fechaInicio = filtros.fechaInicio;
+    if (filtros.fechaFin) params.fechaFin = filtros.fechaFin;
     if (filtros.docente.trim() !== "") params.docente = filtros.docente;
 
     const query = new URLSearchParams(params).toString();
@@ -89,7 +91,7 @@ export default function HistorialPage() {
   useEffect(() => {
     fetchVisitas();
   }, [filtros, pagina]); // Dependemos de filtros y página
-  
+
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">
       <AdminSidebar />
@@ -103,39 +105,26 @@ export default function HistorialPage() {
         <FilterBar
           fields={[
             {
-              label: "Periodo",
-              key: "periodo",
-              type: "select",
-              options: [
-                { value: "todos", label: "Todos los periodos" },
-                { value: "2026-1", label: "2026 - Ciclo 1 (Marzo - Julio)" },
-                {
-                  value: "2026-verano",
-                  label: "2026 - Ciclo Verano (Enero - Febrero)",
-                },
-                {
-                  value: "2025-2",
-                  label: "2025 - Ciclo 2 (Agosto - Diciembre)",
-                },
-                { value: "2025-1", label: "2025 - Ciclo 1 (Marzo - Julio)" },
-                {
-                  value: "2025-verano",
-                  label: "2025 - Ciclo Verano (Enero - Febrero)",
-                },
-              ],
+              label: "Fecha Inicio",
+              key: "fechaInicio",
+              type: "date",
+            },
+            {
+              label: "Fecha Fin",
+              key: "fechaFin",
+              type: "date",
             },
             {
               label: "Docente",
               key: "docente",
               type: "text",
-              placeholder: "Buscar por apellido...",
             },
           ]}
           values={filtros}
           onChange={(newValues) =>
             setFiltros({
-              periodo: newValues.periodo ?? filtros.periodo,
-              docente: newValues.docente ?? filtros.docente,
+              ...filtros,
+              ...newValues,
             })
           }
         />

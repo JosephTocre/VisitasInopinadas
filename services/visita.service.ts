@@ -5,7 +5,8 @@ export class VisitaService {
 
   async obtenerHistorial(
     filters: {
-      periodo?: string;
+      fechaInicio?: string;
+      fechaFin?: string;
       docente?: string;
       sede?: string;
       curso?: string;
@@ -13,45 +14,20 @@ export class VisitaService {
       rol?: string;
     },
     page: number = 1,
-    pageSize: number = 15
+    pageSize: number = 15,
   ) {
     const where: any = {};
 
-    // Filtro por periodo
-    if (filters.periodo && filters.periodo !== "todos") {
-      let gte: Date;
-      let lte: Date;
-
-      if (filters.periodo === "2025-verano") {
-        gte = new Date("2025-01-01T00:00:00Z");
-        lte = new Date("2025-02-28T23:59:59Z");
-      } else if (filters.periodo === "2026-verano") {
-        gte = new Date("2026-01-01T00:00:00Z");
-        lte = new Date("2026-02-28T23:59:59Z");
-      } else if (filters.periodo === "2026-1") {
-        gte = new Date("2026-03-01T00:00:00Z");
-        lte = new Date("2026-07-31T23:59:59Z");
-      } else if (filters.periodo === "2026-2") {
-        gte = new Date("2026-08-01T00:00:00Z");
-        lte = new Date("2026-12-31T23:59:59Z");
-      } else if (filters.periodo === "2025-1") {
-        gte = new Date("2025-03-01T00:00:00Z");
-        lte = new Date("2025-07-31T23:59:59Z");
-      } else if (filters.periodo === "2025-2") {
-        gte = new Date("2025-08-01T00:00:00Z");
-        lte = new Date("2025-12-31T23:59:59Z");
-      } else {
-        // Default o manejo de error
-        gte = new Date("1900-01-01");
-        lte = new Date("2100-12-31");
+    // Filtro por rango de fechas
+    if (filters.fechaInicio || filters.fechaFin) {
+      where.fecha = {};
+      if (filters.fechaInicio) {
+        where.fecha.gte = new Date(`${filters.fechaInicio}T00:00:00Z`);
       }
-
-      where.fecha = {
-        gte,
-        lte,
-      };
+      if (filters.fechaFin) {
+        where.fecha.lte = new Date(`${filters.fechaFin}T23:59:59Z`);
+      }
     }
-
     // Filtro por docente
     if (filters.docente && filters.docente.trim() !== "") {
       where.controlDocente = {

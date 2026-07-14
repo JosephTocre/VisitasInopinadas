@@ -1,12 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export class VisitaRepository {
-
-  async obtenerTodas(
-    page: number = 1,
-    pageSize: number = 15,
-    where: any = {}
-  ) {
+  async obtenerTodas(page: number = 1, pageSize: number = 15, where: any = {}) {
     try {
       return await prisma.hechoVisita.findMany({
         where,
@@ -54,13 +49,11 @@ export class VisitaRepository {
           fecha: "desc",
         },
       });
-
     } catch (error) {
       console.error("PRISMA ERROR:", error);
       throw error;
     }
   }
-
 
   async contar(where: any = {}) {
     return await prisma.hechoVisita.count({
@@ -111,7 +104,6 @@ export class VisitaRepository {
   async obtenerSedes(filters: any = {}) {
     return await prisma.sede.findMany({
       where: {
-        ...filters,
         is_active: true,
       },
       select: {
@@ -128,7 +120,6 @@ export class VisitaRepository {
     return await prisma.curso.findMany({
       where: {
         is_active: true,
-        ...filters,
       },
       select: {
         id_curso: true,
@@ -139,7 +130,7 @@ export class VisitaRepository {
       },
     });
   }
-  
+
   async crear(datos: any) {
     return await prisma.hechoVisita.create({ data: datos });
   }
