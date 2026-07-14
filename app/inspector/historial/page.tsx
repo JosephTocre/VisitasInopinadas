@@ -28,7 +28,8 @@ export default function HistorialPage() {
   const [visitas, setVisitas] = useState<Visita[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filtros, setFiltros] = useState({
-    periodo: "todos",
+    fechaInicio: "",
+    fechaFin: "",
     docente: "",
     sede: "todos",
     curso: "todos",
@@ -42,11 +43,10 @@ export default function HistorialPage() {
   const [sedes, setSedes] = useState<string[]>([]);
   const [cursos, setCursos] = useState<string[]>([]);
 
-  const fetchFiltros = useCallback(async (periodo?: string) => {
+  const fetchFiltros = useCallback(async () => {
     const token = localStorage.getItem("token");
 
     const params = new URLSearchParams({ mode: "filtros" });
-    if (periodo && periodo !== "todos") params.append("periodo", periodo);
 
     const res = await fetch(`/api/visitas?${params.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -83,15 +83,16 @@ export default function HistorialPage() {
   }, []);
 
   useEffect(() => {
-    fetchFiltros(filtros.periodo);
-  }, [filtros.periodo, fetchFiltros]);
+    fetchFiltros();
+  }, [fetchFiltros]);
 
   const fetchVisitas = async () => {
     const token = localStorage.getItem("token");
 
     setIsLoading(true);
     const params: Record<string, string> = { page: pagina.toString() };
-    if (filtros.periodo !== "todos") params.periodo = filtros.periodo;
+    if (filtros.fechaInicio) params.fechaInicio = filtros.fechaInicio;
+    if (filtros.fechaFin) params.fechaFin = filtros.fechaFin;
     if (filtros.docente.trim() !== "") params.docente = filtros.docente;
     if (filtros.sede !== "todos") params.sede = filtros.sede;
     if (filtros.curso !== "todos") params.curso = filtros.curso;
@@ -123,13 +124,14 @@ export default function HistorialPage() {
     setVisitaSeleccionada(data);
   };
 
+  // Reiniciar a la página 1 cuando cambien los filtros
   useEffect(() => {
-    const loadVisitas = async () => {
-      await fetchVisitas();
-    };
+    setPagina(1);
+  }, [filtros]);
 
-    loadVisitas();
-  }, [filtros, pagina]);
+  useEffect(() => {
+    fetchVisitas();
+  }, [filtros, pagina]); // Dependemos de filtros y página
 
   return (
     <div className="min-h-screen bg-[#f5f5f5] flex">
@@ -149,7 +151,9 @@ export default function HistorialPage() {
             value={
               new Set(
                 visitas.map(
-                  (v) => `${v.controlDocente?.docente?.nombre_docente ?? ""} ${v.controlDocente?.docente?.apellido_docente ?? ""
+                  (v) =>
+                    `${v.controlDocente?.docente?.nombre_docente ?? ""} ${
+                      v.controlDocente?.docente?.apellido_docente ?? ""
                     }`,
                 ),
               ).size
@@ -170,26 +174,14 @@ export default function HistorialPage() {
         <FilterBar
           fields={[
             {
-              label: "Periodo",
-              key: "periodo",
-              type: "select",
-              options: [
-                { value: "todos", label: "Todos los periodos" },
-                { value: "2026-1", label: "2026 - Ciclo 1 (Marzo - Julio)" },
-                {
-                  value: "2026-verano",
-                  label: "2026 - Ciclo Verano (Enero - Febrero)",
-                },
-                {
-                  value: "2025-2",
-                  label: "2025 - Ciclo 2 (Agosto - Diciembre)",
-                },
-                { value: "2025-1", label: "2025 - Ciclo 1 (Marzo - Julio)" },
-                {
-                  value: "2025-verano",
-                  label: "2025 - Ciclo Verano (Enero - Febrero)",
-                },
-              ],
+              label: "Fecha Inicio",
+              key: "fechaInicio",
+              type: "date",
+            },
+            {
+              label: "Fecha Fin",
+              key: "fechaFin",
+              type: "date",
             },
             {
               label: "Docente",
@@ -229,14 +221,6 @@ export default function HistorialPage() {
                 ...prev,
                 ...newValues,
               };
-
-              if (
-                newValues.periodo !== undefined &&
-                newValues.periodo !== prev.periodo
-              ) {
-                nuevosFiltros.sede = "todos";
-                nuevosFiltros.curso = "todos";
-              }
 
               return nuevosFiltros;
             });

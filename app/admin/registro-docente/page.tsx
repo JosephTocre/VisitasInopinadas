@@ -215,7 +215,7 @@ export default function RegistroDocentePage() {
             columns={[
               {
                 header: "DNI",
-                accessor: (d: any) => d.dni,
+                accessor: (d: any) => d.dni || "N/A",
               },
               {
                 header: "Nombre",
@@ -224,11 +224,11 @@ export default function RegistroDocentePage() {
               },
               {
                 header: "Correo",
-                accessor: (d: any) => d.correo,
+                accessor: (d: any) => d.correo || "N/A",
               },
               {
                 header: "Teléfono",
-                accessor: (d: any) => d.telefono,
+                accessor: (d: any) => d.telefono || "N/A",
               },
               {
                 header: "Acciones",

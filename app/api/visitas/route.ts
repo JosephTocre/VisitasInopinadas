@@ -23,12 +23,44 @@ export async function GET(request: NextRequest) {
     fechaInicio: searchParams.get("fechaInicio") || undefined,
     fechaFin: searchParams.get("fechaFin") || undefined,
     docente: searchParams.get("docente") || undefined,
+    sede: searchParams.get("sede") || undefined,
+    curso: searchParams.get("curso") || undefined,
     id_inspector: idUsuario,
     rol: rol,
   };
 
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "15");
+
+  const mode = searchParams.get("mode");
+  if (mode === "filtros") {
+    const sede = searchParams.get("sede") || undefined;
+    const curso = searchParams.get("curso") || undefined;
+
+    const filters: any = {};
+
+    if (rol === "INSPECTOR" && idUsuario) {
+      filters.usuarioId = idUsuario;
+    }
+
+    if (sede && sede !== "todos") {
+      filters.sede = { nombre: sede };
+    }
+
+    if (curso && curso !== "todos") {
+      filters.curso = { nombre: curso };
+    }
+
+    const [sedes, cursos] = await Promise.all([
+      visitaService.obtenerSedes(filters),
+      visitaService.obtenerCursos(filters),
+    ]);
+
+    return NextResponse.json({
+      sedes: sedes.map((s: any) => s.nombre),
+      cursos: cursos.map((c: any) => c.nombre),
+    });
+  }
 
   try {
     const visitas = await visitaService.obtenerHistorial(
