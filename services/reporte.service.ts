@@ -10,12 +10,7 @@ export class ReporteService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const [
-      visitasHoy,
-      visitasCompletadas,
-      inspectoresActivos,
-      tendencia
-    ] =
+    const [visitasHoy, visitasCompletadas, inspectoresActivos, tendencia] =
       await Promise.all([
         this.reporteRepository.obtenerCantidadVisitas({
           fecha: { gte: today },
@@ -88,12 +83,12 @@ export class ReporteService {
 
     // 4. Agregar filas
     visitas.forEach((v: any) => {
-      worksheet.addRow({
+      const row = worksheet.addRow({
         id: v.id_visita,
         inspector: v.usuario
           ? `${v.usuario.nombre} ${v.usuario.apellidos}`
           : "N/A",
-        fecha: new Date(v.fecha).toLocaleDateString(),
+        fecha: new Date(v.fecha),
         hInicio: new Date(v.hora_inicio).toLocaleTimeString(),
         hTermino: new Date(v.hora_termino).toLocaleTimeString(),
         sede: v.sede.nombre,
@@ -104,8 +99,9 @@ export class ReporteService {
         turno: v.turno,
         semana: v.n_semana,
         horaPT: v.hora_practica_teoria,
-        // req: v.requerimientos,
       });
+
+      row.getCell("fecha").numFmt = "dd/mm/yyyy";
     });
 
     // 5. Retornar buffer

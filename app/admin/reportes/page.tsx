@@ -100,6 +100,7 @@ export default function ReportesPage() {
 
         <FilterBar
           title="Exportar Reportes"
+          showTodayButton
           fields={[
             {
               label: "Fecha Inicio",

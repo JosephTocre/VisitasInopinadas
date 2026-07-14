@@ -14,6 +14,8 @@ interface FilterBarProps {
   onChange: (newValues: Record<string, string>) => void;
   children?: React.ReactNode;
   title?: string;
+
+  showTodayButton?: boolean;
 }
 
 export function FilterBar({
@@ -22,13 +24,23 @@ export function FilterBar({
   onChange,
   children,
   title,
+  showTodayButton = false,
 }: FilterBarProps) {
+  const aplicarHoy = () => {
+    const hoy = new Date();
+
+    const manana = new Date(hoy);
+    manana.setDate(manana.getDate() + 1);
+
+    onChange({
+      fechaInicio: hoy.toISOString().split("T")[0],
+      fechaFin: manana.toISOString().split("T")[0],
+    });
+  };
   return (
     <div className="flex flex-wrap gap-4 mb-8 bg-white p-4 rounded-xl border border-gray-200 shadow-sm items-end">
       {title && (
-        <div className="w-full text-xl font-bold text-gray-700">
-          {title}
-        </div>
+        <div className="w-full text-xl font-bold text-gray-700">{title}</div>
       )}
       {fields.map((field) => (
         <div
@@ -68,6 +80,17 @@ export function FilterBar({
           )}
         </div>
       ))}
+      {showTodayButton && (
+        <div className="flex h-full items-end">
+          <button
+            type="button"
+            onClick={aplicarHoy}
+            className="bg-black text-white px-4 py-2 rounded-lg font-semibold hover:opacity-80 transition"
+          >
+            Hoy
+          </button>
+        </div>
+      )}
       {children}
     </div>
   );
