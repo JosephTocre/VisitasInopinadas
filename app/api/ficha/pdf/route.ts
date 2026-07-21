@@ -1059,6 +1059,27 @@ export async function GET(request: Request) {
       }
     }
 
+    // Paginación
+    const pages = pdfDoc.getPages();
+    const totalPages = pages.length;
+
+    const pageNumberFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+    pages.forEach((page, index) => {
+      const { width } = page.getSize();
+
+      const texto = `${index + 1}`;
+      const size = 9;
+
+      page.drawText(texto, {
+        x: (width - pageNumberFont.widthOfTextAtSize(texto, size)) / 2,
+        y: 20,
+        size,
+        font: pageNumberFont,
+        color: rgb(0, 0, 0),
+      });
+    });
+
     const pdfBytes = await pdfDoc.save();
     return new NextResponse(Buffer.from(pdfBytes), {
       headers: {

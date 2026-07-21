@@ -627,6 +627,19 @@ export async function GET(
     }
 
     // ─────────────────────────────────────────────────────────────────────
+
+    const pageNumberFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+    const texto = "1";
+    const size = 9;
+
+    page.drawText(texto, {
+      x: (595 - pageNumberFont.widthOfTextAtSize(texto, size)) / 2,
+      y: 20,
+      size,
+      font: pageNumberFont,
+      color: rgb(0, 0, 0),
+    });
     const pdfBytes = await pdfDoc.save();
 
     return new NextResponse(Buffer.from(pdfBytes), {

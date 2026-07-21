@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
 
 const navItems = [
   {
@@ -40,11 +41,13 @@ export default function InspectorSidebar() {
       {/* Logo */}
       <div className="mb-10">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-black rounded-2xl flex items-center justify-center shadow-sm">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
-            </svg>
-          </div>
+          <Image
+            src="/utplogo.png"
+            alt="Logo"
+            width={100}
+            height={80}
+            className="object-contain"
+          />
 
           <div>
             <p className="text-xs text-gray-500 uppercase tracking-wider">

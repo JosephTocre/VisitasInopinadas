@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function InspectorPage() {
   const router = useRouter();
@@ -92,17 +93,13 @@ export default function InspectorPage() {
         <div className="w-full max-w-lg bg-white rounded-xl shadow-md px-10 py-10 flex flex-col items-center text-center">
 
           {/* Icono principal */}
-          <div className="w-16 h-16 bg-black rounded-xl flex items-center justify-center mb-6">
-            <svg
-              width="30"
-              height="30"
-              viewBox="0 0 24 24"
-              fill="white"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.1-1.01L12 2z" />
-            </svg>
-          </div>
+          <Image
+            src="/utplogo.png"
+            alt="Logo"
+            width={300}
+            height={200}
+            className="object-contain mb-6"
+          />
 
 
           <h1 className="text-3xl font-extrabold text-black leading-tight">
